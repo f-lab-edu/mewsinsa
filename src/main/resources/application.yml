@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/mewsinsa_db
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: mewsinsa_admin
+    password: mewsinsa
+
+mybatis:
+  type-aliases-package: com.mewsinsa.*.domain
+  mapper-locations: mybatis/**.xml
