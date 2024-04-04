@@ -9,6 +9,16 @@ public class AddProductOptionRequestDto {
   @Range(min=0, max=Long.MAX_VALUE)
   private Long stock;
 
+  //==Constructor==//
+  public AddProductOptionRequestDto(String productOptionName, Long stock) {
+    this.productOptionName = productOptionName;
+    this.stock = stock;
+  }
+
+  public AddProductOptionRequestDto() {
+  }
+
+
   //==Getter==//
   public String getProductOptionName() {
     return productOptionName;

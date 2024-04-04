@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.mewsinsa.product.repository.ProductRepository">
-
+<!--상품 추가-->
   <insert id="addProduct" parameterType="com.mewsinsa.product.controller.dto.AddProductRequestDto" useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
     INSERT INTO product(product_name, brand_id, category, subcategory, original_price, product_like, product_click)
     VALUES( #{productName}, #{brandId}, #{category}, #{subcategory}, #{originalPrice}, 0, 0)
   </insert>
 
-<!--  상품 추가-->
+<!--  상품 옵션 추가-->
   <insert id="addProductOption">
     INSERT INTO product_option(product_id, product_option_name, stock)
     VALUES(#{productId}, #{productOptionName}, #{stock})

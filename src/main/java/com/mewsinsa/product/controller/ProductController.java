@@ -38,7 +38,7 @@ public class ProductController {
     productService.addProduct(product);
 
     return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+        .Builder(HttpStatusEnum.CREATED)
         .message("상품이 성공적으로 등록 되었습니다.")
         .data(product)
         .build();

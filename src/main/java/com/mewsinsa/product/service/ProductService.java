@@ -1,6 +1,6 @@
 package com.mewsinsa.product.service;
 
-import com.mewsinsa.product.controller.dao.AddProductOptionDAO;
+import com.mewsinsa.product.controller.dto.AddProductOptionDto;
 import com.mewsinsa.product.controller.dto.AddProductRequestDto;
 import com.mewsinsa.product.controller.dto.AddProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductOptionRequestDto;
@@ -36,8 +36,8 @@ public class ProductService {
       List<AddProductOptionRequestDto> productOptions = product.getProductOptionList();
 
       for(AddProductOptionRequestDto productOption : productOptions) {
-        AddProductOptionDAO productOptionDao = new AddProductOptionDAO(productOption.getProductOptionName(), productId, productOption.getStock());
-        productRepository.addProductOption(productOptionDao);
+        AddProductOptionDto productOptionDto = new AddProductOptionDto(productOption.getProductOptionName(), productId, productOption.getStock());
+        productRepository.addProductOption(productOptionDto);
       }
 
     } catch(Exception e) {

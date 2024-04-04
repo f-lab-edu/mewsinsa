@@ -1,19 +1,19 @@
-package com.mewsinsa.product.controller.dao;
+package com.mewsinsa.product.controller.dto;
 
-public class AddProductOptionDAO {
+public class AddProductOptionDto {
   private String productOptionName;
   private Long productId;
   private Long stock;
 
   //==Constructors==//
 
-  public AddProductOptionDAO(String productOptionName, Long productId, Long stock) {
+  public AddProductOptionDto(String productOptionName, Long productId, Long stock) {
     this.productOptionName = productOptionName;
     this.productId = productId;
     this.stock = stock;
   }
 
-  public AddProductOptionDAO() {
+  public AddProductOptionDto() {
   }
 
   //==Constructors 끝==//

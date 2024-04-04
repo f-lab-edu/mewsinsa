@@ -3,6 +3,7 @@ package com.mewsinsa.product.controller.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.List;
 import org.hibernate.validator.constraints.Range;
 
 public class AddProductRequestDto {
@@ -19,14 +20,14 @@ public class AddProductRequestDto {
   @Range(min=0, max=10000000)
   private Long originalPrice;
   @Size(min=1)
-  private ArrayList<AddProductOptionRequestDto> productOptionList;
+  private List<AddProductOptionRequestDto> productOptionList;
 
 
 
   //==Constructors==//
   public AddProductRequestDto(Long productId, String productName, Long brandId, String category,
       String subcategory, Long originalPrice,
-      ArrayList<AddProductOptionRequestDto> productOptionList) {
+      List<AddProductOptionRequestDto> productOptionList) {
     this.productId = productId;
     this.productName = productName;
     this.brandId = brandId;
@@ -62,7 +63,7 @@ public class AddProductRequestDto {
     return originalPrice;
   }
 
-  public ArrayList<AddProductOptionRequestDto> getProductOptionList() {
+  public List<AddProductOptionRequestDto> getProductOptionList() {
     return productOptionList;
   }
 
