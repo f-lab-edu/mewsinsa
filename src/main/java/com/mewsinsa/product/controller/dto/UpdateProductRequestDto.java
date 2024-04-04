@@ -1,21 +1,28 @@
 package com.mewsinsa.product.controller.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.validator.constraints.Range;
 
 public class UpdateProductRequestDto {
+  @NotNull
   private Long productId;
+  @NotEmpty
   private String productName;
+  @NotNull
   private Long brandId;
+  @NotEmpty
   private String category;
+  @NotEmpty
   private String subcategory;
+  @Range(min=0, max=10000000)
   private Long originalPrice;
 
 
   //==Constructors==//
-
-
   public UpdateProductRequestDto(Long productId, String productName, Long brandId, String category,
       String subcategory, Long originalPrice) {
     this.productId = productId;
@@ -29,7 +36,6 @@ public class UpdateProductRequestDto {
   public UpdateProductRequestDto() {
   }
 
-  //==Constructors 끝==//
 
 
   //==Getter==//
@@ -57,11 +63,9 @@ public class UpdateProductRequestDto {
   public Long getProductId() {
     return productId;
   }
-//==Getter 끝==//
 
 
   //==Setter==//
-
   public void setProductName(String productName) {
     this.productName = productName;
   }
@@ -82,10 +86,8 @@ public class UpdateProductRequestDto {
     this.originalPrice = originalPrice;
   }
 
-
   public void setProductId(Long productId) {
     this.productId = productId;
   }
-  //==Setter 끝 ==//
 
 }

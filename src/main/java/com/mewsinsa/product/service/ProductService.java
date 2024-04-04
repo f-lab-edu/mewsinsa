@@ -2,10 +2,12 @@ package com.mewsinsa.product.service;
 
 import com.mewsinsa.product.controller.dao.AddProductOptionDAO;
 import com.mewsinsa.product.controller.dto.AddProductRequestDto;
-import com.mewsinsa.product.controller.dto.ProductOptionRequestDto;
+import com.mewsinsa.product.controller.dto.AddProductOptionRequestDto;
+import com.mewsinsa.product.controller.dto.UpdateProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductRequestDto;
 import com.mewsinsa.product.repository.ProductRepository;
 import java.util.List;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,13 +30,12 @@ public class ProductService {
       productRepository.addProduct(product);
 
       // 키값을 가져오기
-      System.out.println(product.getProductId());
       Long productId = product.getProductId();
 
       // 상품 옵션 정보를 등록
-      List<ProductOptionRequestDto> productOptions = product.getProductOptionList();
+      List<AddProductOptionRequestDto> productOptions = product.getProductOptionList();
 
-      for(ProductOptionRequestDto productOption : productOptions) {
+      for(AddProductOptionRequestDto productOption : productOptions) {
         AddProductOptionDAO productOptionDao = new AddProductOptionDAO(productOption.getProductOptionName(), productId, productOption.getStock());
         productRepository.addProductOption(productOptionDao);
       }
@@ -52,4 +53,39 @@ public class ProductService {
       throw new IllegalArgumentException("상품 수정에 실패하였습니다.", e);
     }
   }
+
+
+  /**
+   * @param productOption 수정하려는 옵션 정보
+   */
+  public void updateProductOption(UpdateProductOptionRequestDto productOption) {
+    try {
+      productRepository.updateProductOption(productOption);
+    } catch(Exception e) {
+      throw new IllegalArgumentException("상품 옵션 수정에 실패하였습니다.", e);
+    }
+  }
+
+  public void deleteProductOption(Long productOptionId) {
+    try {
+      productRepository.deleteProductOption(productOptionId);
+    } catch(Exception e) {
+      throw new IllegalArgumentException("상품 옵션 삭제에 실패하였습니다.", e);
+    }
+
+  }
+
+  public void deleteProduct(Long productId) {
+    try {
+      // 상품 옵션들을 먼저 지웁니다.
+      List<Long> productOptionList = productRepository.findProductOptions(productId);
+      for(Long productOptionId : productOptionList) {
+        deleteProductOption(productOptionId);
+      }
+      productRepository.deleteProduct(productId);
+    } catch(Exception e) {
+      throw new IllegalArgumentException("상품 삭제에 실패하였습니다.", e);
+    }
+  }
+
 }

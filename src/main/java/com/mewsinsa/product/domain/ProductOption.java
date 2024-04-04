@@ -6,7 +6,7 @@ public class ProductOption {
   String optionName;
   Long stock;
 
-  //== AllArgsConstructor ==//
+  //==Constructor==//
 
   public ProductOption(Long id, Long productId, String optionName, Long stock) {
     this.id = id;
@@ -15,7 +15,6 @@ public class ProductOption {
     this.stock = stock;
   }
 
-  //== AllArgsConstructor== 끝 //
 
 
   //== Getter ==//
@@ -36,5 +35,4 @@ public class ProductOption {
     return stock;
   }
 
-  //== Getter 끝 ==//
 }

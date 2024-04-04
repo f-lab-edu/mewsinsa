@@ -13,7 +13,18 @@ public class SuccessResponse {
     this.data = builder.data;
   }
 
+  //==Getter==//
+  public HttpStatusEnum getHttpStatus() {
+    return httpStatus;
+  }
 
+  public String getMessage() {
+    return message;
+  }
+
+  public Object getData() {
+    return data;
+  }
 
   //==Builder==//
   public static class Builder {
@@ -26,12 +37,12 @@ public class SuccessResponse {
       this.httpStatus = httpStatus;
     }
 
-    Builder message(String message) {
+    public Builder message(String message) {
       this.message = message;
       return this;
     }
 
-    Builder data(Object data) {
+    public Builder data(Object data) {
       this.data = data;
       return this;
     }

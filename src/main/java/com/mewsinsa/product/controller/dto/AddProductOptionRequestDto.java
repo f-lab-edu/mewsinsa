@@ -1,7 +1,12 @@
 package com.mewsinsa.product.controller.dto;
 
-public class ProductOptionRequestDto {
+import jakarta.validation.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
+
+public class AddProductOptionRequestDto {
+  @NotEmpty
   private String productOptionName;
+  @Range(min=0, max=Long.MAX_VALUE)
   private Long stock;
 
   //==Getter==//
@@ -13,10 +18,8 @@ public class ProductOptionRequestDto {
     return stock;
   }
 
-  //==Getter 끝 ==//
 
   //==Setter==//
-
   public void setProductOptionName(String productOptionName) {
     this.productOptionName = productOptionName;
   }
@@ -25,5 +28,4 @@ public class ProductOptionRequestDto {
     this.stock = stock;
   }
 
-  //==Setter 끝==//
 }

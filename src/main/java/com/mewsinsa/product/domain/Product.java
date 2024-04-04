@@ -10,7 +10,7 @@ public class Product {
   private Long like;
   private Long click;
 
-  //== AllArgsConstructor ==//
+  //==Constructor ==//
 
   public Product(Long id, String productName, Long brandId, String category, String subcategory,
       Long price, Long like, Long click) {
@@ -24,7 +24,6 @@ public class Product {
     this.click = click;
   }
 
-  //== AllArgsConstructor 끝 ==//
 
   //== Getter ==//
   public Long getId() {
@@ -58,7 +57,6 @@ public class Product {
   public Long getClick() {
     return click;
   }
-  //== Getter 끝 ==//
 
 
 

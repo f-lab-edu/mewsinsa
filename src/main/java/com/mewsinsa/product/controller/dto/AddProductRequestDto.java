@@ -1,26 +1,32 @@
 package com.mewsinsa.product.controller.dto;
 
-import java.lang.reflect.Array;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.List;
+import org.hibernate.validator.constraints.Range;
 
 public class AddProductRequestDto {
+
   private Long productId;
+  @NotEmpty
   private String productName;
+  @Range(min=1, max=Long.MAX_VALUE)
   private Long brandId;
+  @NotEmpty
   private String category;
+  @NotEmpty
   private String subcategory;
+  @Range(min=0, max=10000000)
   private Long originalPrice;
-  private ArrayList<ProductOptionRequestDto> productOptionList;
+  @Size(min=1)
+  private ArrayList<AddProductOptionRequestDto> productOptionList;
 
 
 
   //==Constructors==//
-
-
   public AddProductRequestDto(Long productId, String productName, Long brandId, String category,
       String subcategory, Long originalPrice,
-      ArrayList<ProductOptionRequestDto> productOptionList) {
+      ArrayList<AddProductOptionRequestDto> productOptionList) {
     this.productId = productId;
     this.productName = productName;
     this.brandId = brandId;
@@ -33,7 +39,6 @@ public class AddProductRequestDto {
   public AddProductRequestDto() {
   }
 
-  //==Constructors 끝==//
 
 
   //==Getter==//
@@ -57,14 +62,14 @@ public class AddProductRequestDto {
     return originalPrice;
   }
 
-  public ArrayList<ProductOptionRequestDto> getProductOptionList() {
+  public ArrayList<AddProductOptionRequestDto> getProductOptionList() {
     return productOptionList;
   }
 
   public Long getProductId() {
     return productId;
   }
-//==Getter 끝==//
+
 
 
   //==Setter==//
@@ -90,13 +95,12 @@ public class AddProductRequestDto {
   }
 
   public void setProductOptionList(
-      ArrayList<ProductOptionRequestDto> productOptionList) {
+      ArrayList<AddProductOptionRequestDto> productOptionList) {
     this.productOptionList = productOptionList;
   }
 
   public void setProductId(Long productId) {
     this.productId = productId;
   }
-  //==Setter 끝 ==//
 
 }
