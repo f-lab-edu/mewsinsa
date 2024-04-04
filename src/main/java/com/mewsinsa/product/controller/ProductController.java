@@ -1,21 +1,24 @@
 package com.mewsinsa.product.controller;
 
 import com.mewsinsa.product.controller.dto.AddProductRequestDto;
-import com.mewsinsa.product.repository.ProductRespository;
+import com.mewsinsa.product.controller.dto.UpdateProductRequestDto;
+import com.mewsinsa.product.repository.ProductRepository;
 import com.mewsinsa.product.service.ProductService;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductController {
   private final ProductService productService;
-  private final ProductRespository productRespository;
+  private final ProductRepository productRepository;
 
   //==Constructor==//
-  public ProductController(ProductService productService, ProductRespository productRespository) {
+  public ProductController(ProductService productService, ProductRepository productRepository) {
     this.productService = productService;
-    this.productRespository = productRespository;
+    this.productRepository = productRepository;
   }
   //==Constructor 끝==//
 
@@ -27,6 +30,12 @@ public class ProductController {
   AddProductRequestDto addProduct(@RequestBody AddProductRequestDto product) {
     productService.addProduct(product);
 
+    return product;
+  }
+
+  @PatchMapping("/products/{productId}")
+  UpdateProductRequestDto updateProduct(@RequestBody UpdateProductRequestDto product) {
+    productService.updateProduct(product);
     return product;
   }
 

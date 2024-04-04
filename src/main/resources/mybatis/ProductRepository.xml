@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mewsinsa.product.repository.ProductRespository">
+<mapper namespace="com.mewsinsa.product.repository.ProductRepository">
 
   <insert id="addProduct" parameterType="com.mewsinsa.product.controller.dto.AddProductRequestDto" useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
     INSERT INTO product(product_name, brand_id, category, subcategory, original_price, product_like, product_click) VALUES(
@@ -13,4 +13,29 @@
     #{productId}, #{productOptionName}, #{stock})
   </insert>
 
+  <update id="updateProduct">
+    UPDATE product SET
+    product_name = #{productName},
+    brand_id = #{brandId},
+    category = #{category},
+    subcategory = #{subcategory},
+    original_price = #{originalPrice}
+    where product_id = #{productId}
+  </update>
+
+
+<!--  옵션 내용 업데이트-->
+  <update id="updateProductOption">
+    UPDATE product_option SET
+    product_option_name = #{productOptionName},
+    stock = #{stock}
+    where product_option_id = #{productOptionId}
+  </update>
+
+<!--  옵션 삭제-->
+  <delete id="deleteProductOptions">
+    DELETE
+    FROM product_option
+    WHERE product_option_id = #{productOptionId}
+  </delete>
 </mapper>

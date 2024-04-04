@@ -1,4 +1,4 @@
-package com.mewsinsa.config;
+package com.mewsinsa.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
