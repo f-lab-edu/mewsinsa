@@ -77,11 +77,7 @@ public class ProductService {
 
   public void deleteProduct(Long productId) {
     try {
-      // 상품 옵션들을 먼저 지웁니다.
-      List<Long> productOptionList = productRepository.findProductOptions(productId);
-      for(Long productOptionId : productOptionList) {
-        deleteProductOption(productOptionId);
-      }
+      // ON DELETE CASCADE로 설정하여, 옵션도 함께 지워집니다.
       productRepository.deleteProduct(productId);
     } catch(Exception e) {
       throw new IllegalArgumentException("상품 삭제에 실패하였습니다.", e);
