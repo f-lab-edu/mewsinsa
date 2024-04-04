@@ -3,7 +3,7 @@
 
 <mapper namespace="com.mewsinsa.promotion.repository.PromotionRepository">
   <!--프로모션 추가-->
-  <insert id="addPromotion">
+  <insert id="addPromotion" parameterType="com.mewsinsa.promotion.domain.Promotion" useGeneratedKeys="true" keyProperty="promotionId" keyColumn="promotion_id">
     INSERT INTO promotion(promotion_name, promotion_type, discount_rate, discount_amount, started_at, expired_at)
     VALUES( #{promotionName}, #{promotionType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt})
   </insert>
@@ -23,6 +23,10 @@
     AND NOW() > started_at
     AND ROWNUM() <= #{page} * 10
     AND ROWNUM() > (#{page}-1)*10]]>
-
   </select>
+
+  <insert id="addPromotionProduct" parameterType="long">
+    INSERT INTO promotion_product(product_id, promotion_id)
+    VALUES (#{productId}, #{promotionId})
+  </insert>
 </mapper>

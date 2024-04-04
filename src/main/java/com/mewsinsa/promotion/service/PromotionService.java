@@ -2,6 +2,7 @@ package com.mewsinsa.promotion.service;
 
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
 import com.mewsinsa.promotion.controller.dto.PromotionDto;
+import com.mewsinsa.promotion.domain.Promotion;
 import com.mewsinsa.promotion.repository.PromotionRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,26 @@ public class PromotionService {
     this.promotionRepository = promotionRepository;
   }
 
-  public void addPromotion(AddPromotionRequestDto promotion) {
+  public void addPromotion(AddPromotionRequestDto promotionDto) {
     try {
+      Promotion promotion = new Promotion(
+          0L,
+          promotionDto.getPromotionName(),
+          promotionDto.getPromotionType(),
+          promotionDto.getDiscountRate(),
+          promotionDto.getDiscountAmount(),
+          promotionDto.getStartedAt(),
+          promotionDto.getExpiredAt()
+      );
+
+      // 프로모션을 저장
       promotionRepository.addPromotion(promotion);
+      Long promotionId = promotion.getPromotionId();
+
+      List<Long> promotionProduts = promotionDto.getPromotionProductList();
+      for(long productId : promotionProduts) {
+        promotionRepository.addPromotionProduct(productId, promotionId);
+      }
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException("프로모션 등록에 실패하였습니다.", e);
     }

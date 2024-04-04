@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.coupon.repository.CouponRepository">
+<!--  새로운 쿠폰 등록-->
+  <insert id="addCoupon" parameterType="com.mewsinsa.coupon.domain.Coupon" useGeneratedKeys="true" keyProperty="couponId" keyColumn="coupon_id">
+    INSERT INTO coupon(coupon_name, coupon_type, discount_rate, discount_amount, started_at, expired_at)
+    VALUES( #{couponName}, #{couponType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt})
+  </insert>
+
+  <!--  진행중인 쿠폰 조회-->
+  <select id="findOngoingCoupons" parameterType="int" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+    coupon_id AS couponId,
+    coupon_name AS couponName,
+    coupon_type AS couponType,
+    discount_rate AS discountRate,
+    discount_amount AS discountAmount,
+    started_at AS startedAt,
+    expired_at AS expiredAt
+    FROM coupon
+    WHERE  <![CDATA[NOW() < expired_at
+    AND NOW() > started_at
+    AND ROWNUM() <= #{page} * 30
+    AND ROWNUM() > (#{page}-1)*30]]>
+  </select>
+
+<!--  쿠폰에 적용되는 상품 정보 등록-->
+  <insert id="addCouponProduct" parameterType="long">
+    INSERT INTO coupon_product(product_id, coupon_id)
+    VALUES (#{productId}, #{couponId})
+  </insert>
+</mapper>

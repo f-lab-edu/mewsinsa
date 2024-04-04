@@ -1,22 +1,22 @@
-package com.mewsinsa.promotion.domain;
+package com.mewsinsa.coupon.domain;
 
 import java.time.LocalDateTime;
 
-public class Promotion {
-  private Long promotionId;
-  private String promotionName;
+public class Coupon {
+  private Long couponId;
+  private String couponName;
   /**
    * true: 정률할인
    * false: 정액할인
    */
-  private Boolean promotionType;
+  private Boolean couponType;
 
   /**
-   * 할인율. promotionType이 false일 경우 null가능
+   * 할인율. couponType이 false일 경우 null가능
    */
   private Integer discountRate;
   /**
-   * 할인금액. promotionType이 true일 경우 null가능
+   * 할인금액. couponType이 true일 경우 null가능
    */
   private Long discountAmount;
 
@@ -31,15 +31,16 @@ public class Promotion {
    */
   private LocalDateTime expiredAt;
 
+
   //==Constructor==//
-  public Promotion() {
+  public Coupon() {
   }
 
-  public Promotion(Long promotionId, String promotionName, Boolean promotionType,
-      Integer discountRate, Long discountAmount, LocalDateTime startedAt, LocalDateTime expiredAt) {
-    this.promotionId = promotionId;
-    this.promotionName = promotionName;
-    this.promotionType = promotionType;
+  public Coupon(Long couponId, String couponName, Boolean couponType, Integer discountRate,
+      Long discountAmount, LocalDateTime startedAt, LocalDateTime expiredAt) {
+    this.couponId = couponId;
+    this.couponName = couponName;
+    this.couponType = couponType;
     this.discountRate = discountRate;
     this.discountAmount = discountAmount;
     this.startedAt = startedAt;
@@ -47,16 +48,16 @@ public class Promotion {
   }
 
   //==Getter==//
-  public Long getPromotionId() {
-    return promotionId;
+  public Long getCouponId() {
+    return couponId;
   }
 
-  public String getPromotionName() {
-    return promotionName;
+  public String getCouponName() {
+    return couponName;
   }
 
-  public Boolean getPromotionType() {
-    return promotionType;
+  public Boolean getCouponType() {
+    return couponType;
   }
 
   public Integer getDiscountRate() {
@@ -76,16 +77,16 @@ public class Promotion {
   }
 
   //==Setter==//
-  public void setPromotionId(Long promotionId) {
-    this.promotionId = promotionId;
+  public void setCouponId(Long couponId) {
+    this.couponId = couponId;
   }
 
-  public void setPromotionName(String promotionName) {
-    this.promotionName = promotionName;
+  public void setCouponName(String couponName) {
+    this.couponName = couponName;
   }
 
-  public void setPromotionType(Boolean promotionType) {
-    this.promotionType = promotionType;
+  public void setCouponType(Boolean couponType) {
+    this.couponType = couponType;
   }
 
   public void setDiscountRate(Integer discountRate) {
