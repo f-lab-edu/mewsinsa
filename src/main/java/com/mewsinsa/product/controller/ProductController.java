@@ -1,13 +1,15 @@
 package com.mewsinsa.product.controller;
 
 import com.mewsinsa.global.response.HttpStatusEnum;
-import com.mewsinsa.global.response.SuccessResponse;
+import com.mewsinsa.global.response.SuccessResult;
+import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.product.controller.dto.AddProductRequestDto;
 import com.mewsinsa.product.controller.dto.AddProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductRequestDto;
-import com.mewsinsa.product.repository.ProductRepository;
 import com.mewsinsa.product.service.ProductService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,14 +36,16 @@ public class ProductController {
    * @return SuccessResponse
    */
   @PostMapping
-  SuccessResponse addProduct(@Validated @RequestBody AddProductRequestDto product) {
+  ResponseEntity<SuccessResult> addProduct(@Validated @RequestBody AddProductRequestDto product) {
     productService.addProduct(product);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
         .message("상품이 성공적으로 등록 되었습니다.")
         .data(product)
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
+
   }
 
   /**
@@ -49,45 +53,49 @@ public class ProductController {
    * @return SuccessResponse
    */
   @PatchMapping("/{productId}")
-  SuccessResponse updateProduct(@Validated @RequestBody UpdateProductRequestDto product) {
+  ResponseEntity<SuccessResult> updateProduct(@Validated @RequestBody UpdateProductRequestDto product) {
     productService.updateProduct(product);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
         .message("상품이 성공적으로 수정 되었습니다.")
         .data(product)
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
 
   @PatchMapping("/product-options/{productOptionId}")
-  SuccessResponse updateProductOption(@Validated @RequestBody UpdateProductOptionRequestDto productOption) {
+  ResponseEntity<SuccessResult> updateProductOption(@Validated @RequestBody UpdateProductOptionRequestDto productOption) {
     productService.updateProductOption(productOption);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
         .message("상품 옵션이 성공적으로 수정 되었습니다.")
         .data(productOption)
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @DeleteMapping("/product-options/{productOptionId}")
-  SuccessResponse deleteProductOption(@RequestBody Long productOptionId) {
+  ResponseEntity<SuccessResult> deleteProductOption(@RequestBody Long productOptionId) {
     productService.deleteProductOption(productOptionId);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
         .message("상품 옵션이 성공적으로 삭제 되었습니다.")
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @DeleteMapping("/{productId}")
-  SuccessResponse deleteProduct(@RequestBody Long productId) {
+  ResponseEntity<SuccessResult> deleteProduct(@RequestBody Long productId) {
     productService.deleteProduct(productId);
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
         .message("상품이 성공적으로 삭제 되었습니다.")
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
 

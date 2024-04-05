@@ -1,11 +1,15 @@
 package com.mewsinsa.promotion.controller;
 
 import com.mewsinsa.global.response.HttpStatusEnum;
-import com.mewsinsa.global.response.SuccessResponse;
+import com.mewsinsa.global.response.SuccessResult;
+import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
 import com.mewsinsa.promotion.controller.dto.PromotionDto;
 import com.mewsinsa.promotion.service.PromotionService;
 import java.util.List;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,26 +29,28 @@ public class PromotionController {
   }
 
   @PostMapping
-  SuccessResponse addPromotion(@Validated @RequestBody AddPromotionRequestDto promotion) {
+  ResponseEntity<SuccessResult> addPromotion(@Validated @RequestBody AddPromotionRequestDto promotion) {
     promotionService.addPromotion(promotion);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
         .message("프로모션이 정상적으로 등록되었습니다.")
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
   }
 
   @GetMapping
-  SuccessResponse findOngoingPromotions(@RequestParam(value = "page", required = false) Integer page) {
+  ResponseEntity<SuccessResult> findOngoingPromotions(@RequestParam(value = "page", required = false) Integer page) {
     if(page == null) {
       page = 1;
     }
     List<PromotionDto> promotionList = promotionService.findOngoingPromotions(page);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
         .data(promotionList)
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
 

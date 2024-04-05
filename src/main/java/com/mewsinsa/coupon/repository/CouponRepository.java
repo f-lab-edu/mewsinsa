@@ -13,5 +13,7 @@ public interface CouponRepository {
 
   List<Coupon> findOngoingCoupons(Integer page);
 
-  void addCouponProduct(@Param("productId")Long productId, @Param("couponId")Long couponId);
+  void addCouponProduct(@Param("productId")Long productId, @Param("couponId") Long couponId);
+
+  List<Coupon> findAvailableCouponsToProduct(@Param("productId") Long productId);
 }

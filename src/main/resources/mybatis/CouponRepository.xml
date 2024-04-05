@@ -11,13 +11,13 @@
   <!--  진행중인 쿠폰 조회-->
   <select id="findOngoingCoupons" parameterType="int" resultType="com.mewsinsa.coupon.domain.Coupon">
     SELECT
-    coupon_id AS couponId,
-    coupon_name AS couponName,
-    coupon_type AS couponType,
-    discount_rate AS discountRate,
-    discount_amount AS discountAmount,
-    started_at AS startedAt,
-    expired_at AS expiredAt
+      coupon_id AS couponId,
+      coupon_name AS couponName,
+      coupon_type AS couponType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
     FROM coupon
     WHERE  <![CDATA[NOW() < expired_at
     AND NOW() > started_at
@@ -25,9 +25,24 @@
     AND ROWNUM() > (#{page}-1)*30]]>
   </select>
 
-<!--  쿠폰에 적용되는 상품 정보 등록-->
+
+  <!--  쿠폰을 사용할 수 있는 상품 정보 등록-->
   <insert id="addCouponProduct" parameterType="long">
     INSERT INTO coupon_product(product_id, coupon_id)
     VALUES (#{productId}, #{couponId})
   </insert>
+
+<!--상품에 적용되는 쿠폰 리스트 조회-->
+  <select id="findAvailableCouponsToProduct" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      coupon_id AS couponId,
+      coupon_name AS couponName,
+      coupon_type AS couponType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM coupon
+    WHERE product_id = #{productId}
+  </select>
 </mapper>

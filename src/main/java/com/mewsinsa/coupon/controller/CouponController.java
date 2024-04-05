@@ -4,12 +4,19 @@ import com.mewsinsa.coupon.controller.dto.AddCouponRequestDto;
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.service.CouponService;
 import com.mewsinsa.global.response.HttpStatusEnum;
-import com.mewsinsa.global.response.SuccessResponse;
+import com.mewsinsa.global.response.SuccessResult;
+import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
 import com.mewsinsa.promotion.controller.dto.PromotionDto;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,27 +34,42 @@ public class CouponController {
   }
 
 
+
   @PostMapping
-  SuccessResponse addPromotion(@Validated @RequestBody AddCouponRequestDto coupon) {
+  ResponseEntity<SuccessResult> addCoupon(@Validated @RequestBody AddCouponRequestDto coupon) {
     couponService.addCoupon(coupon);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
         .message("쿠폰이 정상적으로 등록되었습니다.")
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
   }
 
   @GetMapping
-  SuccessResponse findOngoingCoupons(@RequestParam(value = "page", required = false) Integer page) {
+  ResponseEntity<SuccessResult> findOngoingCoupons(@RequestParam(value = "page", required = false) Integer page) {
     if(page == null) {
       page = 1;
     }
     List<Coupon> couponList = couponService.findOngoingCoupons(page);
 
-    return new SuccessResponse
-        .Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
         .data(couponList)
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+
+  @GetMapping("/products/{productId}")
+  ResponseEntity<SuccessResult> findAvailableCouponsToProduct(@PathVariable("productId") @Positive Long productId) {
+    List<Coupon> availableCouponList = couponService.findAvailableCouponsToProduct(productId);
+
+    SuccessResult result = new Builder(HttpStatusEnum.OK)
+        .data(availableCouponList)
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
 
