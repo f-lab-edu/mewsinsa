@@ -1,5 +1,7 @@
 package com.mewsinsa.product.controller.dto;
 
+import static com.mewsinsa.global.config.ConstantConfig.MAX_PRICE_OF_PRODUCT;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
@@ -8,7 +10,6 @@ import org.hibernate.validator.constraints.Range;
 
 public class AddProductRequestDto {
 
-  private Long productId;
   @NotEmpty
   private String productName;
   @Range(min=1, max=Long.MAX_VALUE)
@@ -25,10 +26,9 @@ public class AddProductRequestDto {
 
 
   //==Constructors==//
-  public AddProductRequestDto(Long productId, String productName, Long brandId, String category,
+  public AddProductRequestDto(String productName, Long brandId, String category,
       String subcategory, Long originalPrice,
       List<AddProductOptionRequestDto> productOptionList) {
-    this.productId = productId;
     this.productName = productName;
     this.brandId = brandId;
     this.category = category;
@@ -67,9 +67,6 @@ public class AddProductRequestDto {
     return productOptionList;
   }
 
-  public Long getProductId() {
-    return productId;
-  }
 
 
 
@@ -100,8 +97,5 @@ public class AddProductRequestDto {
     this.productOptionList = productOptionList;
   }
 
-  public void setProductId(Long productId) {
-    this.productId = productId;
-  }
 
 }

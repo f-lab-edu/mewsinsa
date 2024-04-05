@@ -35,7 +35,7 @@ class ProductServiceTest {
     productOptions.add(new AddProductOptionRequestDto("L", 100L));
 
     productService.addProduct(
-        new AddProductRequestDto(0L, "상품 이름", 1L,
+        new AddProductRequestDto("상품 이름", 1L,
             "상의", "맨투맨", 10000L, productOptions));
 
 

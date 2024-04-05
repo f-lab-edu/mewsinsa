@@ -1,5 +1,10 @@
 package com.mewsinsa.promotion.controller.dto;
 
+import static com.mewsinsa.global.config.ConstantConfig.MAX_DISCOUNT_AMOUNT;
+import static com.mewsinsa.global.config.ConstantConfig.MAX_DISCOUNT_RATE;
+import static com.mewsinsa.global.config.ConstantConfig.MIN_DISCOUNT_AMOUNT;
+import static com.mewsinsa.global.config.ConstantConfig.MIN_DISCOUNT_RATE;
+
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -35,7 +35,7 @@
 <!--상품에 적용되는 쿠폰 리스트 조회-->
   <select id="findAvailableCouponsToProduct" resultType="com.mewsinsa.coupon.domain.Coupon">
     SELECT
-      coupon_id AS couponId,
+      coupon.coupon_id AS couponId,
       coupon_name AS couponName,
       coupon_type AS couponType,
       discount_rate AS discountRate,
@@ -43,6 +43,7 @@
       started_at AS startedAt,
       expired_at AS expiredAt
     FROM coupon
-    WHERE product_id = #{productId}
+    JOIN coupon_product ON coupon.coupon_id = coupon_product.coupon_id
+    WHERE coupon_product.product_id = #{productId}
   </select>
 </mapper>

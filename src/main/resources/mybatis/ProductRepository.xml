@@ -3,9 +3,9 @@
 
 <mapper namespace="com.mewsinsa.product.repository.ProductRepository">
 <!--상품 추가-->
-  <insert id="addProduct" parameterType="com.mewsinsa.product.controller.dto.AddProductRequestDto" useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
+  <insert id="addProduct" parameterType="com.mewsinsa.product.domain.Product" useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
     INSERT INTO product(product_name, brand_id, category, subcategory, original_price, product_like, product_click)
-    VALUES( #{productName}, #{brandId}, #{category}, #{subcategory}, #{originalPrice}, 0, 0)
+    VALUES( #{productName}, #{brandId}, #{category}, #{subcategory}, #{price}, 0, 0)
   </insert>
 
 <!--  상품 옵션 추가-->
@@ -53,6 +53,31 @@
     SELECT product_option_id
     FROM product_option
     WHERE product_id = #{productId}
+  </select>
+
+  <select id="findProductOptionsInfo" parameterType="long" resultType="com.mewsinsa.product.domain.ProductOption">
+    SELECT
+      product_option_id AS productOptionId,
+      product_id AS productId,
+      product_option_name AS optionName,
+      stock AS stock
+    FROM product_option
+    WHERE product_option.product_id = #{productId}
+  </select>
+
+  <select id="findProduct" resultType="hashmap" parameterType="long">
+    SELECT
+      p.product_id AS productId,
+      p.product_name AS productName,
+      b.brand_id AS brandId,
+      b.brand_name AS brandName,
+      p.original_price AS originalPrice,
+      p.product_like AS countOfLike,
+      p.product_click AS countOfClick,
+      p.category AS category,
+      p.subcategory AS subcategory
+    FROM product as p, brand as b
+    WHERE p.product_id = #{productId} AND p.brand_id = b.brand_id
   </select>
 
 </mapper>

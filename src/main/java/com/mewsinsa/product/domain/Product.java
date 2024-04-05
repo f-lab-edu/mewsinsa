@@ -1,7 +1,7 @@
 package com.mewsinsa.product.domain;
 
 public class Product {
-  private Long id;
+  private Long productId;
   private String productName;
   private Long brandId;
   private String category;
@@ -12,9 +12,20 @@ public class Product {
 
   //==Constructor ==//
 
-  public Product(Long id, String productName, Long brandId, String category, String subcategory,
+  public Product(Long productId, String productName, Long brandId, String category, String subcategory,
       Long price, Long like, Long click) {
-    this.id = id;
+    this.productId = productId;
+    this.productName = productName;
+    this.brandId = brandId;
+    this.category = category;
+    this.subcategory = subcategory;
+    this.price = price;
+    this.like = like;
+    this.click = click;
+  }
+
+  public Product(String productName, Long brandId, String category, String subcategory,
+      Long price, Long like, Long click) {
     this.productName = productName;
     this.brandId = brandId;
     this.category = category;
@@ -26,8 +37,8 @@ public class Product {
 
 
   //== Getter ==//
-  public Long getId() {
-    return id;
+  public Long getProductId() {
+    return productId;
   }
 
   public String getProductName() {

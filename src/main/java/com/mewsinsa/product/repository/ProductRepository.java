@@ -1,18 +1,21 @@
 package com.mewsinsa.product.repository;
 
 import com.mewsinsa.product.controller.dto.AddProductOptionDto;
-import com.mewsinsa.product.controller.dto.AddProductRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductRequestDto;
+import com.mewsinsa.product.domain.Product;
+import com.mewsinsa.product.domain.ProductOption;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Mapper
 @Repository
 public interface ProductRepository {
 
-  void addProduct(AddProductRequestDto productInfo);
+  void addProduct(Product productInfo);
   void addProductOption(AddProductOptionDto productOption);
 
   void updateProduct(UpdateProductRequestDto product);
@@ -23,6 +26,10 @@ public interface ProductRepository {
   void deleteProduct(Long productId);
 
   List<Long> findProductOptions(Long productId);
+
+  HashMap<String, Object> findProduct(@Param("productId") Long productId);
+
+  List<ProductOption> findProductOptionsInfo(@Param("productId") Long productId);
 
 
 }

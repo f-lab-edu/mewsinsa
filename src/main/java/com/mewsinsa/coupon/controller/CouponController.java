@@ -34,7 +34,11 @@ public class CouponController {
   }
 
 
-
+  /**
+   * 새로운 쿠폰을 등록
+   * @param coupon 등록할 쿠폰 정보
+   * @return ResponseEntity. 등록된 쿠폰의 정보
+   */
   @PostMapping
   ResponseEntity<SuccessResult> addCoupon(@Validated @RequestBody AddCouponRequestDto coupon) {
     couponService.addCoupon(coupon);
@@ -46,6 +50,11 @@ public class CouponController {
     return new ResponseEntity<>(result, HttpStatus.CREATED);
   }
 
+  /**
+   * 전체 쿠폰을 페이지 단위로 조회 (30개씩)
+   * @param page 페이지 정보
+   * @return 해당 페이지의 쿠폰 리스트
+   */
   @GetMapping
   ResponseEntity<SuccessResult> findOngoingCoupons(@RequestParam(value = "page", required = false) Integer page) {
     if(page == null) {
@@ -61,6 +70,11 @@ public class CouponController {
   }
 
 
+  /**
+   * 특정 상품에 적용할 수 있는 전체 쿠폰 리스트 조회
+   * @param productId 특정 상품의 Id
+   * @return 상품에 적용 가능한 쿠폰 리스트
+   */
   @GetMapping("/products/{productId}")
   ResponseEntity<SuccessResult> findAvailableCouponsToProduct(@PathVariable("productId") @Positive Long productId) {
     List<Coupon> availableCouponList = couponService.findAvailableCouponsToProduct(productId);

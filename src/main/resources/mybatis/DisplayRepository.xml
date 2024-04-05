@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.display.repository.DisplayRepository">
+  <select id="displayProductDetail" parameterType="long" resultType="hashmap">
+    SELECT
+      pd.product_id AS productId,
+      p.product_name AS productName,
+      b.brand_id AS brandId,
+      b.brand_name AS brandName,
+      pd.original_price AS originalPrice,
+      pd.promotion_price AS promotionPrice,
+      pd.coupon_discount_amount AS couponDiscountAmount,
+      pd.discount_rate AS discountRate,
+      pd.has_gift AS hasGift
+    FROM product_display as pd, product as p, brand as b
+    WHERE pd.product_id = #{productId} AND pd.product_id = p.product_id AND p.brand_id = b.brand_id;
+  </select>
+
+
+</mapper>

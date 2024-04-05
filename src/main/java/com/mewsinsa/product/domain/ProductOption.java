@@ -1,7 +1,7 @@
 package com.mewsinsa.product.domain;
 
 public class ProductOption {
-  Long id;
+  Long productOptionId;
   Long productId;
   String optionName;
   Long stock;
@@ -9,7 +9,7 @@ public class ProductOption {
   //==Constructor==//
 
   public ProductOption(Long id, Long productId, String optionName, Long stock) {
-    this.id = id;
+    this.productOptionId = id;
     this.productId = productId;
     this.optionName = optionName;
     this.stock = stock;
@@ -19,8 +19,8 @@ public class ProductOption {
 
   //== Getter ==//
 
-  public Long getId() {
-    return id;
+  public Long getProductOptionId() {
+    return productOptionId;
   }
 
   public Long getProductId() {
