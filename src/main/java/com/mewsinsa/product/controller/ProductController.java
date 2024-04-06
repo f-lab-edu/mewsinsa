@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +55,7 @@ public class ProductController {
    * @param product 수정하려는 상품 정보
    * @return SuccessResponse
    */
-  @PatchMapping("/{productId}")
+  @PutMapping("/{productId}")
   ResponseEntity<SuccessResult> updateProduct(@Validated @RequestBody UpdateProductRequestDto product) {
     productService.updateProduct(product);
 
@@ -67,7 +68,7 @@ public class ProductController {
   }
 
 
-  @PatchMapping("/product-options/{productOptionId}")
+  @PutMapping("/product-options/{productOptionId}")
   ResponseEntity<SuccessResult> updateProductOption(@Validated @RequestBody UpdateProductOptionRequestDto productOption) {
     productService.updateProductOption(productOption);
 
