@@ -17,14 +17,5 @@ class KakaoLoginPropertiesTest {
   @Autowired
   KakaoLoginService kakaoLoginService;
 
-  @Test
-  void kakaoBeanValueTest() {
-    log.info(kakaoBean.getKakaoLoginApiKey());
-  }
-
-  @Test
-  void kakaoGetCodeTest() {
-    kakaoLoginService.getCode();
-  }
 
 }

@@ -25,6 +25,15 @@ public class KakaoLoginProperties {
   @Value("${kakao.login.uri.token}")
   private String tokenRequestUri;
 
+  @Value("${kakao.api.uri.base}")
+  private String kakaoApiBaseUri;
+
+  @Value("${kakao.api.uri.user}")
+  private String kakaoApiUserInfoRequestUri;
+
+  @Value("${kakao.login.client_secret}")
+  private String kakaoClientSecret;
+
   //==Getter==//
   public String getKakaoLoginApiKey() {
     return kakaoLoginApiKey;
@@ -44,5 +53,17 @@ public class KakaoLoginProperties {
 
   public String getTokenRequestUri() {
     return tokenRequestUri;
+  }
+
+  public String getKakaoApiBaseUri() {
+    return kakaoApiBaseUri;
+  }
+
+  public String getKakaoApiUserInfoRequestUri() {
+    return kakaoApiUserInfoRequestUri;
+  }
+
+  public String getKakaoClientSecret() {
+    return kakaoClientSecret;
   }
 }
