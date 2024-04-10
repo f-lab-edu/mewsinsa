@@ -8,3 +8,12 @@ spring:
 mybatis:
   type-aliases-package: com.mewsinsa.*.domain
   mapper-locations: mybatis/**.xml
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
