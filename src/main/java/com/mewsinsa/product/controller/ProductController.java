@@ -1,7 +1,7 @@
 package com.mewsinsa.product.controller;
 
 import com.mewsinsa.auth.jwt.interceptor.Auth;
-import com.mewsinsa.global.response.HttpStatusEnum;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.product.controller.dto.AddProductRequestDto;
@@ -44,7 +44,7 @@ public class ProductController {
   ResponseEntity<SuccessResult> addProduct(@Validated @RequestBody AddProductRequestDto product) {
     productService.addProduct(product);
 
-    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
         .message("상품이 성공적으로 등록 되었습니다.")
         .data(product)
         .build();
@@ -62,7 +62,7 @@ public class ProductController {
   ResponseEntity<SuccessResult> updateProduct(@Validated @RequestBody UpdateProductRequestDto product) {
     productService.updateProduct(product);
 
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .message("상품이 성공적으로 수정 되었습니다.")
         .data(product)
         .build();
@@ -75,7 +75,7 @@ public class ProductController {
   ResponseEntity<SuccessResult> updateProductOption(@Validated @RequestBody UpdateProductOptionRequestDto productOption) {
     productService.updateProductOption(productOption);
 
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .message("상품 옵션이 성공적으로 수정 되었습니다.")
         .data(productOption)
         .build();
@@ -88,7 +88,7 @@ public class ProductController {
   ResponseEntity<SuccessResult> deleteProductOption(@RequestBody Long productOptionId) {
     productService.deleteProductOption(productOptionId);
 
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .message("상품 옵션이 성공적으로 삭제 되었습니다.")
         .build();
 
@@ -99,7 +99,7 @@ public class ProductController {
   @DeleteMapping("/{productId}")
   ResponseEntity<SuccessResult> deleteProduct(@RequestBody Long productId) {
     productService.deleteProduct(productId);
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .message("상품이 성공적으로 삭제 되었습니다.")
         .build();
 

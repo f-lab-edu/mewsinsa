@@ -1,21 +1,19 @@
 package com.mewsinsa.auth.jwt.service;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
-import com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
+import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
 import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwt;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 import org.slf4j.Logger;
@@ -79,7 +77,7 @@ public class JwtService {
     try {
       memberRepository.addMember(member);
     } catch (Exception e) {
-      throw new IllegalArgumentException(e);
+      throw new IllegalArgumentException(e.getMessage());
     }
   }
 
@@ -100,7 +98,7 @@ public class JwtService {
       encryptedPassword = Base64.getEncoder().encodeToString(md.digest());
 
     } catch(NoSuchAlgorithmException e) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException(e.getMessage());
     }
 
     return encryptedPassword;
@@ -115,7 +113,7 @@ public class JwtService {
       accessTokenRepository.deleteAccessTokenByMemberId(memberId);
       refreshTokenRepository.deleteRefreshTokenByMemberId(memberId);
     } catch(Exception e) {
-      throw new IllegalArgumentException("로그아웃에 실패하였습니다.", e);
+      throw new IllegalArgumentException(e.getMessage());
     }
   }
 
@@ -140,7 +138,7 @@ public class JwtService {
     RefreshTokenDto findRefreshToken = refreshTokenRepository.findRefreshTokenByMemberId(
         memberId);
     if(!findRefreshToken.getTokenValue().equals(refreshToken)) {
-      throw new IllegalStateException("잘못된 리프레시 토큰입니다.");
+      throw new InvalidTokenException("잘못된 리프레시 토큰입니다.");
     }
 
     // 재발급

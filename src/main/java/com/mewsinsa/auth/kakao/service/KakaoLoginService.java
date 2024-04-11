@@ -79,9 +79,6 @@ public class KakaoLoginService {
    * @return 유저의 정보
    */
   public KakaoUserInfoDto getUserInfo(KakaoTokenResponseDto kakaoToken) {
-//    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-//    params.add("secure_resource", "false");
-//    params.add("property_keys", new String[] {"kakao_account.email"}.toString());
 
     // 액세스 토큰으로 회원정보를 가져옵니다.
     String response = WebClient.create(kakaoLoginProperties.getKakaoApiBaseUri())
@@ -93,7 +90,6 @@ public class KakaoLoginService {
         .bodyToMono(String.class)
         .block();
 
-//    log.info("line 74 " + response);
 
     //json 응답을 객체로 변환
     ObjectMapper objectMapper = new ObjectMapper();
@@ -102,7 +98,7 @@ public class KakaoLoginService {
     try {
       userInfo = objectMapper.readValue(response, KakaoUserInfoDto.class);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      throw new IllegalStateException(e);
     }
 
     return userInfo;

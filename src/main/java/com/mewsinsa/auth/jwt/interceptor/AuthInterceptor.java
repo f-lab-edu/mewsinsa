@@ -1,13 +1,7 @@
 package com.mewsinsa.auth.jwt.interceptor;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
-import com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto;
-import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
-import com.mewsinsa.global.response.FailureResult;
-import com.mewsinsa.global.response.FailureResult.Builder;
-import com.mewsinsa.global.response.HttpStatusEnum;
-import com.mewsinsa.member.domain.Member;
-import com.mewsinsa.member.repository.MemberRepository;
+import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -16,7 +10,6 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -51,10 +44,9 @@ public class AuthInterceptor implements HandlerInterceptor {
           .parseSignedClaims(actualToken);
 
     } catch(ExpiredJwtException ex) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 토큰입니다.");
+      throw ex;
     } catch(JwtException ex) {
-      throw new IllegalArgumentException("잘못된 토큰입니다.");
+      throw new InvalidTokenException("잘못된 토큰입니다.");
     }
 
     return true;

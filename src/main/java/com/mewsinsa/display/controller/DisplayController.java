@@ -4,7 +4,7 @@ import com.mewsinsa.display.controller.dto.DisplayProductResponseDto;
 import com.mewsinsa.display.controller.dto.ProductDetailResponseDto;
 import com.mewsinsa.display.domain.ProductDisplay;
 import com.mewsinsa.display.service.DisplayService;
-import com.mewsinsa.global.response.HttpStatusEnum;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
@@ -40,7 +40,7 @@ public class DisplayController {
     ProductDetailResponseDto result = displayService.productDetail(productId);
 
     SuccessResult successResult = new SuccessResult
-        .Builder(HttpStatusEnum.OK)
+        .Builder(DetailedStatus.OK)
         .data(result)
         .message("상품의 디테일 정보입니다.")
         .build();
@@ -55,7 +55,7 @@ public class DisplayController {
 
 
     SuccessResult successResult = new SuccessResult
-        .Builder(HttpStatusEnum.OK)
+        .Builder(DetailedStatus.OK)
         .data(list)
         .message("서브 카테고리: " + subcategory + ", page: " + page)
         .build();

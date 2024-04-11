@@ -7,7 +7,7 @@ import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.auth.kakao.controller.dto.KakaoTokenResponseDto;
 import com.mewsinsa.auth.kakao.controller.dto.KakaoUserInfoDto;
 import com.mewsinsa.auth.kakao.service.KakaoLoginService;
-import com.mewsinsa.global.response.HttpStatusEnum;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
 import java.net.URI;
@@ -59,7 +59,7 @@ public class KakaoLoginController {
       jwtMap.put(JwtProvider.ACCESS_HEADER_STRING, jwtToken.getAccessToken());
       jwtMap.put(JwtProvider.REFRESH_HEADER_STRING, jwtToken.getRefreshToken());
 
-      SuccessResult result = new Builder(HttpStatusEnum.CREATED)
+      SuccessResult result = new Builder(DetailedStatus.CREATED)
           .message("로그인에 성공하여 jwt가 발행되었습니다.")
           .data(jwtMap).build();
 

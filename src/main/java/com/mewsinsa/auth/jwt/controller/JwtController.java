@@ -5,11 +5,12 @@ import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.global.response.FailureResult;
-import com.mewsinsa.global.response.HttpStatusEnum;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.net.URI;
 import org.slf4j.Logger;
@@ -38,13 +39,25 @@ public class JwtController {
 
   @PostMapping("/logout")
   public void logout(@RequestHeader(value=JwtProvider.ACCESS_HEADER_STRING, required=false) String accessToken) {
-    String actualToken = accessToken.replaceFirst("Bearer ", ""); // Bearer 제거
 
-    // 토큰 읽어서 memberId 알아내기
-    Jws<Claims> claimsJws = Jwts.parser()
-        .verifyWith(JwtProvider.getSigningKey())
-        .build()
-        .parseSignedClaims(actualToken);
+    if(accessToken == null) {
+        throw new IllegalStateException();
+    }
+
+    String actualToken = accessToken.replaceFirst("Bearer ", ""); // Bearer 제거
+    Jws<Claims> claimsJws;
+    try {
+      // 토큰 읽어서 memberId 알아내기
+      claimsJws = Jwts.parser()
+          .verifyWith(JwtProvider.getSigningKey())
+          .build()
+          .parseSignedClaims(actualToken);
+
+
+
+    } catch(JwtException e) {
+      throw new IllegalStateException();
+    }
 
     Long memberId = Long.parseLong(claimsJws.getPayload().getSubject());
 
@@ -73,7 +86,7 @@ public class JwtController {
       return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
-    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
         .message("access token이 재발급 되었습니다.")
         .data(jwtToken)
         .build();

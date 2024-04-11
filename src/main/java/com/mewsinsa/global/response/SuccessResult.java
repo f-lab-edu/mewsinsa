@@ -1,7 +1,9 @@
 package com.mewsinsa.global.response;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
 public class SuccessResult {
-  private HttpStatusEnum status;
+  private DetailedStatus status;
   private String message;
   private Object data;
 
@@ -14,7 +16,7 @@ public class SuccessResult {
   }
 
   //==Getter==//
-  public HttpStatusEnum getHttpStatus() {
+  public DetailedStatus getHttpStatus() {
     return status;
   }
 
@@ -28,14 +30,15 @@ public class SuccessResult {
 
   //==Builder==//
   public static class Builder {
-    HttpStatusEnum status;
+    DetailedStatus status;
     String message;
     Object data;
 
     // httpStatus에 대한 정보는 반드시 필요
-    public Builder(HttpStatusEnum status) {
+    public Builder(DetailedStatus status) {
       this.status = status;
     }
+
 
     public Builder message(String message) {
       this.message = message;

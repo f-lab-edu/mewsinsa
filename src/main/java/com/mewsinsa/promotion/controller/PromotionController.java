@@ -1,6 +1,6 @@
 package com.mewsinsa.promotion.controller;
 
-import com.mewsinsa.global.response.HttpStatusEnum;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
@@ -32,7 +32,7 @@ public class PromotionController {
   ResponseEntity<SuccessResult> addPromotion(@Validated @RequestBody AddPromotionRequestDto promotion) {
     promotionService.addPromotion(promotion);
 
-    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
         .message("프로모션이 정상적으로 등록되었습니다.")
         .build();
 
@@ -46,7 +46,7 @@ public class PromotionController {
     }
     List<PromotionDto> promotionList = promotionService.findOngoingPromotions(page);
 
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .data(promotionList)
         .build();
 

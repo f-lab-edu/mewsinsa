@@ -3,7 +3,7 @@ package com.mewsinsa.coupon.controller;
 import com.mewsinsa.coupon.controller.dto.AddCouponRequestDto;
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.service.CouponService;
-import com.mewsinsa.global.response.HttpStatusEnum;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
@@ -43,7 +43,7 @@ public class CouponController {
   ResponseEntity<SuccessResult> addCoupon(@Validated @RequestBody AddCouponRequestDto coupon) {
     couponService.addCoupon(coupon);
 
-    SuccessResult result = new Builder(HttpStatusEnum.CREATED)
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
         .message("쿠폰이 정상적으로 등록되었습니다.")
         .build();
 
@@ -62,7 +62,7 @@ public class CouponController {
     }
     List<Coupon> couponList = couponService.findOngoingCoupons(page);
 
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .data(couponList)
         .build();
 
@@ -79,7 +79,7 @@ public class CouponController {
   ResponseEntity<SuccessResult> findAvailableCouponsToProduct(@PathVariable("productId") @Positive Long productId) {
     List<Coupon> availableCouponList = couponService.findAvailableCouponsToProduct(productId);
 
-    SuccessResult result = new Builder(HttpStatusEnum.OK)
+    SuccessResult result = new Builder(DetailedStatus.OK)
         .data(availableCouponList)
         .build();
 
