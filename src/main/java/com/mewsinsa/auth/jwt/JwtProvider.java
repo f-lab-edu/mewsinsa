@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,20 +38,22 @@ public class JwtProvider {
   /**
    * application-jwt.properties에 정의되어 있습니다.
    */
-  private final String key;
+
+  private static String key;
+  private static String keyBase64Encoded; // properties에 정의된 값
+  private static SecretKey signingKey;
+
   private final AccessTokenRepository accessTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  private final SecretKey signingKey;
-
-  public JwtProvider(@Value("${jwt.secret_key}") String key,
+  @Autowired
+  public JwtProvider(@Value("${jwt.secret_key}") String keyParam,
       AccessTokenRepository accessTokenRepository, RefreshTokenRepository refreshTokenRepository) {
-    this.key = key;
+    key = keyParam;
+    keyBase64Encoded = Base64.getEncoder().encodeToString(key.getBytes());
+    signingKey = Keys.hmacShaKeyFor(keyBase64Encoded.getBytes());
     this.accessTokenRepository = accessTokenRepository;
     this.refreshTokenRepository = refreshTokenRepository;
-
-    String keyBase64Encoded = Base64.getEncoder().encodeToString(key.getBytes()); // properties에 정의된 값
-    signingKey = Keys.hmacShaKeyFor(keyBase64Encoded.getBytes());
 
   }
 
@@ -61,7 +64,7 @@ public class JwtProvider {
   }
 
   //==SigningKey==//
-  public SecretKey getSigningKey() {
+  public static SecretKey getSigningKey() {
     return signingKey;
   }
 
@@ -86,7 +89,7 @@ public class JwtProvider {
     claims.put("nickname", nickname);
     claims.put("isAdmin", Boolean.toString(isAdmin));
 
-    Date expiration = new Date(System.currentTimeMillis() + REFRESHTOKEN_TIME);
+    Date expiration = new Date(System.currentTimeMillis() + ACCESSTOKEN_TIME);
 
     String accessToken = ACCESS_PREFIX_STRING + Jwts.builder()
         .subject(Long.toString(memberId))

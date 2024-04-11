@@ -53,7 +53,6 @@ public class DisplayController {
       @RequestParam("count") @Positive int count) {
     List<DisplayProductResponseDto> list = displayService.productListBySubcategory(subcategory, page, count);
 
-    log.info("Line 56: " + subcategory);
 
     SuccessResult successResult = new SuccessResult
         .Builder(HttpStatusEnum.OK)

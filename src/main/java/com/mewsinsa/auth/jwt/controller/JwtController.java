@@ -11,11 +11,6 @@ import com.mewsinsa.global.response.SuccessResult.Builder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MissingClaimException;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class JwtController {
   Logger log = LoggerFactory.getLogger(getClass());
 
-  private final JwtProvider jwtProvider;
   private final JwtService jwtService;
 
-  public JwtController(JwtProvider jwtProvider, JwtService jwtService) {
-    this.jwtProvider = jwtProvider;
+  public JwtController(JwtService jwtService) {
     this.jwtService = jwtService;
   }
 
@@ -49,7 +42,7 @@ public class JwtController {
 
     // 토큰 읽어서 memberId 알아내기
     Jws<Claims> claimsJws = Jwts.parser()
-        .verifyWith(jwtProvider.getSigningKey())
+        .verifyWith(JwtProvider.getSigningKey())
         .build()
         .parseSignedClaims(actualToken);
 
@@ -58,9 +51,9 @@ public class JwtController {
     jwtService.logout(memberId); // refresh, access token을 DB에서 지워주기
   }
 
-  @PostMapping("/sign-in")
+  @PostMapping("/sign-up")
   public void signIn(@RequestBody SignInRequestDto signInRequestDto) {
-    jwtService.signIn(signInRequestDto);
+    jwtService.signUp(signInRequestDto);
   }
 
 

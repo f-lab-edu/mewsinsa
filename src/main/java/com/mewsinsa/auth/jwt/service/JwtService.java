@@ -59,7 +59,7 @@ public class JwtService {
   }
 
 
-  public void signIn(SignInRequestDto signInRequestDto) {
+  public void signUp(SignInRequestDto signInRequestDto) {
     String encryptedPassword = getEncryptedPassword(signInRequestDto.getPassword());
 
     Member member = new Member.Builder()

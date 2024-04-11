@@ -1,5 +1,6 @@
 package com.mewsinsa.product.controller;
 
+import com.mewsinsa.auth.jwt.interceptor.Auth;
 import com.mewsinsa.global.response.HttpStatusEnum;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
@@ -38,6 +39,7 @@ public class ProductController {
    * @param product 등록하려는 상품 정보
    * @return SuccessResponse
    */
+  @Auth
   @PostMapping
   ResponseEntity<SuccessResult> addProduct(@Validated @RequestBody AddProductRequestDto product) {
     productService.addProduct(product);
@@ -55,6 +57,7 @@ public class ProductController {
    * @param product 수정하려는 상품 정보
    * @return SuccessResponse
    */
+  @Auth
   @PutMapping("/{productId}")
   ResponseEntity<SuccessResult> updateProduct(@Validated @RequestBody UpdateProductRequestDto product) {
     productService.updateProduct(product);
@@ -67,7 +70,7 @@ public class ProductController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-
+  @Auth
   @PutMapping("/product-options/{productOptionId}")
   ResponseEntity<SuccessResult> updateProductOption(@Validated @RequestBody UpdateProductOptionRequestDto productOption) {
     productService.updateProductOption(productOption);
@@ -80,6 +83,7 @@ public class ProductController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+  @Auth
   @DeleteMapping("/product-options/{productOptionId}")
   ResponseEntity<SuccessResult> deleteProductOption(@RequestBody Long productOptionId) {
     productService.deleteProductOption(productOptionId);
@@ -91,6 +95,7 @@ public class ProductController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+  @Auth
   @DeleteMapping("/{productId}")
   ResponseEntity<SuccessResult> deleteProduct(@RequestBody Long productId) {
     productService.deleteProduct(productId);
