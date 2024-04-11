@@ -7,10 +7,15 @@
     VALUES (#{tokenValue}, #{expiration}, #{memberId})
   </insert>
 
-  <delete id="deleteRefreshToken" parameterType="long">
+  <delete id="deleteRefreshTokenByMemberId" parameterType="long">
     DELETE
     FROM refresh_token
     WHERE member_id = #{memberId}
+  </delete>
+  <delete id="deleteRefreshTokenByTokenValue">
+    DELETE
+    FROM refresh_token
+    WHERE token_value = #{refreshToken}
   </delete>
 
   <select id="findRefreshTokenByMemberId"

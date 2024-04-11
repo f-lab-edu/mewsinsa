@@ -1,32 +1,45 @@
 package com.mewsinsa.auth.jwt.service;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
-import com.mewsinsa.auth.jwt.controller.dto.LogoutTokenDto;
+import com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
+import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
-import com.mewsinsa.auth.jwt.repository.LogoutTokenRepository;
+import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwt;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JwtService {
   Logger log = LoggerFactory.getLogger(getClass());
   private final RefreshTokenRepository refreshTokenRepository;
-  private final LogoutTokenRepository logoutTokenRepository;
+  private final AccessTokenRepository accessTokenRepository;
   private final MemberRepository memberRepository;
   private final JwtProvider jwtProvider;
 
+  @Value("${jwt.sign_in.password.salt}")
+  private String passwordSalt;
+
   public JwtService(RefreshTokenRepository refreshTokenRepository,
-      LogoutTokenRepository logoutTokenRepository,
+      AccessTokenRepository accessTokenRepository,
       MemberRepository memberRepository, JwtProvider jwtProvider) {
     this.refreshTokenRepository = refreshTokenRepository;
-    this.logoutTokenRepository = logoutTokenRepository;
+    this.accessTokenRepository = accessTokenRepository;
     this.memberRepository = memberRepository;
     this.jwtProvider = jwtProvider;
   }
@@ -36,51 +49,104 @@ public class JwtService {
     return refreshTokenRepository.findRefreshTokenByMemberId(memberId);
   }
 
+  @Transactional
   public JwtToken login(Long memberId) {
-    // 1. 멤버 찾기
-    // 2. 리프레시 토큰이 있는지 확인 (DB)
-    // 3-1. 있으면 액세스만 발행 (멤버의 닉네임, 어드민 여부 가져와서 액세스 토큰 생성)
-    // 3-2. 없으면 멤버의 닉네임, 어드민 여부 가져와서, 토큰 생성
-
     // 멤버 찾기
     Member member = memberRepository.findMemberById(memberId);
 
-    // 리프레시 토큰이 있는지 확인
-    RefreshTokenDto refreshToken = getRefreshToken(memberId);
-    JwtToken jwtToken = null;
-    if(refreshToken == null) { // 리프레시 토큰이 없는 경우 -> 새로 발행
-      jwtToken = jwtProvider.createJwtToken(memberId, member.getNickname(), member.getAdmin());
-
-    } else if(refreshToken.getExpiration().compareTo(new Date()) < 0) {
-      // 리프레시 토큰의 기한 지남. 폐기 후 다시 발행
-      refreshTokenRepository.deleteRefreshToken(memberId);
-      jwtToken = jwtProvider.createJwtToken(memberId, member.getNickname(), member.getAdmin());
-    } else {
-      // 리프레시 토큰이 유효한 경우 -> 리프레시 토큰으로 액세스 토큰만 재발행
-      String accessToken = jwtProvider.createAccessToken(memberId, member.getNickname(), member.getAdmin());
-      jwtToken = new JwtToken(accessToken, refreshToken.getTokenValue());
-    }
-
-    return jwtToken;
+    // 토큰 발행
+    return jwtProvider.createJwtToken(memberId, member.getNickname(), member.getAdmin());
   }
 
 
-  // TODO: sign in -> 회원 이름, 이메일만 넘기고 나머지 정보를 적도록 함
+  public void signIn(SignInRequestDto signInRequestDto) {
+    String encryptedPassword = getEncryptedPassword(signInRequestDto.getPassword());
 
+    Member member = new Member.Builder()
+        .mewsinsaId(signInRequestDto.getMewsinsaId())
+        .password(encryptedPassword)
+        .name(signInRequestDto.getName())
+        .nickname(signInRequestDto.getNickname())
+        .email(signInRequestDto.getEmail())
+        .phone(signInRequestDto.getPhone())
+        .profileImage(signInRequestDto.getProfileImage())
+        .tierId(signInRequestDto.getTierId())
+        .isAdmin(signInRequestDto.getAdmin())
+        .points(signInRequestDto.getPoints())
+        .build();
 
-
-  // TODO: logout -> 회원의 액세스 토큰을 logout된 토큰 DB에 저장
-  public void logout(Long memberId, String accessToken) {
+    // DB에 회원 정보 저장
     try {
-      // 멤버의 리프레시 토큰 먼저 삭제
-      logoutTokenRepository.deleteLogoutToken(memberId);
+      memberRepository.addMember(member);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
 
-      // logoutToken을 DB에 저장
-      LogoutTokenDto logoutToken = new LogoutTokenDto(memberId, accessToken, LocalDateTime.now());
-      logoutTokenRepository.addLogoutToken(logoutToken);
+  /**
+   * @param password 유저 비밀번호
+   * @return salt+password를 SHA-256으로 암호화 한 값
+   */
+  private String getEncryptedPassword(String password) {
+    String saltedPassword = passwordSalt + password;
+    String encryptedPassword = null;
+    MessageDigest md = null;
+
+    try {
+      md = MessageDigest.getInstance("SHA-256");
+
+      byte[] bytes = saltedPassword.getBytes(StandardCharsets.UTF_8);
+      md.update(bytes);
+      encryptedPassword = Base64.getEncoder().encodeToString(md.digest());
+
+    } catch(NoSuchAlgorithmException e) {
+      throw new IllegalArgumentException();
+    }
+
+    return encryptedPassword;
+  }
+
+
+
+  @Transactional
+  public void logout(Long memberId) {
+    try {
+      // 멤버의 access, refresh 토큰 삭제
+      accessTokenRepository.deleteAccessTokenByMemberId(memberId);
+      refreshTokenRepository.deleteRefreshTokenByMemberId(memberId);
     } catch(Exception e) {
       throw new IllegalArgumentException("로그아웃에 실패하였습니다.", e);
     }
+  }
+
+  // TODO: refreshToken을 읽고 accessToken을 재발급합니다.
+  @Transactional
+  public JwtToken reissueAccessToken(String refreshToken) {
+    Jws<Claims> claims = jwtProvider.parseClaims(refreshToken);
+
+    // 리턴 값이 null이라면 만료
+    if(claims == null) {
+      // refresh Token을 DB에서 삭제
+      refreshTokenRepository.deleteRefreshTokenByTokenValue(refreshToken);
+      return null;
+    }
+
+    Long memberId = Long.parseLong(claims.getPayload().getSubject());
+    Date expiration = claims.getPayload().getExpiration();
+    String nickname = claims.getPayload().get("nickname", String.class);
+    boolean isAdmin = Boolean.parseBoolean(claims.getPayload().get("isAdmin", String.class));
+
+    // refreshToken과 DB에 저장된 refreshToken의 값이 일치하는지 확인
+    RefreshTokenDto findRefreshToken = refreshTokenRepository.findRefreshTokenByMemberId(
+        memberId);
+    if(!findRefreshToken.getTokenValue().equals(refreshToken)) {
+      throw new IllegalStateException("잘못된 리프레시 토큰입니다.");
+    }
+
+    // 재발급
+    String accessToken = jwtProvider.createAccessToken(memberId, nickname, isAdmin);
+
+    return new JwtToken(accessToken, refreshToken);
   }
 
   // TODO: 인가(헤더를 읽고 로그인된 사용자인지 판단하는 로직, 관리자 여부도 확인)

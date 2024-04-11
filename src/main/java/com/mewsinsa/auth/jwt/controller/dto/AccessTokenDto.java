@@ -1,20 +1,21 @@
 package com.mewsinsa.auth.jwt.controller.dto;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
-public class LogoutTokenDto {
+public class AccessTokenDto {
   private Long memberId;
   private String tokenValue;
-  private LocalDateTime logoutAt;
+  private Date expiration;
 
   //==Constructor==//
-  public LogoutTokenDto() {
+  public AccessTokenDto() {
   }
 
-  public LogoutTokenDto(Long memberId, String tokenValue, LocalDateTime logoutAt) {
+  public AccessTokenDto(Long memberId, String tokenValue, Date expiration) {
     this.memberId = memberId;
     this.tokenValue = tokenValue;
-    this.logoutAt = logoutAt;
+    this.expiration = expiration;
   }
 
   //==Getter==//
@@ -26,8 +27,8 @@ public class LogoutTokenDto {
     return tokenValue;
   }
 
-  public LocalDateTime getLogoutAt() {
-    return logoutAt;
+  public Date getExpiration() {
+    return expiration;
   }
 
   //==Setter==//
@@ -39,7 +40,7 @@ public class LogoutTokenDto {
     this.tokenValue = tokenValue;
   }
 
-  public void setLogoutAt(LocalDateTime logoutAt) {
-    this.logoutAt = logoutAt;
+  public void setExpiration(Date expiration) {
+    this.expiration = expiration;
   }
 }

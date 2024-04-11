@@ -32,6 +32,19 @@ public class Member {
     this.points = points;
   }
 
+  public Member(Builder builder) {
+    this.memberId = builder.memberId;
+    this.mewsinsaId = builder.mewsinsaId;
+    this.password = builder.password;
+    this.name = builder.name;
+    this.nickname = builder.nickname;
+    this.email = builder.email;
+    this.phone = builder.phone;
+    this.profileImage = builder.profileImage;
+    this.tierId = builder.tierId;
+    this.isAdmin = builder.isAdmin;
+    this.points = builder.points;
+  }
 
 
   //==Getter==//
@@ -122,5 +135,80 @@ public class Member {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+
+  //==Builder==//
+  public static class Builder {
+    private Long memberId;
+    private String mewsinsaId;
+    private String password;
+    private String name;
+    private String nickname;
+    private String email;
+    private String phone;
+    private String profileImage;
+    private Integer tierId;
+    private Boolean isAdmin;
+    private Long points;
+
+    public Builder memberId(Long memberId) {
+      this.memberId = memberId;
+      return this;
+    }
+
+    public Builder mewsinsaId(String mewsinsaId) {
+      this.mewsinsaId = mewsinsaId;
+      return this;
+    }
+
+    public Builder password(String password) {
+      this.password = password;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder nickname(String nickname) {
+      this.nickname = nickname;
+      return this;
+    }
+
+    public Builder email(String email) {
+      this.email = email;
+      return this;
+    }
+
+    public Builder phone(String phone) {
+      this.phone = phone;
+      return this;
+    }
+
+    public Builder profileImage(String profileImage) {
+      this.profileImage = profileImage;
+      return this;
+    }
+
+    public Builder tierId(Integer tierId) {
+      this.tierId = tierId;
+      return this;
+    }
+
+    public Builder isAdmin(Boolean admin) {
+      isAdmin = admin;
+      return this;
+    }
+
+    public Builder points(Long points) {
+      this.points = points;
+      return this;
+    }
+
+    public Member build() {
+      return new Member(this);
+    }
   }
 }

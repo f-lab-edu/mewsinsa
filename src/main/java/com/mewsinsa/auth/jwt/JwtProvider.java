@@ -1,17 +1,21 @@
 package com.mewsinsa.auth.jwt;
 
 
+import com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
-import com.mewsinsa.auth.jwt.repository.LogoutTokenRepository;
+
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 
+import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +23,7 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class JwtProvider {
@@ -26,22 +31,22 @@ public class JwtProvider {
   public static final long REFRESHTOKEN_TIME = 1000 * 60 * 60 * 24 * 14; // 2주
   public static final String ACCESS_PREFIX_STRING = "Bearer ";
   public static final String ACCESS_HEADER_STRING = "Authorization";
-//  public static final String REFRESH_TOKEN_PREFIX = "Refresh";
+  public static final String REFRESH_HEADER_STRING = "RefreshToken";
 
 
   /**
    * application-jwt.properties에 정의되어 있습니다.
    */
   private final String key;
-  private final LogoutTokenRepository logoutTokenRepository;
+  private final AccessTokenRepository accessTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
 
   private final SecretKey signingKey;
 
   public JwtProvider(@Value("${jwt.secret_key}") String key,
-      LogoutTokenRepository logoutTokenRepository, RefreshTokenRepository refreshTokenRepository) {
+      AccessTokenRepository accessTokenRepository, RefreshTokenRepository refreshTokenRepository) {
     this.key = key;
-    this.logoutTokenRepository = logoutTokenRepository;
+    this.accessTokenRepository = accessTokenRepository;
     this.refreshTokenRepository = refreshTokenRepository;
 
     String keyBase64Encoded = Base64.getEncoder().encodeToString(key.getBytes()); // properties에 정의된 값
@@ -74,19 +79,27 @@ public class JwtProvider {
    * 리프레시 토큰으로 액세스 토큰 재발급 요청이 왔을 때 호출됩니다.
    * @return 액세스 토큰
    */
-  public String createAccessToken(Long userId, String nickname, Boolean isAdmin) {
+  public String createAccessToken(Long memberId, String nickname, Boolean isAdmin) {
     Map<String, Object> claims = new HashMap<>();
 
-    claims.put("userId", userId);
+    claims.put("userId", memberId);
     claims.put("nickname", nickname);
     claims.put("isAdmin", Boolean.toString(isAdmin));
 
-    return ACCESS_PREFIX_STRING + Jwts.builder()
-        .subject(Long.toString(userId))
+    Date expiration = new Date(System.currentTimeMillis() + REFRESHTOKEN_TIME);
+
+    String accessToken = ACCESS_PREFIX_STRING + Jwts.builder()
+        .subject(Long.toString(memberId))
         .claims(claims)
-        .expiration(new Date(System.currentTimeMillis() + ACCESSTOKEN_TIME))
+        .expiration(expiration)
         .signWith(this.getSigningKey())
         .compact();
+
+    // 액세스 토큰을 DB에 저장
+    accessTokenRepository.deleteAccessTokenByMemberId(memberId);
+    accessTokenRepository.addAccessToken(new AccessTokenDto(memberId, accessToken, expiration));
+
+    return accessToken;
   }
 
   /**
@@ -97,13 +110,14 @@ public class JwtProvider {
     Date expiration = new Date(System.currentTimeMillis() + REFRESHTOKEN_TIME);
 
     String refreshToken = Jwts.builder()
-        .subject(Long.toString(memberId) + "_refresh")
+        .subject(Long.toString(memberId))
         .claim("userId", memberId)
         .expiration(expiration)
         .signWith(getSigningKey())
         .compact();
 
-    // 리프레시 토큰은 DB에 저장
+    // 리프레시 토큰을 DB에 저장
+    refreshTokenRepository.deleteRefreshTokenByMemberId(memberId);
     refreshTokenRepository.addRefreshToken(new RefreshTokenDto(refreshToken, memberId, expiration));
 
     return refreshToken;
@@ -123,9 +137,10 @@ public class JwtProvider {
           .build()
           .parseSignedClaims(token);
 
+    } catch(ExpiredJwtException ex) {
+      return null; // 만료되었음
     } catch(JwtException ex) {
-      ex.printStackTrace();
-      return null; // 잘못된 토큰
+      throw new IllegalArgumentException("잘못된 토큰입니다.");
     }
 
     return claimsJws;

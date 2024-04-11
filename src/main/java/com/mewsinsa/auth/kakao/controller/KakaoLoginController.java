@@ -1,5 +1,6 @@
 package com.mewsinsa.auth.kakao.controller;
 
+import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.auth.jwt.controller.dto.AccessTokenResponseDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 import com.mewsinsa.auth.jwt.service.JwtService;
@@ -10,6 +11,8 @@ import com.mewsinsa.global.response.HttpStatusEnum;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -52,17 +55,25 @@ public class KakaoLoginController {
       // 토큰을 발급
       JwtToken jwtToken = jwtService.login(memberId);
 
+      Map<String, String> jwtMap = new HashMap<>();
+      jwtMap.put(JwtProvider.ACCESS_HEADER_STRING, jwtToken.getAccessToken());
+      jwtMap.put(JwtProvider.REFRESH_HEADER_STRING, jwtToken.getRefreshToken());
 
       SuccessResult result = new Builder(HttpStatusEnum.CREATED)
           .message("로그인에 성공하여 jwt가 발행되었습니다.")
-          .data(new AccessTokenResponseDto(jwtToken.getAccessToken())).build();
+          .data(jwtMap).build();
 
       return new ResponseEntity<>(result, HttpStatus.CREATED);
 
     } else { // 회원 가입으로 리다이렉트
+      Map<String, String> memberInfo = new HashMap<>();
+
+      memberInfo.put("name", userInfo.getKakaoAccount().getName());
+      memberInfo.put("email", userInfo.getKakaoAccount().getEmail());
+
       HttpHeaders headers = new HttpHeaders();
       headers.setLocation(URI.create("/auth/sign-in"));
-      return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+      return new ResponseEntity<>(memberInfo, headers, HttpStatus.MOVED_PERMANENTLY);
     }
   }
 

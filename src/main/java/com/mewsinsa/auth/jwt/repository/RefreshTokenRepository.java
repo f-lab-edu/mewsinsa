@@ -16,5 +16,7 @@ public interface RefreshTokenRepository {
   void addRefreshToken(RefreshTokenDto refreshToken);
 
   // 리프레시 토큰 지우기
-  void deleteRefreshToken(@Param("memberId") Long memberId);
+  void deleteRefreshTokenByMemberId(@Param("memberId") Long memberId);
+
+  public void deleteRefreshTokenByTokenValue(String refreshToken);
 }
