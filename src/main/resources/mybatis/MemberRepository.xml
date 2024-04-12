@@ -46,4 +46,20 @@
     FROM member
     WHERE member_id = #{memberId}
   </select>
+  <select id="findMemberByMewsinsaId" resultType="com.mewsinsa.member.domain.Member">
+    SELECT
+    member_id AS memberId,
+    mewsinsa_id AS mewsinsaId,
+    password,
+    name,
+    nickname,
+    email,
+    phone,
+    profile_image AS profileImage,
+    tier_id AS tierId,
+    is_admin AS isAdmin,
+    points
+    FROM member
+    WHERE mewsinsa_id = #{mewsinsaId}
+  </select>
 </mapper>

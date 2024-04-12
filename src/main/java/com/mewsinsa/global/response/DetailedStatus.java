@@ -22,6 +22,8 @@ public enum DetailedStatus {
   //==Auth, Jwt==//
   EXPIRED_TOKEN(401, "A001"), // Auth
   INVALID_TOKEN(401, "A002"),
+  NON_EXSISTENT_MEMBER(401, "A003"),
+  INCORRECT_PASSWORD(401, "A004"),
 
   //==Invalid Argument==//
   TYPE_MISMATCH(400, "V001"),

@@ -4,7 +4,9 @@ import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
+import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
+import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
 import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
@@ -147,8 +149,27 @@ public class JwtService {
     return new JwtToken(accessToken, refreshToken);
   }
 
-  // TODO: 인가(헤더를 읽고 로그인된 사용자인지 판단하는 로직, 관리자 여부도 확인)
-  // Controller에서 @RequestHeader로 헤더 읽고 Authorization의 액세스 토큰의 기한을 보고 로그인 사용자인지 판단
-  // 주문, 회원 정보 조회, 장바구니, 매거진 글쓰기 등등 로그인 안된 사용자는 인터셉터로 걸러야 됨
+  // 과정:
+  // 1. mewsinsaId로 DB에서 회원 찾기
+  // 2. 없으면?(null)이면 -> CustomException 던지기 (아이디 없음 A003)
+  // 3. 있으면? -> 비밀번호를 해싱해서 멤버 비밀번호랑 비교하기
+  // 4. 같으면? -> 토큰 발행
+  // 5. 다르면? -> CustomException 던지기 (비밀번호가 틀림 A004)
+  @Transactional
+  public JwtToken mewsinsaLogin(String mewsinsaId, String password) {
+    Member member = memberRepository.findMemberByMewsinsaId(mewsinsaId);
+    if(member == null) {
+      throw new NonExistentMemberException(mewsinsaId, "회원이 존재하지 않습니다.");
+    }
+
+    // 비밀번호를 해싱
+    String encryptedPassword = getEncryptedPassword(password);
+    if(!encryptedPassword.equals(member.getPassword())) { // 같지 않음
+      throw new IncorrectPasswordException(mewsinsaId, "비밀번호가 틀립니다.");
+    }
+
+    // 토큰 발행
+    return jwtProvider.createJwtToken(member.getMemberId(), member.getNickname(), member.getAdmin());
+  }
 
 }

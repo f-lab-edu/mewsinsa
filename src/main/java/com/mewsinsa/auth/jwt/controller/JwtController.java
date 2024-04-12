@@ -1,10 +1,10 @@
 package com.mewsinsa.auth.jwt.controller;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
+import com.mewsinsa.auth.jwt.controller.dto.LoginRequestDto;
 import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 import com.mewsinsa.auth.jwt.service.JwtService;
-import com.mewsinsa.global.response.FailureResult;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
@@ -13,17 +13,19 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/auth")
@@ -38,7 +40,7 @@ public class JwtController {
   }
 
   @PostMapping("/logout")
-  public void logout(@RequestHeader(value=JwtProvider.ACCESS_HEADER_STRING, required=false) String accessToken) {
+  public ResponseEntity<SuccessResult> logout(@RequestHeader(value=JwtProvider.ACCESS_HEADER_STRING, required=false) String accessToken) {
 
     if(accessToken == null) {
         throw new IllegalStateException();
@@ -52,9 +54,6 @@ public class JwtController {
           .verifyWith(JwtProvider.getSigningKey())
           .build()
           .parseSignedClaims(actualToken);
-
-
-
     } catch(JwtException e) {
       throw new IllegalStateException();
     }
@@ -62,11 +61,22 @@ public class JwtController {
     Long memberId = Long.parseLong(claimsJws.getPayload().getSubject());
 
     jwtService.logout(memberId); // refresh, access token을 DB에서 지워주기
+
+    SuccessResult result = new Builder(DetailedStatus.OK)
+        .message("로그아웃 되었습니다.")
+        .build();
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @PostMapping("/sign-up")
-  public void signIn(@RequestBody SignInRequestDto signInRequestDto) {
+  public ResponseEntity<SuccessResult> signUp(@RequestBody SignInRequestDto signInRequestDto) {
     jwtService.signUp(signInRequestDto);
+
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
+        .message("회원 가입에 성공하였습니다.")
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
   }
 
 
@@ -90,6 +100,23 @@ public class JwtController {
         .message("access token이 재발급 되었습니다.")
         .data(jwtToken)
         .build();
+
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
+  }
+
+
+  @PostMapping("/login")
+  public ResponseEntity<SuccessResult> login(@RequestBody LoginRequestDto loginRequestDto) {
+    JwtToken jwtToken = jwtService.mewsinsaLogin(loginRequestDto.getId(),
+        loginRequestDto.getPassword());
+
+    Map<String, String> jwtMap = new HashMap<>();
+    jwtMap.put(JwtProvider.ACCESS_HEADER_STRING, jwtToken.getAccessToken());
+    jwtMap.put(JwtProvider.REFRESH_HEADER_STRING, jwtToken.getRefreshToken());
+
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
+        .message("로그인에 성공하여 jwt가 발행되었습니다.")
+        .data(jwtMap).build();
 
     return new ResponseEntity<>(result, HttpStatus.CREATED);
   }

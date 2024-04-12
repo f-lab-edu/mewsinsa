@@ -1,6 +1,8 @@
 package com.mewsinsa.global.error;
 
+import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
+import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.FailureResult;
 import com.mewsinsa.global.response.FailureResult.Builder;
@@ -16,6 +18,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
   Logger log = LoggerFactory.getLogger(getClass());
+  @ExceptionHandler(NonExistentMemberException.class)
+  protected ResponseEntity<FailureResult> handleNonExsistentMemberException(NonExistentMemberException e) {
+
+      final FailureResult result = new FailureResult.Builder()
+          .status(DetailedStatus.NON_EXSISTENT_MEMBER)
+          .code(DetailedStatus.NON_EXSISTENT_MEMBER.getCode())
+          .message(e.getMessage())
+          .build();
+
+      return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler(IncorrectPasswordException.class)
+  protected ResponseEntity<FailureResult> handleIncorrectPasswordException(IncorrectPasswordException e) {
+
+    final FailureResult result = new FailureResult.Builder()
+        .status(DetailedStatus.INCORRECT_PASSWORD)
+        .code(DetailedStatus.INCORRECT_PASSWORD.getCode())
+        .message(e.getMessage())
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+  }
 
   @ExceptionHandler(InvalidTokenException.class)
   protected ResponseEntity<FailureResult> handleInvalidTokenException (InvalidTokenException e) {
