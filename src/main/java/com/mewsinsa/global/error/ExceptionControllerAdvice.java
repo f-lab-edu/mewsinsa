@@ -2,6 +2,7 @@ package com.mewsinsa.global.error;
 
 import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
+import com.mewsinsa.auth.jwt.exception.NoTokenException;
 import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.FailureResult;
@@ -36,6 +37,17 @@ public class ExceptionControllerAdvice {
     final FailureResult result = new FailureResult.Builder()
         .status(DetailedStatus.INCORRECT_PASSWORD)
         .code(DetailedStatus.INCORRECT_PASSWORD.getCode())
+        .message(e.getMessage())
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler(NoTokenException.class)
+  protected ResponseEntity<FailureResult> handleNoTokenException (NoTokenException e) {
+    final FailureResult result = new FailureResult.Builder()
+        .status(DetailedStatus.NO_TOKEN)
+        .code(DetailedStatus.NO_TOKEN.getCode())
         .message(e.getMessage())
         .build();
 

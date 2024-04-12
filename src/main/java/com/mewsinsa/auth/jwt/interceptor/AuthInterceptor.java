@@ -2,6 +2,7 @@ package com.mewsinsa.auth.jwt.interceptor;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
+import com.mewsinsa.auth.jwt.exception.NoTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -28,9 +29,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
     if(accessToken == null) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 없습니다. 로그인해주세요.");
-      return false;
+      throw new NoTokenException("토큰이 없습니다. 로그인 해주세요.");
     }
 
     String actualToken = accessToken.replaceFirst("Bearer ", "");

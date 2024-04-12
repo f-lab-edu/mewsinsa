@@ -24,6 +24,7 @@ public enum DetailedStatus {
   INVALID_TOKEN(401, "A002"),
   NON_EXSISTENT_MEMBER(401, "A003"),
   INCORRECT_PASSWORD(401, "A004"),
+  NO_TOKEN(401, "A005"),
 
   //==Invalid Argument==//
   TYPE_MISMATCH(400, "V001"),
