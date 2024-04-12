@@ -50,7 +50,7 @@ public class KakaoLoginController {
     // 회원 정보로 회원인지 판단
     Long memberId = kakaoLoginService.findMemberIdByEmail(userInfo.getKakaoAccount().getEmail());
 
-    if(memberId != null) { // 로그인 처리 -> 1. 리프레시 토큰이 존재하면 액세스 토큰 발행, 2. 없으면 새 토큰 발행. 리프레시는 DB에 저장
+    if(memberId != null) {
 
       // 토큰을 발급
       JwtToken jwtToken = jwtService.login(memberId);
