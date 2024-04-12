@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.auth.jwt.repository.AccessTokenRepository">
+
+  <insert id="addAccessToken">
+    INSERT INTO access_token (member_id, token_value, expiration)
+    VALUES (#{memberId}, #{tokenValue}, #{expiration})
+  </insert>
+
+  <delete id="deleteAccessTokenByMemberId">
+    DELETE
+    FROM access_token
+    WHERE member_id = #{memberId}
+  </delete>
+  <delete id="deleteAccessTokenByTokenValue">
+    DELETE
+    FROM access_token
+    WHERE token_value = #{accessToken}
+  </delete>
+
+
+  <select id="findAccessTokenByTokenValue"
+          resultType="com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto">
+    SELECT
+      member_id AS memberId,
+      token_value AS tokenValue,
+      expiration
+    FROM access_token
+    WHERE token_value = #{accessToken}
+  </select>
+
+  <select id="findAccessTokenByMemberId"
+          resultType="com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto">
+    SELECT
+      member_id AS memberId,
+      token_value AS tokenValue,
+      expiration
+      FROM access_token
+    WHERE token_value = #{memberId}
+  </select>
+</mapper>
