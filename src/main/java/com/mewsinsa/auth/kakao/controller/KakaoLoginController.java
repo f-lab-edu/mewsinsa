@@ -72,7 +72,7 @@ public class KakaoLoginController {
       memberInfo.put("email", userInfo.getKakaoAccount().getEmail());
 
       HttpHeaders headers = new HttpHeaders();
-      headers.setLocation(URI.create("/auth/sign-in"));
+      headers.setLocation(URI.create("/auth/sign-up-page"));
       return new ResponseEntity<>(memberInfo, headers, HttpStatus.MOVED_PERMANENTLY);
     }
   }

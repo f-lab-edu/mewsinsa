@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.payment.repository.ReceiptRepository">
+
+  <insert id="saveReceipt">
+    INSERT INTO receipt (order_id, total_price, payment_method, created_at, points, used_points, use_points_in_advance)
+    VALUES(#{orderId}, #{totalPrice}, #{paymentMethod}, #{createdAt}, #{points}, #{usedPoints}, #{usePointsInAdvance})
+  </insert>
+</mapper>

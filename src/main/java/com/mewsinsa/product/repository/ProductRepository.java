@@ -1,5 +1,6 @@
 package com.mewsinsa.product.repository;
 
+import com.mewsinsa.order.controller.dto.form.OrderedProductInfoDto;
 import com.mewsinsa.product.controller.dto.AddProductOptionDto;
 import com.mewsinsa.product.controller.dto.UpdateProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductRequestDto;
@@ -7,6 +8,7 @@ import com.mewsinsa.product.domain.Product;
 import com.mewsinsa.product.domain.ProductOption;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -29,7 +31,15 @@ public interface ProductRepository {
 
   HashMap<String, Object> findProduct(@Param("productId") Long productId);
 
+  // 해당 상품의 옵션 정보 모두 가져오기
   List<ProductOption> findProductOptionsInfo(@Param("productId") Long productId);
 
+  ProductOption findProductOptionByProductOptionId(@Param("productOptionId") Long productOptionId);
 
+
+  void updateProductOptionStock(@Param("productOptionId") Long productOptionId, @Param("count") Long count);
+
+  Product findOneProduct(@Param("productId") Long productId);
+
+  OrderedProductInfoDto findOneOrderedProductInfo(@Param("productOptionId") Long productOptionId);
 }

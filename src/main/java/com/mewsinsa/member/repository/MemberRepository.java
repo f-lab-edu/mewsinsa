@@ -9,11 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface MemberRepository {
   public Member findMemberByEmail(@Param("userEmail") String userEmail);
   public Member findMemberById(@Param("memberId") Long memberId);
-
   public Member findMemberByMewsinsaId(@Param("mewsinsaId") String mewsinsaId);
-
   public void addMember(Member member);
-
   public void deleteMember(@Param("memberId") Long memberId);
-
+  public Member findMemberByAccessToken(@Param("accessToken") String accessToken);
 }

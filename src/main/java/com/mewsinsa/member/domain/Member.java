@@ -12,13 +12,15 @@ public class Member {
   private Integer tierId;
   private Boolean isAdmin;
   private Long points;
+  private Long defaultDeliveryAddressId;
 
   //==Constructor==//
   public Member() {
   }
 
   public Member(Long memberId, String mewsinsaId, String password, String name, String nickname,
-      String email, String phone, String profileImage, Integer tierId, Boolean isAdmin, Long points) {
+      String email, String phone, String profileImage, Integer tierId, Boolean isAdmin, Long points,
+      Long defaultDeliveryAddressId) {
     this.memberId = memberId;
     this.mewsinsaId = mewsinsaId;
     this.password = password;
@@ -30,6 +32,7 @@ public class Member {
     this.tierId = tierId;
     this.isAdmin = isAdmin;
     this.points = points;
+    this.defaultDeliveryAddressId = defaultDeliveryAddressId;
   }
 
   public Member(Builder builder) {
@@ -44,6 +47,7 @@ public class Member {
     this.tierId = builder.tierId;
     this.isAdmin = builder.isAdmin;
     this.points = builder.points;
+    this.defaultDeliveryAddressId = builder.defaultDeliveryAddressId;
   }
 
 
@@ -92,6 +96,10 @@ public class Member {
     return email;
   }
 
+  public Long getDefaultDeliveryAddressId() {
+    return defaultDeliveryAddressId;
+  }
+
   //==Setter==//
   public void setMemberId(Long memberId) {
     this.memberId = memberId;
@@ -137,6 +145,9 @@ public class Member {
     this.email = email;
   }
 
+  public void setDefaultDeliveryAddressId(Long defaultDeliveryAddressId) {
+    this.defaultDeliveryAddressId = defaultDeliveryAddressId;
+  }
 
   //==Builder==//
   public static class Builder {
@@ -151,6 +162,7 @@ public class Member {
     private Integer tierId;
     private Boolean isAdmin;
     private Long points;
+    private Long defaultDeliveryAddressId;
 
     public Builder memberId(Long memberId) {
       this.memberId = memberId;
@@ -204,6 +216,11 @@ public class Member {
 
     public Builder points(Long points) {
       this.points = points;
+      return this;
+    }
+
+    public Builder defaultdeliveryAddressId(Long defaultDeliveryAddressId) {
+      this.defaultDeliveryAddressId = defaultDeliveryAddressId;
       return this;
     }
 

@@ -17,4 +17,8 @@ public interface PromotionRepository {
 
   void addPromotionProduct(@Param("productId")Long productId, @Param("promotionId")Long promotionId);
 
+  Promotion findOnePromotionByPromotionId(@Param("promotionId") Long promotionId);
+
+  List<Promotion> findPromotionListByProductId(@Param("productId") Long productId);
+
 }

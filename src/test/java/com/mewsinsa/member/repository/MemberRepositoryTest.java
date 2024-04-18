@@ -24,7 +24,7 @@ class MemberRepositoryTest {
   void beforeEach() {
     // 새로운 멤버 넣기
     Member memberA = new Member(0L, "testid", "testpw", "testUser", "testNickname", "test2@naver.com",
-        "01012341234", "", 1, false, 0L);
+        "01012341234", "", 1, false, 0L, null);
     memberRepository.addMember(memberA);
     memberId = memberA.getMemberId();
   }

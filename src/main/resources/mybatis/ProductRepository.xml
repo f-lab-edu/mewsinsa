@@ -34,7 +34,14 @@
     where product_option_id = #{productOptionId}
   </update>
 
-<!--  옵션 삭제-->
+<!--  재소를 감소 시키기-->
+  <update id="updateProductOptionStock">
+    UPDATE product_option SET
+      stock = stock - #{count}
+    where product_option_id = #{productOptionId}
+  </update>
+
+  <!--  옵션 삭제-->
   <delete id="deleteProductOption" parameterType="long">
     DELETE
     FROM product_option
@@ -78,6 +85,44 @@
       p.subcategory AS subcategory
     FROM product as p, brand as b
     WHERE p.product_id = #{productId} AND p.brand_id = b.brand_id
+  </select>
+  <select id="findProductOptionByProductOptionId"
+          resultType="com.mewsinsa.product.domain.ProductOption">
+    SELECT
+      product_option_id AS productOptionId,
+      product_id AS productId,
+      product_option_name AS optionName,
+      stock AS stock
+    FROM product_option
+    WHERE product_option.product_option_id = #{productOptionId}
+  </select>
+  <select id="findOneProduct" resultType="com.mewsinsa.product.domain.Product">
+    SELECT
+      product_id AS productId,
+      product_name AS productName,
+      brand_id AS brandId,
+      category,
+      subcategory,
+      original_price AS originalPrice,
+      product_like AS lLike,
+      product_click AS click
+    FROM product
+    WHERE product_id = #{productId}
+  </select>
+
+  <select id="findOneOrderedProductInfo" resultType="com.mewsinsa.order.controller.dto.form.OrderedProductInfoDto">
+    SELECT
+      product.product_id AS productId,
+      product.product_name AS productName,
+      product_option.product_option_id AS productOptionId,
+      product_option.product_option_name AS productOptionName,
+      brand.brand_id AS brandId,
+      brand.brand_name AS brandName,
+      product.original_price AS unitOriginalPrice
+    FROM product, product_option, brand
+    WHERE product_option.product_option_id = #{productOptionId}
+    AND product.product_id = product_option.product_id
+    AND product.brand_id = brand.brand_id
   </select>
 
 </mapper>

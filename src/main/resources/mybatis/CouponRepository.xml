@@ -46,4 +46,23 @@
     JOIN coupon_product ON coupon.coupon_id = coupon_product.coupon_id
     WHERE coupon_product.product_id = #{productId}
   </select>
+  <select id="findOneCoupon" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      coupon_id AS couponId,
+      coupon_name AS couponName,
+      coupon_type AS couponType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM coupon
+    WHERE coupon_id = #{couponId}
+  </select>
+  <select id="findOneCouponProduct" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      product_id AS productId,
+      coupon_id AS couponId
+    FROM coupon_product
+    WHERE product_id = #{productId} AND coupon_id = #{couponId}
+  </select>
 </mapper>

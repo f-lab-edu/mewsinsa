@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.delivery.repository.DeliveryAddressRepository">
+
+  <select id="findOneDeliveryAddressByDeliveryAddressId"
+          resultType="com.mewsinsa.delivery.domain.DeliveryAddress">
+    SELECT
+      delivery_address_id AS deliveryAddressId,
+      member_id AS memberId,
+      receiver_name AS receiverName,
+      receiver_phone AS receiverPhone,
+      delivery_address AS deliveryAddress
+    FROM delivery_address
+    WHERE delivery_address_id = #{delivery_address_id}
+  </select>
+  <select id="findDefaultDeliveryAddressByMemberId"
+          resultType="com.mewsinsa.delivery.domain.DeliveryAddress">
+    SELECT
+      delivery_address_id AS deliveryAddressId,
+      `member`.member_id AS memberId,
+      receiver_name AS receiverName,
+      receiver_phone AS receiverPhone,
+      delivery_address.receiver_address AS deliveryAddress
+      FROM delivery_address, `member`
+    WHERE `member`.member_id = #{memberId}
+    AND `member`.default_delivery_address_id = delivery_address.delivery_address_id;
+
+  </select>
+</mapper>

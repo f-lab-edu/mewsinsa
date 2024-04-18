@@ -16,4 +16,8 @@ public interface CouponRepository {
   void addCouponProduct(@Param("productId")Long productId, @Param("couponId") Long couponId);
 
   List<Coupon> findAvailableCouponsToProduct(@Param("productId") Long productId);
+
+  Coupon findOneCoupon(@Param("couponId") Long couponId);
+
+  Coupon findOneCouponProduct(@Param("productId") Long productId, @Param("couponId") Long couponId);
 }

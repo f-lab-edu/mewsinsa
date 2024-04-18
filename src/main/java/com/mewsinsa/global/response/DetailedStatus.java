@@ -26,6 +26,12 @@ public enum DetailedStatus {
   INCORRECT_PASSWORD(401, "A004"),
   NO_TOKEN(401, "A005"),
 
+  //==Order==//
+  OUT_OF_STOCK(400, "O001"), // Order
+  NOT_APPLICAPABLE_COUPN(400, "O002"),
+  INVALID_PRODUCT_OPTION_ID(400, "O003"),
+  NON_CANCELLABLE_ORDER(400, "O004"),
+
   //==Invalid Argument==//
   TYPE_MISMATCH(400, "V001"),
   NOT_VALIDATED(400, "V002"),
