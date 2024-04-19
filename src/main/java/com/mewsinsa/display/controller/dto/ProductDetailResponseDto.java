@@ -1,5 +1,7 @@
 package com.mewsinsa.display.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.mewsinsa.product.domain.ProductOption;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Null;
@@ -8,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.hibernate.validator.constraints.Range;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductDetailResponseDto {
   @Range(min=1, max=Long.MAX_VALUE)
   private Long productId;

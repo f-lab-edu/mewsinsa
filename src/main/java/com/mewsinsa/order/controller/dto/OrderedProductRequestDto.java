@@ -1,7 +1,10 @@
 package com.mewsinsa.order.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.hibernate.validator.constraints.Range;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderedProductRequestDto {
   @Range(min=1, max=Integer.MAX_VALUE)
   private Long productOptionId;

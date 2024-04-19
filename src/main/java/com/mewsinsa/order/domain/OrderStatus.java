@@ -1,5 +1,9 @@
 package com.mewsinsa.order.domain;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public enum OrderStatus {
   BEFORE_PAYMENT("입금 전"),
   CONFIRMED_PAYMENT("입금 확인"),

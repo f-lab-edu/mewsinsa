@@ -7,7 +7,6 @@ public class OrderResponseDto {
   private LocalDateTime orderedAt;
 
   //==Constructor==//
-
   public OrderResponseDto() {
   }
 

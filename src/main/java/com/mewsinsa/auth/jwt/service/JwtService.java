@@ -4,6 +4,7 @@ import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
+import com.mewsinsa.auth.jwt.exception.DuplicateMemberInfoException;
 import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
 import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
@@ -16,11 +17,13 @@ import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Base64;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +62,7 @@ public class JwtService {
   }
 
 
-  public void signUp(SignInRequestDto signInRequestDto) {
+  public void signUp(SignInRequestDto signInRequestDto) throws SQLIntegrityConstraintViolationException {
     String encryptedPassword = getEncryptedPassword(signInRequestDto.getPassword());
 
     Member member = new Member.Builder()
@@ -78,6 +81,8 @@ public class JwtService {
     // DB에 회원 정보 저장
     try {
       memberRepository.addMember(member);
+    } catch (DataIntegrityViolationException e) {
+      throw new DuplicateMemberInfoException("아이디 또는 이메일 또는 연락처가 기존 회원과 중복됩니다.");
     } catch (Exception e) {
       throw new IllegalArgumentException(e.getMessage());
     }
@@ -119,7 +124,7 @@ public class JwtService {
     }
   }
 
-  // TODO: refreshToken을 읽고 accessToken을 재발급합니다.
+  // refreshToken을 읽고 accessToken을 재발급합니다.
   @Transactional
   public JwtToken reissueAccessToken(String refreshToken) {
     Jws<Claims> claims = jwtProvider.parseClaims(refreshToken);

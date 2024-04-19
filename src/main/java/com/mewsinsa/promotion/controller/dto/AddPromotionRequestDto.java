@@ -5,6 +5,8 @@ import static com.mewsinsa.global.config.ConstantConfig.MAX_DISCOUNT_RATE;
 import static com.mewsinsa.global.config.ConstantConfig.MIN_DISCOUNT_AMOUNT;
 import static com.mewsinsa.global.config.ConstantConfig.MIN_DISCOUNT_RATE;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +14,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.hibernate.validator.constraints.Range;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AddPromotionRequestDto {
   @NotEmpty
   private String promotionName;

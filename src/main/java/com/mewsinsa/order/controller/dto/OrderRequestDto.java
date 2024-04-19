@@ -1,11 +1,13 @@
 package com.mewsinsa.order.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.hibernate.validator.constraints.Range;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderRequestDto {
   @NotEmpty
   private String receiverAddress;
@@ -15,7 +17,7 @@ public class OrderRequestDto {
   @Pattern(regexp = "[0-9]{3}-[0-9]{4}-[0-9]{4}")
   private String receiverPhone;
   @Size(min=1)
-  private List<OrderedProductRequestDto> orderedProductList;
+  private List<OrderedProductDto> orderedProductList;
 
   //==Getter==//
   public String getReceiverAddress() {
@@ -30,7 +32,7 @@ public class OrderRequestDto {
     return receiverPhone;
   }
 
-  public List<OrderedProductRequestDto> getOrderedProductList() {
+  public List<OrderedProductDto> getOrderedProductList() {
     return orderedProductList;
   }
 
@@ -48,7 +50,7 @@ public class OrderRequestDto {
   }
 
   public void setOrderedProductList(
-      List<OrderedProductRequestDto> orderedProductList) {
+      List<OrderedProductDto> orderedProductList) {
     this.orderedProductList = orderedProductList;
   }
 

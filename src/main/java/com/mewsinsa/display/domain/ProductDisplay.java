@@ -1,5 +1,9 @@
 package com.mewsinsa.display.domain;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductDisplay {
   private Long productId;
   private Long originalPrice;

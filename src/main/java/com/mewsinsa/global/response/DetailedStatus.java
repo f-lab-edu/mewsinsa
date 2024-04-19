@@ -25,12 +25,15 @@ public enum DetailedStatus {
   NON_EXSISTENT_MEMBER(401, "A003"),
   INCORRECT_PASSWORD(401, "A004"),
   NO_TOKEN(401, "A005"),
+  DUPLICATE_MEMBER_INFO(400, "A006"), // 회원가입 시에 기존 회원과 중복되는 정보를 입력
 
   //==Order==//
   OUT_OF_STOCK(400, "O001"), // Order
   NOT_APPLICAPABLE_COUPN(400, "O002"),
   INVALID_PRODUCT_OPTION_ID(400, "O003"),
   NON_CANCELLABLE_ORDER(400, "O004"),
+  NON_EXSISTENT_ORDER(400, "O005"), // 존재하지 않는 주문
+  INVALIED_ORDER(400, "O006"), // 주문이 잘못된 경우
 
   //==Invalid Argument==//
   TYPE_MISMATCH(400, "V001"),

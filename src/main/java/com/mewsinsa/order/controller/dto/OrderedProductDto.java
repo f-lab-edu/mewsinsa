@@ -1,69 +1,100 @@
 package com.mewsinsa.order.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.apache.ibatis.annotations.Param;
 import org.hibernate.validator.constraints.Range;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderedProductDto {
-
+  private Long productId;
   private Long productOptionId;
-  private Long productOptionCount;
-  private Long appliedCouponId;
-  private Long orderedProductId;
-  private Long piecePrice;
-
-  //==Constructor==//
-  public OrderedProductDto() {
-  }
-
-  public OrderedProductDto(Long productOptionId, Long productOptionCount, Long appliedCouponId,
-      Long orderedProductId, Long piecePrice) {
-    this.productOptionId = productOptionId;
-    this.productOptionCount = productOptionCount;
-    this.appliedCouponId = appliedCouponId;
-    this.orderedProductId = orderedProductId;
-    this.piecePrice = piecePrice;
-  }
+  private Long quantity;
+  private Long couponId;
+  private Long points;
+  private Long couponDiscountAmount;
+  private Long pieceOriginalPrice;
+  private Long piecePromotionPrice;
+  private Long pieceTierDiscountAmount;
 
   //==Getter==//
+  public Long getProductId() {
+    return productId;
+  }
 
   public Long getProductOptionId() {
     return productOptionId;
   }
 
-  public Long getProductOptionCount() {
-    return productOptionCount;
+  public Long getQuantity() {
+    return quantity;
   }
 
-  public Long getAppliedCouponId() {
-    return appliedCouponId;
+  public Long getCouponId() {
+    return couponId;
   }
 
-  public Long getOrderedProductId() {
-    return orderedProductId;
+//  public Long getOrderId() {
+//    return orderId;
+//  }
+
+  public Long getPoints() {
+    return points;
   }
 
-  public Long getPiecePrice() {
-    return piecePrice;
+  public Long getCouponDiscountAmount() {
+    return couponDiscountAmount;
+  }
+
+  public Long getPieceOriginalPrice() {
+    return pieceOriginalPrice;
+  }
+
+  public Long getPiecePromotionPrice() {
+    return piecePromotionPrice;
+  }
+
+  public Long getPieceTierDiscountAmount() {
+    return pieceTierDiscountAmount;
   }
 
   //==Setter==//
+  public void setProductId(Long productId) {
+    this.productId = productId;
+  }
+
   public void setProductOptionId(Long productOptionId) {
     this.productOptionId = productOptionId;
   }
 
-  public void setProductOptionCount(Long productOptionCount) {
-    this.productOptionCount = productOptionCount;
+  public void setQuantity(Long quantity) {
+    this.quantity = quantity;
   }
 
-  public void setAppliedCouponId(Long appliedCouponId) {
-    this.appliedCouponId = appliedCouponId;
+  public void setCouponId(Long couponId) {
+    this.couponId = couponId;
   }
 
-  public void setOrderedProductId(Long orderedProductId) {
-    this.orderedProductId = orderedProductId;
+//  public void setOrderId(Long orderId) {
+//    this.orderId = orderId;
+//  }
+
+  public void setPoints(Long points) {
+    this.points = points;
   }
 
-  public void setPiecePrice(Long piecePrice) {
-    this.piecePrice = piecePrice;
+  public void setCouponDiscountAmount(Long couponDiscountAmount) {
+    this.couponDiscountAmount = couponDiscountAmount;
+  }
+
+  public void setPieceOriginalPrice(Long pieceOriginalPrice) {
+    this.pieceOriginalPrice = pieceOriginalPrice;
+  }
+
+  public void setPiecePromotionPrice(Long piecePromotionPrice) {
+    this.piecePromotionPrice = piecePromotionPrice;
+  }
+
+  public void setPieceTierDiscountAmount(Long pieceTierDiscountAmount) {
+    this.pieceTierDiscountAmount = pieceTierDiscountAmount;
   }
 }

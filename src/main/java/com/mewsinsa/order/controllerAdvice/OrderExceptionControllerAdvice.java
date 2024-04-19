@@ -3,6 +3,7 @@ package com.mewsinsa.order.controllerAdvice;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.FailureResult;
 import com.mewsinsa.order.exception.InvalidProductOptionException;
+import com.mewsinsa.order.exception.NonExsistentOrderException;
 import com.mewsinsa.order.exception.NotApplicapableCouponException;
 import com.mewsinsa.order.exception.OrderCancellationException;
 import com.mewsinsa.order.exception.OrderException;
@@ -60,4 +61,28 @@ public class OrderExceptionControllerAdvice {
 
     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(NonExsistentOrderException.class)
+  protected ResponseEntity<FailureResult> handleOrderException(NonExsistentOrderException e) {
+    final FailureResult result = new FailureResult.Builder()
+        .status(DetailedStatus.NON_CANCELLABLE_ORDER)
+        .code(DetailedStatus.NON_CANCELLABLE_ORDER.getCode())
+        .message(e.getMessage())
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(OrderException.class)
+  protected ResponseEntity<FailureResult> handleOrderException(OrderException e) {
+
+    final FailureResult result = new FailureResult.Builder()
+        .status(DetailedStatus.INVALIED_ORDER)
+        .code(DetailedStatus.INVALIED_ORDER.getCode())
+        .message(e.getMessage())
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+  }
+
 }

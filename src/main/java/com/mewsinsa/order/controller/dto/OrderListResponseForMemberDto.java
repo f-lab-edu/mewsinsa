@@ -1,7 +1,9 @@
 package com.mewsinsa.order.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderListResponseForMemberDto {
   private Long orderedProductId;
   private Long brandId;

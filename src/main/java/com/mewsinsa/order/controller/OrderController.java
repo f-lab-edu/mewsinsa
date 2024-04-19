@@ -10,10 +10,10 @@ import com.mewsinsa.order.controller.dto.OrderListResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
 import com.mewsinsa.order.controller.dto.OrderResponseDto;
-import com.mewsinsa.order.controller.dto.form.OrderFormProductDto;
 import com.mewsinsa.order.controller.dto.form.OrderFormRequestDto;
 import com.mewsinsa.order.controller.dto.form.OrderFormResponseDto;
-import com.mewsinsa.order.domain.Order;
+import com.mewsinsa.order.domain.History;
+import com.mewsinsa.order.exception.NonExsistentOrderException;
 import com.mewsinsa.order.service.OrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -48,7 +48,6 @@ public class OrderController {
         orderFormRequestDto);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.CREATED)
-        .message("주문에 성공하였습니다.")
         .data(orderFormResponseDto)
         .build();
 
@@ -119,6 +118,23 @@ public class OrderController {
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
         .message("주문이 정상적으로 취소 되었습니다.")
 //        .data()
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+  // TODO: 확인 필요
+  @Auth
+  @GetMapping("/ordered-products/{orderedProductId}/history")
+  public ResponseEntity<SuccessResult> lookUpOneHistoryTable(@PathVariable("orderedProductId") Long orderedProductId) {
+    History history = orderService.lookUpOneHistoryTable(orderedProductId);
+
+    if(history == null) {
+      throw new NonExsistentOrderException("주문이 존재하지 않습니다. orderedProductId: " + orderedProductId);
+    }
+    SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .message("주문이 정상적으로 취소 되었습니다.")
+        .data(history)
         .build();
 
     return new ResponseEntity<>(result, HttpStatus.OK);

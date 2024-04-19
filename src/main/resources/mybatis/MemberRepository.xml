@@ -77,5 +77,6 @@
       points
     FROM member, access_token
     WHERE access_token.token_value = #{accessToken}
+    AND member.member_id = access_token.member_id
   </select>
 </mapper>

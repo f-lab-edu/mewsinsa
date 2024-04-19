@@ -1,5 +1,9 @@
 package com.mewsinsa.display.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class DisplayProductResponseDto {
   private Long productId;
   private String productName;

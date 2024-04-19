@@ -1,8 +1,10 @@
 package com.mewsinsa.auth.jwt.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SignInRequestDto {
   @NotEmpty
   private String mewsinsaId;

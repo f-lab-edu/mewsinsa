@@ -1,7 +1,9 @@
 package com.mewsinsa.order.domain;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class History {
   private Long orderId;
   private Long receiptId;

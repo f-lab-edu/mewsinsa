@@ -1,8 +1,10 @@
 package com.mewsinsa.order.controller.dto.form;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.mewsinsa.coupon.domain.Coupon;
 import java.util.List;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderedProductInfoDto {
   private Long productId;
   private String productName;

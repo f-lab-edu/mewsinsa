@@ -1,5 +1,6 @@
 package com.mewsinsa.global.error;
 
+import com.mewsinsa.auth.jwt.exception.DuplicateMemberInfoException;
 import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
 import com.mewsinsa.auth.jwt.exception.NoTokenException;
@@ -11,6 +12,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -75,6 +77,17 @@ public class ExceptionControllerAdvice {
 
     return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
   }
+  @ExceptionHandler(DuplicateMemberInfoException.class)
+  protected ResponseEntity<FailureResult> handleOrderException(DuplicateMemberInfoException e) {
+    final FailureResult result = new FailureResult.Builder()
+        .status(DetailedStatus.DUPLICATE_MEMBER_INFO)
+        .code(DetailedStatus.DUPLICATE_MEMBER_INFO.getCode())
+        .message(e.getMessage())
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+  }
+
 
   @ExceptionHandler(TypeMismatchException.class)
   protected ResponseEntity<FailureResult> handleTypeMismatchException(TypeMismatchException e) {

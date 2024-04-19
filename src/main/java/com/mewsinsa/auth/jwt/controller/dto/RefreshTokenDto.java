@@ -1,8 +1,10 @@
 package com.mewsinsa.auth.jwt.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.Date;
 import java.util.UUID;
-
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RefreshTokenDto {
 
   private String tokenValue;

@@ -1,11 +1,14 @@
 package com.mewsinsa.promotion.controller.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 프로모션 조회를 위한 DTO입니다.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PromotionDto {
 
   private Long promotionId;

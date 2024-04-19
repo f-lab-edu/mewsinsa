@@ -19,9 +19,11 @@ import com.mewsinsa.order.controller.dto.form.OrderedProductInfoDto;
 import com.mewsinsa.order.domain.History;
 import com.mewsinsa.order.domain.Order;
 import com.mewsinsa.order.domain.OrderStatus;
+import com.mewsinsa.order.domain.OrderedProduct;
 import com.mewsinsa.order.exception.InvalidProductOptionException;
 import com.mewsinsa.order.exception.NotApplicapableCouponException;
 import com.mewsinsa.order.exception.OrderCancellationException;
+import com.mewsinsa.order.exception.OrderException;
 import com.mewsinsa.order.exception.OutOfStockException;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
 import com.mewsinsa.order.controller.dto.OrderedProductRequestDto;
@@ -41,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +97,8 @@ public class OrderService {
     // 회원 기본 배송지 불러오기
     // 1. 액세스 토큰으로 회원 정보 찾아오기
     Member member = memberRepository.findMemberByAccessToken(accessToken);
+    Integer tierId = member.getTierId();
+    String tierName = tierMap.get(tierId).getTierName();
 
     // 2. 회원의 기본 배송지 정보를 불러오기
     DeliveryAddress deliveryAddress = deliveryAddressRepository.findDefaultDeliveryAddressByMemberId(member.getMemberId());
@@ -160,7 +165,7 @@ public class OrderService {
       totalTierDiscountAmount += quantity * unitTierDiscountAmount;
     }
 
-    return new OrderFormResponseDto(deliveryAddress, productInfoList, totalTierDiscountAmount, totalPoints);
+    return new OrderFormResponseDto(deliveryAddress, productInfoList, totalTierDiscountAmount, totalPoints, tierId, tierName);
   }
 
   /**
@@ -170,44 +175,104 @@ public class OrderService {
    */
   @Transactional
   public OrderResponseDto makeOrder(OrderRequestDto orderRequestDto, Long memberId) {
-    // 1. orderProductList를 돈다.
-    // 2. 각각의 옵션과 수량을 체크하고, 그 옵션의 데이터를 DB에서 읽어온다.
-    // 3. 옵션의 수량을 보고 감소했을 때를 본다.
-    // 4. 만약 수량을 감소시켰는데 음수가 떠버리면 -> Exception을 던진다.
-    // 5.
+    Member member = memberRepository.findMemberById(memberId);
+    Integer tierId = member.getTierId();
+    String tierName = tierMap.get(tierId).getTierName();
 
-    List<OrderedProductRequestDto> orderedProductList = orderRequestDto.getOrderedProductList();
+    // 회원의 기본 배송지 정보
+    DeliveryAddress deliveryAddress = deliveryAddressRepository.findDefaultDeliveryAddressByMemberId(member.getMemberId());
+
+    List<OrderedProductDto> orderedProductList = orderRequestDto.getOrderedProductList();
     Map<Long, Long> productIdMap = new HashMap<>(); // key: 옵션 번호, value: productId
 
-    // 올바른 부분인지 체크하는 부분: 1. 쿠폰이 해당 상품에 적용 가능한가 / 2. 재고가 충분한가
-    for(OrderedProductRequestDto orderedProduct : orderedProductList) {
-
-
+    // option의 내용이 올바른 부분인지 체크하는 부분:
+    // 1. unitPromotion, piecePromotion의 가격이 일치하는가?
+    // 2. 쿠폰과 쿠폰 할인 금액이 올바른가?
+    // 3. 재고가 충분한가?
+    Map<Long, Long> couponMap = new HashMap<>(); // key: couponId, value: productOptionId
+    Long totalPoints = 0L, totalTierDiscountAmount = 0L;
+    for(OrderedProductDto orderedProduct : orderedProductList) {
       // 옵션을 꺼내오기
       Long productOptionId = orderedProduct.getProductOptionId();
-      ProductOption productOption = productRepository.findProductOptionByProductOptionId(productOptionId);
+      OrderedProductInfoDto tempOrderedProductInfo = productRepository.findOneOrderedProductInfo(orderedProduct.getProductOptionId());
 
-      if(productOption == null) {
+      // 주문에 포함된 옵션이 DB에 존재하지 않는 경우
+      if(tempOrderedProductInfo == null) {
         throw new InvalidProductOptionException("해당 상품 옵션이 존재하지 않습니다.", productOptionId);
       }
 
-      // 1. 쿠폰 체크
-      isApplicableCoupon(productOption.getProductId(), orderedProduct.getAppliedCouponId());
+      // 찾아온 데이터를 꺼내기
+      Long productId = tempOrderedProductInfo.getProductId();
+      String productName = tempOrderedProductInfo.getProductName();
+      String productOptionName = tempOrderedProductInfo.getProductOptionName();
+      Long brandId = tempOrderedProductInfo.getBrandId();
+      String brandName = tempOrderedProductInfo.getBrandName();
+      Long unitOriginalPrice = tempOrderedProductInfo.getUnitOriginalPrice();
+      Long quantity = orderedProduct.getQuantity();
+
+      // 프로모션 단가 계산
+      Long unitPromotionPrice = calculatePromotionPrice(productId, unitOriginalPrice);
+      Long discountAmount = quantity * (unitOriginalPrice - unitPromotionPrice);
+      Long pieceOriginalPrice = unitOriginalPrice * quantity;
+      Long piecePromotionPrice = unitPromotionPrice * quantity;
+
+      // 회원 할인금액, 적립금 계산
+      Long unitTierDiscountAmount = calculateTierDiscountAmount(member.getTierId(), unitPromotionPrice);
+      Long points = quantity * calcaulateUnitPoints(member.getTierId(), unitPromotionPrice);
+
+      // 검증 1. 부분 가격이 맞는지 확인
+      // 프로모션가가 맞는지 확인
+      if(!Objects.equals(orderedProduct.getPiecePromotionPrice(), piecePromotionPrice)) {
+        throw new OrderException("상품의 프로모션가가 틀립니다. / productOptionId: " + productOptionId + ", client piecePromotionPrice: " + orderedProduct.getPiecePromotionPrice() + ", server piecePromotionPrice: " + piecePromotionPrice);
+      }
+      // 회원 등급 할인 금액이 맞는지 확인
+      if(orderedProduct.getPieceTierDiscountAmount() != quantity * unitTierDiscountAmount) {
+        throw new OrderException("회원 할인가가 틀립니다. / productOptionId: " + productOptionId + ", client pieceTierDiscountAmount: " + orderedProduct.getPieceTierDiscountAmount() + ", server pieceTierDiscountAmount: " + quantity * unitTierDiscountAmount);
+      }
+      // 적립금이 맞는지 확인
+      if(!Objects.equals(orderedProduct.getPoints(), points)) {
+        throw new OrderException("적립금이 틀립니다. / productOptionId: " + productOptionId + ", client points: " + orderedProduct.getPoints() + ", server points: " + points);
+      }
 
 
-      // 2. 재고 체크 & 재고 감소
+      // 검증 2. 쿠폰이 맞는지 확인
+      Long couponId = orderedProduct.getCouponId();
+      // TODO: 유저가 해당 쿠폰을 발급 받았는가? -> issued coupon table에서 찾아오기
+//      couponRepository.findIssuedCoupon()
+      // 쿠폰이 적용 가능한가
+      isApplicableCoupon(productId, couponId);
+      // 쿠폰이 중복 적용됐는가
+      if(couponId != null && couponMap.get(couponId) != null) {
+        throw new OrderException("쿠폰이 중복 적용되었습니다. / productOptionId: " + productOptionId + ", " + couponMap.get(couponId) + ", couponId: " + couponId);
+      }
+      // 쿠폰이 존재하는가, 쿠폰의 기한이 남아있는가
+      Coupon coupon = couponRepository.findOneCoupon(couponId);
+      if(couponId != null && (coupon == null || coupon.getExpiredAt().isBefore(LocalDateTime.now()))) {
+        throw new OrderException("존재하지 않거나, 기한이 지난 쿠폰입니다 / couponId: " + couponId);
+      }
+      // 쿠폰으로 할인 받은 비용이 맞는지 확인
+      Long couponDiscountAmount;
+      if(coupon.getCouponType() == FIXED_DISCOUNT) {
+        couponDiscountAmount = coupon.getDiscountAmount();
+      } else {
+        couponDiscountAmount = (long)(piecePromotionPrice * ((double)coupon.getDiscountRate() / 100.0));
+      }
+      if(couponId != null && !Objects.equals(orderedProduct.getCouponDiscountAmount(), couponDiscountAmount)) {
+        throw new OrderException("쿠폰 할인 금액이 틀립니다 / couponId: " + couponId + ", client couponDiscountAmount: "
+            + orderedProduct.getCouponDiscountAmount() + ", server couponDiscountAmount: " + couponDiscountAmount);
+      }
+
+      // 검증 3. 재고 체크 & 재고 감소
+      ProductOption productOption = productRepository.findProductOptionByProductOptionId(productOptionId);
       long stock = productOption.getStock();
 
-      log.info("stock: {}  quantity: {}", stock, orderedProduct.getProductOptionCount());
-      if((stock - orderedProduct.getProductOptionCount()) < 0) { // 살수 없음
-        throw new OutOfStockException(productOptionId, stock, orderedProduct.getProductOptionCount());
+      log.info("stock: {}  quantity: {}", stock, quantity);
+      if((stock - quantity) < 0) { // 살수 없음
+        throw new OutOfStockException(productOptionId, stock, quantity);
       }
 
       // 살수 있음 -> 재고 감소 시키기
-      productRepository.updateProductOptionStock(productOptionId,
-          orderedProduct.getProductOptionCount());
-
-
+      productRepository.updateProductOptionStock(productOptionId, quantity);
 
       // 상품 번호 저장
       productIdMap.put(orderedProduct.getProductOptionId(), productOption.getProductId());
@@ -226,18 +291,17 @@ public class OrderService {
     Long orderId = newOrder.getOrderId();
     LocalDateTime orderedAt = LocalDateTime.now();
     // orderedProduct를 각각 DB에 저장하고 이력 테이블에도 저장
-    for(OrderedProductRequestDto orderedProduct : orderedProductList) {
+    for(OrderedProductDto orderedProduct : orderedProductList) {
       Long productId = productIdMap.get(orderedProduct.getProductOptionId());
       Long originalPrice = findOriginalPrice(productId);
-      Long piecePrice = calculateFinalPrice(originalPrice, getTierId(memberId), orderedProduct.getAppliedCouponId(), productId);
+      Long piecePrice = calculateFinalPrice(originalPrice, getTierId(memberId), orderedProduct.getCouponId(), productId);
 
-      OrderedProductDto orderedProductDto = new OrderedProductDto(orderedProduct.getProductOptionId(),
-              orderedProduct.getProductOptionCount(),
-              orderedProduct.getAppliedCouponId(), 0L, piecePrice);
+      OrderedProduct orderedProductInfo = new OrderedProduct(orderedProduct.getProductOptionId(),
+              orderedProduct.getQuantity(), orderedProduct.getCouponId(), 0L, piecePrice);
 
       // 주문된 상품을 저장
-      orderedProductRepository.addOrderedProduct(orderId, orderedProductDto);
-      historyRepository.addHistory(orderedProductDto.getOrderedProductId(), orderId, orderedAt, OrderStatus.BEFORE_PAYMENT.getStatusDescription());
+      orderedProductRepository.addOrderedProduct(orderId, orderedProductInfo);
+      historyRepository.addHistory(orderedProductInfo.getOrderedProductId(), orderId, orderedAt, OrderStatus.BEFORE_PAYMENT.getStatusDescription());
     }
 
     return new OrderResponseDto(orderId, orderedAt);
@@ -385,5 +449,14 @@ public class OrderService {
     int discountRate = tierMap.get(tierId).getDiscountRate();
     return (long)((double) promotionPrice * ((double) discountRate / 100.0));
   }
+
+  // 이력 테이블 조회
+  public History lookUpOneHistoryTable(Long orderedProductId) {
+    return historyRepository.findOneHistoryByOrderedProductId(orderedProductId);
+  }
+
+
+  //==makeOrder()에서 사용하는 검증 메소드==//
+
 
 }
