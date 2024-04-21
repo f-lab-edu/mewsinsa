@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class History {
   private Long orderId;
-  private Long receiptId;
   private Long orderedProductId;
   private LocalDateTime orderedAt;
   private LocalDateTime paymentConfirmedAt;
@@ -24,7 +23,6 @@ public class History {
 
   public History(Builder builder) {
     this.orderId = builder.orderId;
-    this.receiptId = builder.receiptId;
     this.orderedProductId = builder.orderedProductId;
     this.orderedAt = builder.orderedAt;
     this.paymentConfirmedAt = builder.paymentConfirmedAt;
@@ -40,10 +38,6 @@ public class History {
   //==Getter==//
   public Long getOrderId() {
     return orderId;
-  }
-
-  public Long getReceiptId() {
-    return receiptId;
   }
 
   public Long getOrderedProductId() {
@@ -89,7 +83,6 @@ public class History {
   //==Builder==//
   public static class Builder {
     private Long orderId;
-    private Long receiptId;
     private Long orderedProductId;
     private LocalDateTime orderedAt;
     private LocalDateTime paymentConfirmedAt;
@@ -107,10 +100,6 @@ public class History {
       return this;
     }
 
-    public Builder receiptId(Long receiptId) {
-      this.receiptId = receiptId;
-      return this;
-    }
 
     public Builder orderedProductId(Long orderedProductId) {
       this.orderedProductId = orderedProductId;

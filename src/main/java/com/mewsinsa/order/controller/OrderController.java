@@ -6,6 +6,7 @@ import com.mewsinsa.auth.jwt.interceptor.Auth;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.member.service.MemberService;
+import com.mewsinsa.order.controller.dto.OrderDeliveryAddressUpdateRequestDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
@@ -13,6 +14,7 @@ import com.mewsinsa.order.controller.dto.OrderResponseDto;
 import com.mewsinsa.order.controller.dto.form.OrderFormRequestDto;
 import com.mewsinsa.order.controller.dto.form.OrderFormResponseDto;
 import com.mewsinsa.order.domain.History;
+import com.mewsinsa.order.domain.Order;
 import com.mewsinsa.order.domain.OrderedProduct;
 import com.mewsinsa.order.exception.NonExsistentOrderException;
 import com.mewsinsa.order.service.OrderService;
@@ -22,6 +24,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -126,21 +129,40 @@ public class OrderController {
 
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
-//  @Auth
+  @Auth
   @PostMapping("/cancel-order/{orderedProductId}")
   public ResponseEntity<SuccessResult> cancelOrder(@PathVariable("orderedProductId") Long orderedProductId) {
 
     OrderedProduct cancelledOrderedProduct = orderService.cancelOrder(orderedProductId);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .message("주문이 성공적으로 취소 되었습니다.")
         .data(cancelledOrderedProduct)
         .build();
 
     return new ResponseEntity<>(result, HttpStatus.OK);
-
   }
 
 
+  // 배송지 정보 수정
+  @PatchMapping("/update-address/{orderId}")
+  public ResponseEntity<SuccessResult> updateDeliveryAddressInOrder(
+      @PathVariable("orderId") Long orderId,
+      @RequestBody OrderDeliveryAddressUpdateRequestDto deliveryAddress) {
+    Order order = orderService.updateDeliveryAddressInOrder(
+        orderId,
+        deliveryAddress.getReceiverName(),
+        deliveryAddress.getReceiverPhone(),
+        deliveryAddress.getReceiverAddress()
+    );
+
+    SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .message("배송지가 정상적으로 변경되었습니다.")
+        .data(order)
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
 
 
 

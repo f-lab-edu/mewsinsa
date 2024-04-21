@@ -6,6 +6,11 @@
     INSERT INTO `order` (receiver_address, receiver_name, receiver_phone, member_id)
     VALUES (#{receiverAddress}, #{receiverName}, #{receiverPhone}, #{memberId})
   </insert>
+  <update id="updateDeliveryAddressInOrder">
+    UPDATE `order`
+    SET receiver_address=#{receiverAddress}, receiver_name=#{receiverName}, receiver_phone=#{receiverPhone}
+    WHERE order_id = #{orderId};
+  </update>
   <delete id="deleteOrderByOrderId">
     DELETE FROM `order` WHERE order_id = #{orderId}
   </delete>

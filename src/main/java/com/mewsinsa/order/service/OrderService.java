@@ -21,6 +21,7 @@ import com.mewsinsa.order.domain.History;
 import com.mewsinsa.order.domain.Order;
 import com.mewsinsa.order.domain.OrderStatus;
 import com.mewsinsa.order.domain.OrderedProduct;
+import com.mewsinsa.order.exception.DeliveryAddressUpdateException;
 import com.mewsinsa.order.exception.InvalidProductOptionException;
 import com.mewsinsa.order.exception.NotApplicapableCouponException;
 import com.mewsinsa.order.exception.OrderCancellationException;
@@ -313,7 +314,7 @@ public class OrderService {
       }
 
       // 살수 있음 -> 재고 감소 시키기
-      productRepository.updateProductOptionStock(productOptionId, quantity);
+      reduceStock(productOptionId, stock - quantity);
 
 
       // piecePrice란: piecePromotionPrice - 쿠폰할인
@@ -353,9 +354,33 @@ public class OrderService {
   }
 
 
+  // 관리자 전용. 전체 주문 리스트 조회
   public List<OrderListResponseForAdminDto> allOrderList(int page, int count) {
     return orderRepository.findAllOrders(page, count);
+  }
 
+  // TODO: 관리자 전용. 특정 주문 정보 조회
+
+  // TODO: 주문에서 배송지 수령자 정보 변경
+  @Transactional
+  public Order updateDeliveryAddressInOrder(Long orderId, String receiverName, String receiverPhone, String receiverAddress) {
+    Order order = orderRepository.findOneOrderByOrderId(orderId);
+    List<History> historyList = historyRepository.findHistoriesByOrderId(orderId);
+
+    List<String> updatableList = new ArrayList<>(Arrays.asList(
+        new String[]{OrderStatus.BEFORE_PAYMENT.getStatusDescription(),
+            OrderStatus.CONFIRMED_PAYMENT.getStatusDescription(),
+            OrderStatus.PREPARING_FOR_DELIVERY.getStatusDescription()}));
+
+    // 배송지를 바꿀 수 있는지 검사해보기
+    for (History history : historyList) {
+      if(!updatableList.contains(history.getStatus())) {
+        throw new DeliveryAddressUpdateException("배송지를 변경할 수 없습니다.");
+      }
+    }
+
+    orderRepository.updateDeliveryAddressInOrder(orderId, receiverName, receiverPhone, receiverAddress);
+    return orderRepository.findOneOrderByOrderId(orderId);
   }
 
   public List<OrderListResponseForMemberDto> orderListByMemberId(Long memberId, Integer page,
@@ -382,6 +407,7 @@ public class OrderService {
     Product product = productRepository.findOneProduct(productId);
     return product.getPrice();
   }
+
 
   /**
    * @param originalPrice
@@ -472,13 +498,12 @@ public class OrderService {
             OrderStatus.PREPARING_FOR_DELIVERY.getStatusDescription()}));
 
     Long refundPrice = 0L;
-    if(cancelableList.contains(history.getStatus())) {
-      productRepository.updateIsCancelled(orderedProductId, true);
-      historyRepository.updateStatus(orderedProductId, OrderStatus.ORDER_CANCELLATION_COMPLETED);
-
-    } else { // 한 상품이라도 출고가 되었다면 주문을 취소할 수가 없습니다.
+    if(!cancelableList.contains(history.getStatus())) {
       throw new OrderCancellationException("주문을 취소할 수 없습니다.", history.getStatus());
     }
+
+    productRepository.updateIsCancelled(orderedProductId, true);
+    historyRepository.updateStatus(orderedProductId, OrderStatus.ORDER_CANCELLATION_COMPLETED.getStatusDescription());
 
     Receipt receipt = receiptRepository.findOneReceiptByOrderId(history.getOrderId());
     receiptRepository.updateReceiptIsRefunded(receipt.getReceiptId(), true);
@@ -486,6 +511,7 @@ public class OrderService {
 
     return orderedProductRepository.findOrderedProductByOrderedProductId(orderedProductId);
   }
+
 
 
   public Long calcaulateUnitPoints(Integer tierId, Long promotionPrice) {

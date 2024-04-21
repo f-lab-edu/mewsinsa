@@ -27,4 +27,11 @@ public interface OrderRepository {
 
   public Order findOneOrderByOrderId(@Param("orderId") Long orderId);
 
+  public void updateDeliveryAddressInOrder(
+      @Param("orderId") Long orderId,
+      @Param("receiverName") String receiverName,
+      @Param("receiverPhone") String receiverPhone,
+      @Param("receiverAddress") String receiverAddress
+  );
+
 }

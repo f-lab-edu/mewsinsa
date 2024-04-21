@@ -10,7 +10,7 @@
   <update id="updateReceiptIsRefunded">
     UPDATE receipt
     SET is_refunded = #{isRefunded}
-    WHERE receipt_id = #{receipt_id}
+    WHERE receipt_id = #{receiptId}
   </update>
   <select id="findOneReceiptByOrderId" resultType="com.mewsinsa.payment.domain.Receipt">
     SELECT
@@ -18,13 +18,13 @@
       order_id AS orderId,
       total_price AS totalPrice,
       payment_method AS paymentMethod,
-      paidAt AS paid_at,
+      paid_at AS paidAt,
       points,
       used_points AS usedPoints,
       use_points_in_advance AS usePointsInAdvance,
       is_refunded AS isRefunded
     FROM receipt
-    WHERE order_id = #{order_id}
+    WHERE order_id = #{orderId}
   </select>
 
 </mapper>
