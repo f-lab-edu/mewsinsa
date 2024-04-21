@@ -7,4 +7,24 @@
     INSERT INTO receipt (order_id, total_price, payment_method, paid_at, points, used_points, use_points_in_advance)
     VALUES(#{orderId}, #{totalPrice}, #{paymentMethod}, #{paidAt}, #{points}, #{usedPoints}, #{usePointsInAdvance})
   </insert>
+  <update id="updateReceiptIsRefunded">
+    UPDATE receipt
+    SET is_refunded = #{isRefunded}
+    WHERE receipt_id = #{receipt_id}
+  </update>
+  <select id="findOneReceiptByOrderId" resultType="com.mewsinsa.payment.domain.Receipt">
+    SELECT
+      receipt_id AS receiptId,
+      order_id AS orderId,
+      total_price AS totalPrice,
+      payment_method AS paymentMethod,
+      paidAt AS paid_at,
+      points,
+      used_points AS usedPoints,
+      use_points_in_advance AS usePointsInAdvance,
+      is_refunded AS isRefunded
+    FROM receipt
+    WHERE order_id = #{order_id}
+  </select>
+
 </mapper>

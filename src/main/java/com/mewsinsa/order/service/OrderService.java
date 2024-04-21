@@ -186,7 +186,6 @@ public class OrderService {
     Long usedPoints = orderRequestDto.getUsedPoints();
     boolean usePointsInAdvance = orderRequestDto.getUsePointsInAdvance();
 
-    // 모든 옵션의 재고를 감소 시켰으므로, 주문을 만들 수 있다.
     // 주문이 들어온 시각
     LocalDateTime orderedAt = LocalDateTime.now();
 
@@ -458,6 +457,7 @@ public class OrderService {
     return oneCouponProduct != null;
   }
 
+  @Transactional
   public OrderedProduct cancelOrder(Long orderedProductId) {
     // TODO: 인가에 대한 부분 구현
 
@@ -471,12 +471,18 @@ public class OrderService {
             OrderStatus.CONFIRMED_PAYMENT.getStatusDescription(),
             OrderStatus.PREPARING_FOR_DELIVERY.getStatusDescription()}));
 
+    Long refundPrice = 0L;
     if(cancelableList.contains(history.getStatus())) {
       productRepository.updateIsCancelled(orderedProductId, true);
       historyRepository.updateStatus(orderedProductId, OrderStatus.ORDER_CANCELLATION_COMPLETED);
-    } else {
+
+    } else { // 한 상품이라도 출고가 되었다면 주문을 취소할 수가 없습니다.
       throw new OrderCancellationException("주문을 취소할 수 없습니다.", history.getStatus());
     }
+
+    Receipt receipt = receiptRepository.findOneReceiptByOrderId(history.getOrderId());
+    receiptRepository.updateReceiptIsRefunded(receipt.getReceiptId(), true);
+    // TODO: 결제가 이미 진행되었을시에 환불하는 과정
 
     return orderedProductRepository.findOrderedProductByOrderedProductId(orderedProductId);
   }
@@ -496,9 +502,4 @@ public class OrderService {
   public History lookUpOneHistoryTable(Long orderedProductId) {
     return historyRepository.findOneHistoryByOrderedProductId(orderedProductId);
   }
-
-
-  //==makeOrder()에서 사용하는 검증 메소드==//
-
-
 }
