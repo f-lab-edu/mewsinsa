@@ -15,6 +15,13 @@
   <select id="findOrderedProductByOrderedProductId"
           resultType="com.mewsinsa.order.domain.OrderedProduct">
     SELECT
-
+    product_option_id AS productOptionId,
+    quantity AS productOptionCount,
+    coupon_id AS appliedCouponId,
+    ordered_product_id AS orderedProductId,
+    order_id AS orderId,
+    piece_price AS piecePrice
+    FROM ordered_product
+    WHERE ordered_product_id = #{orderedProductId}
   </select>
 </mapper>

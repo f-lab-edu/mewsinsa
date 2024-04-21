@@ -42,4 +42,9 @@ public interface ProductRepository {
   Product findOneProduct(@Param("productId") Long productId);
 
   OrderedProductInfoDto findOneOrderedProductInfo(@Param("productOptionId") Long productOptionId);
+
+  // 주문 취소
+  void updateIsCancelled(@Param("orderedProductId") Long orderedProductId, @Param("isCancelled") Boolean isCancelled);
+
+  ProductOption findProductOptionByProductOptionIdForUpdate(Long productOptionId);
 }

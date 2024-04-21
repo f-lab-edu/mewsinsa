@@ -7,6 +7,11 @@
     INSERT INTO history (ordered_product_id, order_id, ordered_at, status)
     VALUES (#{orderedProductId}, #{orderId}, #{orderedAt}, #{status})
   </insert>
+  <update id="updateStatus">
+    UPDATE history
+    SET status = #{orderStatus}
+    WHERE ordered_product_id = #{orderedProductId}
+  </update>
   <select id="findOneHistoryByOrderedProductId"
           resultType="com.mewsinsa.order.domain.History">
     SELECT

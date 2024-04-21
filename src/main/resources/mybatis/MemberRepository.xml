@@ -7,6 +7,9 @@
     INSERT INTO member(mewsinsa_id, password, name, nickname, email, phone, profile_image, tier_id, is_admin, range_of_notification, points)
     VALUES(#{mewsinsaId}, #{password}, #{name}, #{nickname}, #{email}, #{phone}, #{profileImage}, #{tierId}, #{isAdmin}, "1", #{points})
   </insert>
+  <update id="updateMemberPoints">
+    UPDATE member SET points = #{points} WHERE member_id = #{memberId}
+  </update>
 
   <delete id="deleteMember" parameterType="long">
     DELETE

@@ -3,6 +3,7 @@ package com.mewsinsa.order.controller.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -19,6 +20,11 @@ public class OrderRequestDto {
   @Size(min=1)
   private List<OrderedProductDto> orderedProductList;
 
+  @NotNull
+  private Long usedPoints;
+  @NotNull
+  private Boolean usePointsInAdvance;
+
   //==Getter==//
   public String getReceiverAddress() {
     return receiverAddress;
@@ -34,6 +40,14 @@ public class OrderRequestDto {
 
   public List<OrderedProductDto> getOrderedProductList() {
     return orderedProductList;
+  }
+
+  public Long getUsedPoints() {
+    return usedPoints;
+  }
+
+  public Boolean getUsePointsInAdvance() {
+    return usePointsInAdvance;
   }
 
   //==Setter==//
@@ -54,4 +68,11 @@ public class OrderRequestDto {
     this.orderedProductList = orderedProductList;
   }
 
+  public void setUsedPoints(Long usedPoints) {
+    this.usedPoints = usedPoints;
+  }
+
+  public void setUsePointsInAdvance(Boolean usePointsInAdvance) {
+    this.usePointsInAdvance = usePointsInAdvance;
+  }
 }

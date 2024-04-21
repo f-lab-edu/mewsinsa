@@ -2,6 +2,7 @@ package com.mewsinsa.coupon.repository;
 
 
 import com.mewsinsa.coupon.domain.Coupon;
+import com.mewsinsa.coupon.domain.IssuedCoupon;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -20,4 +21,6 @@ public interface CouponRepository {
   Coupon findOneCoupon(@Param("couponId") Long couponId);
 
   Coupon findOneCouponProduct(@Param("productId") Long productId, @Param("couponId") Long couponId);
+
+  IssuedCoupon findOneIssuedCoupon(@Param("couponId") Long couponId, @Param("memberId") Long memberId);
 }

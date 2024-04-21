@@ -4,7 +4,7 @@
 <mapper namespace="com.mewsinsa.payment.repository.ReceiptRepository">
 
   <insert id="saveReceipt">
-    INSERT INTO receipt (order_id, total_price, payment_method, created_at, points, used_points, use_points_in_advance)
-    VALUES(#{orderId}, #{totalPrice}, #{paymentMethod}, #{createdAt}, #{points}, #{usedPoints}, #{usePointsInAdvance})
+    INSERT INTO receipt (order_id, total_price, payment_method, paid_at, points, used_points, use_points_in_advance)
+    VALUES(#{orderId}, #{totalPrice}, #{paymentMethod}, #{paidAt}, #{points}, #{usedPoints}, #{usePointsInAdvance})
   </insert>
 </mapper>

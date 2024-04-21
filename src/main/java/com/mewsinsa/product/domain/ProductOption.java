@@ -19,8 +19,6 @@ public class ProductOption {
     this.stock = stock;
   }
 
-
-
   //== Getter ==//
 
   public Long getProductOptionId() {

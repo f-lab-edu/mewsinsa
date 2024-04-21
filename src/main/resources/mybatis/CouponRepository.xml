@@ -65,4 +65,15 @@
     FROM coupon_product
     WHERE product_id = #{productId} AND coupon_id = #{couponId}
   </select>
+  <select id="findOneIssuedCoupon" resultType="com.mewsinsa.coupon.domain.IssuedCoupon">
+    SELECT
+      issued_coupon_id AS issuedCouponId,
+      is_used AS isUsed,
+      issued_at AS issuedAt,
+      used_at AS usedAt,
+      coupon_id AS couponId,
+      member_id AS memberId
+    FROM issued_coupon
+    WHERE coupon_id = #{couponId} AND member_id = #{memberId}
+  </select>
 </mapper>

@@ -13,4 +13,5 @@ public interface MemberRepository {
   public void addMember(Member member);
   public void deleteMember(@Param("memberId") Long memberId);
   public Member findMemberByAccessToken(@Param("accessToken") String accessToken);
+  public void updateMemberPoints(@Param("memberId") Long memberId, @Param("points") Long points);
 }

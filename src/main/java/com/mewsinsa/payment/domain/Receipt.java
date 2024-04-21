@@ -7,7 +7,7 @@ public class Receipt {
   private Long orderId;
   private Long totalPrice;
   private String paymentMethod;
-  private LocalDateTime createdAt;
+  private LocalDateTime paidAt;
   private Long points;
   private Long usedPoints;
   private Boolean usePointsInAdvance;
@@ -21,7 +21,7 @@ public class Receipt {
     this.orderId = builder.orderId;
     this.totalPrice = builder.totalPrice;
     this.paymentMethod = builder.paymentMethod;
-    this.createdAt = builder.createdAt;
+    this.paidAt = builder.paidAt;
     this.points = builder.points;
     this.usedPoints = builder.usedPoints;
     this.usePointsInAdvance = builder.usePointsInAdvance;
@@ -45,8 +45,8 @@ public class Receipt {
     return paymentMethod;
   }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
+  public LocalDateTime getPaidAt() {
+    return paidAt;
   }
 
   public Long getPoints() {
@@ -76,7 +76,7 @@ public class Receipt {
     private Long orderId;
     private Long totalPrice;
     private String paymentMethod;
-    private LocalDateTime createdAt;
+    private LocalDateTime paidAt;
     private Long points;
     private Long usedPoints;
     private Boolean usePointsInAdvance;
@@ -102,8 +102,8 @@ public class Receipt {
       return this;
     }
 
-    public Builder createdAt(LocalDateTime createdAt) {
-      this.createdAt = createdAt;
+    public Builder createdAt(LocalDateTime paidAt) {
+      this.paidAt = paidAt;
       return this;
     }
 

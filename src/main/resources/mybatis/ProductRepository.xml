@@ -40,6 +40,11 @@
       stock = stock - #{count}
     where product_option_id = #{productOptionId}
   </update>
+  <update id="updateIsCancelled">
+    UPDATE ordered_product SET
+    is_cancelled = #{isCancelled}
+    WHERE ordered_product_id = #{orderedProductId}
+  </update>
 
   <!--  옵션 삭제-->
   <delete id="deleteProductOption" parameterType="long">
@@ -123,6 +128,17 @@
     WHERE product_option.product_option_id = #{productOptionId}
     AND product.product_id = product_option.product_id
     AND product.brand_id = brand.brand_id
+  </select>
+  <select id="findProductOptionByProductOptionIdForUpdate"
+          resultType="com.mewsinsa.product.domain.ProductOption">
+    SELECT
+      product_option_id AS productOptionId,
+      product_id AS productId,
+      product_option_name AS optionName,
+      stock AS stock
+    FROM product_option
+    WHERE product_option.product_option_id = #{productOptionId}
+    FOR UPDATE
   </select>
 
 </mapper>
