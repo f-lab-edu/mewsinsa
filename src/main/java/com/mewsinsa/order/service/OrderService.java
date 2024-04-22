@@ -9,7 +9,9 @@ import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.domain.Tier;
 import com.mewsinsa.member.repository.MemberRepository;
 import com.mewsinsa.member.service.MemberService;
-import com.mewsinsa.order.controller.dto.OrderListResponseForAdminDto;
+import com.mewsinsa.order.controller.dto.OrderDeliveryAddressDto;
+import com.mewsinsa.order.controller.dto.admin.OrderInfoResponseForAdminDto;
+import com.mewsinsa.order.controller.dto.admin.OrderListResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto;
 import com.mewsinsa.order.controller.dto.OrderResponseDto;
 import com.mewsinsa.order.controller.dto.OrderedProductDto;
@@ -28,7 +30,6 @@ import com.mewsinsa.order.exception.OrderCancellationException;
 import com.mewsinsa.order.exception.OrderException;
 import com.mewsinsa.order.exception.OutOfStockException;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
-import com.mewsinsa.order.controller.dto.OrderedProductRequestDto;
 import com.mewsinsa.order.repository.HistoryRepository;
 import com.mewsinsa.order.repository.OrderRepository;
 import com.mewsinsa.order.repository.OrderedProductRepository;
@@ -51,7 +52,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -321,7 +321,7 @@ public class OrderService {
       Long piecePrice = piecePromotionPrice - couponDiscountAmount;
       totalPrice += piecePrice;
       OrderedProduct orderedProductInfo = new OrderedProduct(orderedProduct.getProductOptionId(),
-          orderedProduct.getQuantity(), orderedProduct.getCouponId(), piecePrice, orderId);
+          orderedProduct.getQuantity(), orderedProduct.getCouponId(), piecePrice, orderId, false);
 
       // 주문된 상품을 저장
       orderedProductRepository.addOrderedProduct(orderId, orderedProductInfo);
@@ -358,10 +358,16 @@ public class OrderService {
   public List<OrderListResponseForAdminDto> allOrderList(int page, int count) {
     return orderRepository.findAllOrders(page, count);
   }
-
   // TODO: 관리자 전용. 특정 주문 정보 조회
+  public OrderInfoResponseForAdminDto orderInfo(Long orderId) {
+    List<OrderedProduct> orderedProductList = orderRepository.findOrderedProductsByOrderId(orderId);
+    OrderInfoResponseForAdminDto orderInfo = orderRepository.findOrderInfoByOrderId(orderId);
+    orderInfo.setOrderedProductList(orderedProductList);
 
-  // TODO: 주문에서 배송지 수령자 정보 변경
+    return orderInfo;
+  }
+
+  // 주문에서 배송지 수령자 정보 변경
   @Transactional
   public Order updateDeliveryAddressInOrder(Long orderId, String receiverName, String receiverPhone, String receiverAddress) {
     Order order = orderRepository.findOneOrderByOrderId(orderId);

@@ -1,6 +1,6 @@
 package com.mewsinsa.order.controller.dto;
 
-public class OrderDeliveryAddressUpdateRequestDto {
+public class OrderDeliveryAddressDto {
   private String receiverName;
   private String receiverPhone;
   private String receiverAddress;

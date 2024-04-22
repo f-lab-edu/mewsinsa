@@ -5,37 +5,31 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderedProduct {
-  private Long productOptionId;
-  private Long productOptionCount;
-  private Long appliedCouponId;
   private Long orderedProductId;
+  private Long productOptionId;
+  private Long quantity;
+  private Long couponId;
   private Long piecePrice; // 개당 주문 가격
   private Long orderId;
+  private Boolean isCancelled;
 
   //==Constructor==//
   public OrderedProduct() {
   }
 
-  public OrderedProduct(Long productOptionId, Long productOptionCount,
-      Long appliedCouponId, Long piecePrice, Long orderId) {
+  public OrderedProduct(Long productOptionId, Long quantity,
+      Long couponId, Long piecePrice, Long orderId, Boolean isCancelled) {
     this.productOptionId = productOptionId;
-    this.productOptionCount = productOptionCount;
-    this.appliedCouponId = appliedCouponId;
+    this.quantity = quantity;
+    this.couponId = couponId;
     this.piecePrice = piecePrice;
     this.orderId = orderId;
+    this.isCancelled = isCancelled;
   }
 
   //==Getter==//
   public Long getProductOptionId() {
     return productOptionId;
-  }
-
-  public Long getProductOptionCount() {
-    return productOptionCount;
-  }
-
-  public Long getAppliedCouponId() {
-    return appliedCouponId;
   }
 
   public Long getOrderedProductId() {
@@ -50,17 +44,21 @@ public class OrderedProduct {
     return orderId;
   }
 
+  public Long getQuantity() {
+    return quantity;
+  }
+
+  public Long getCouponId() {
+    return couponId;
+  }
+
+  public Boolean getCancelled() {
+    return isCancelled;
+  }
+
   //==Setter==//
   public void setProductOptionId(Long productOptionId) {
     this.productOptionId = productOptionId;
-  }
-
-  public void setProductOptionCount(Long productOptionCount) {
-    this.productOptionCount = productOptionCount;
-  }
-
-  public void setAppliedCouponId(Long appliedCouponId) {
-    this.appliedCouponId = appliedCouponId;
   }
 
   public void setOrderedProductId(Long orderedProductId) {
@@ -74,4 +72,17 @@ public class OrderedProduct {
   public void setOrderId(Long orderId) {
     this.orderId = orderId;
   }
+
+  public void setQuantity(Long quantity) {
+    this.quantity = quantity;
+  }
+
+  public void setCouponId(Long couponId) {
+    this.couponId = couponId;
+  }
+
+  public void setCancelled(Boolean cancelled) {
+    isCancelled = cancelled;
+  }
 }
+

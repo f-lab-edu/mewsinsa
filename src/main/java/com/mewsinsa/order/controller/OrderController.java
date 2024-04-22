@@ -6,8 +6,9 @@ import com.mewsinsa.auth.jwt.interceptor.Auth;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.member.service.MemberService;
-import com.mewsinsa.order.controller.dto.OrderDeliveryAddressUpdateRequestDto;
-import com.mewsinsa.order.controller.dto.OrderListResponseForAdminDto;
+import com.mewsinsa.order.controller.dto.OrderDeliveryAddressDto;
+import com.mewsinsa.order.controller.dto.admin.OrderInfoResponseForAdminDto;
+import com.mewsinsa.order.controller.dto.admin.OrderListResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
 import com.mewsinsa.order.controller.dto.OrderResponseDto;
@@ -93,6 +94,18 @@ public class OrderController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+//  @Auth
+  @GetMapping("/{orderId}")
+  public ResponseEntity<SuccessResult> orderInfo(@Positive @PathVariable("orderId") Long orderId) {
+    OrderInfoResponseForAdminDto orderInfo = orderService.orderInfo(orderId);
+
+    SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .data(orderInfo)
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
   @Auth
   @GetMapping("/members/{memberId}")
   public ResponseEntity<SuccessResult> memberOrderList(
@@ -148,7 +161,7 @@ public class OrderController {
   @PatchMapping("/update-address/{orderId}")
   public ResponseEntity<SuccessResult> updateDeliveryAddressInOrder(
       @PathVariable("orderId") Long orderId,
-      @RequestBody OrderDeliveryAddressUpdateRequestDto deliveryAddress) {
+      @RequestBody OrderDeliveryAddressDto deliveryAddress) {
     Order order = orderService.updateDeliveryAddressInOrder(
         orderId,
         deliveryAddress.getReceiverName(),
@@ -163,7 +176,4 @@ public class OrderController {
 
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
-
-
-
 }

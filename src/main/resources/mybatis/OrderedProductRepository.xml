@@ -6,8 +6,8 @@
   <insert id="addOrderedProduct" parameterType="com.mewsinsa.order.domain.OrderedProduct"
     useGeneratedKeys="true" keyProperty="orderedProduct.orderedProductId" keyColumn="ordered_product_id">
     INSERT INTO ordered_product (order_id, product_option_id, coupon_id, quantity, piece_price)
-    VALUES (#{orderId}, #{orderedProduct.productOptionId},#{orderedProduct.appliedCouponId},
-    #{orderedProduct.productOptionCount}, #{orderedProduct.piecePrice})
+    VALUES (#{orderId}, #{orderedProduct.productOptionId},#{orderedProduct.couponId},
+    #{orderedProduct.quantity}, #{orderedProduct.piecePrice})
   </insert>
   <delete id="deleteOrderedProduct">
     DELETE FROM ordered_product WHERE ordered_product_id = #{orderedProductId}
@@ -16,8 +16,8 @@
           resultType="com.mewsinsa.order.domain.OrderedProduct">
     SELECT
     product_option_id AS productOptionId,
-    quantity AS productOptionCount,
-    coupon_id AS appliedCouponId,
+    quantity
+    coupon_id AS couponId,
     ordered_product_id AS orderedProductId,
     order_id AS orderId,
     piece_price AS piecePrice

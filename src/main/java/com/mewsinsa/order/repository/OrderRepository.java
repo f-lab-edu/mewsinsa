@@ -1,8 +1,11 @@
 package com.mewsinsa.order.repository;
 
-import com.mewsinsa.order.controller.dto.OrderListResponseForAdminDto;
+import com.mewsinsa.order.controller.dto.OrderedProductDto;
+import com.mewsinsa.order.controller.dto.admin.OrderInfoResponseForAdminDto;
+import com.mewsinsa.order.controller.dto.admin.OrderListResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto;
 import com.mewsinsa.order.domain.Order;
+import com.mewsinsa.order.domain.OrderedProduct;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,5 +36,9 @@ public interface OrderRepository {
       @Param("receiverPhone") String receiverPhone,
       @Param("receiverAddress") String receiverAddress
   );
+
+  public List<OrderedProduct> findOrderedProductsByOrderId(@Param("orderId") Long orderId);
+
+  public OrderInfoResponseForAdminDto findOrderInfoByOrderId(@Param("orderId") Long orderId);
 
 }

@@ -1,4 +1,4 @@
-package com.mewsinsa.order.controller.dto;
+package com.mewsinsa.order.controller.dto.admin;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
