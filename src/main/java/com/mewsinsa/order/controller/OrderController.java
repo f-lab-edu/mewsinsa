@@ -94,7 +94,7 @@ public class OrderController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-//  @Auth
+  @Auth
   @GetMapping("/{orderId}")
   public ResponseEntity<SuccessResult> orderInfo(@Positive @PathVariable("orderId") Long orderId) {
     OrderInfoResponseForAdminDto orderInfo = orderService.orderInfo(orderId);
@@ -158,6 +158,7 @@ public class OrderController {
 
 
   // 배송지 정보 수정
+  @Auth
   @PatchMapping("/update-address/{orderId}")
   public ResponseEntity<SuccessResult> updateDeliveryAddressInOrder(
       @PathVariable("orderId") Long orderId,
