@@ -49,8 +49,10 @@ public class DisplayController {
 
   @GetMapping("/products")
   ResponseEntity<SuccessResult> displayProducts(@RequestParam("subcategory") String subcategory,
-      @RequestParam("page") @Positive int page,
-      @RequestParam("count") @Positive int count) {
+      @RequestParam(value = "page", required = false) @Positive Integer page,
+      @RequestParam(value = "count", required = false) @Positive Integer count) {
+    page = page == null ? 1 : page;
+    count = count == null ? 90 : count;
     List<DisplayProductResponseDto> list = displayService.productListBySubcategory(subcategory, page, count);
 
 

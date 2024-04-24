@@ -47,5 +47,4 @@ public interface ProductRepository {
   // 주문 취소
   void updateIsCancelled(@Param("orderedProductId") Long orderedProductId, @Param("isCancelled") Boolean isCancelled);
 
-  ProductOption findProductOptionByProductOptionIdForUpdate(Long productOptionId);
 }

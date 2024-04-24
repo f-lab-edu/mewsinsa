@@ -38,19 +38,6 @@ public class DisplayService {
     List<DisplayProductResponseDto> productList = null;
     try {
       productList = displayRepository.displayProductListBySubcategory(subcategory, page, count);
-
-      for (DisplayProductResponseDto product : productList) {
-        Long productId = product.getProductId();
-        HashMap<String, Object> displayInfo = displayRepository.displayProductInfo(productId);
-
-        // product_display에 상품 정보가 있는 경우
-        if(displayInfo != null) {
-          product.setPromotionPrice((Long) displayInfo.get("promotionPrice"));
-          product.setDiscountRate((Integer) displayInfo.get("discountRate"));
-          product.setCouponDiscountAmount((Long) displayInfo.get("couponDiscountAmount"));
-          product.setHasGift((Boolean) displayInfo.get("hasGift"));
-        }
-      }
     } catch (Exception e) {
       throw new IllegalArgumentException("상품 리스트 조회에 실패했습니다.", e);
     }
@@ -81,7 +68,7 @@ public class DisplayService {
 
       Long originalPrice = (Long) productHashMap.get("originalPrice");
 
-      // 티어별 가격 계산
+      // 티어별 가격 계산 -> 이거 스트림으로 고칠 수 있을 것 같다
       for (Tier tier : Tier.values()) { // 열거 순회
         tierPrice.put(tier.name(), (long)(((1 - (double)tier.getDiscountRate() / 10) * originalPrice)));
       }

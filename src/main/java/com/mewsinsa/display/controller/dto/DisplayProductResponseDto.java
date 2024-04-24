@@ -9,11 +9,13 @@ public class DisplayProductResponseDto {
   private String productName;
   private Long brandId;
   private String brandName;
+  private String category;
+  private String subcategory;
   private Long originalPrice;
-  private Long countOfLike;
+  private Long productLike;
+  private Long productClick;
   private Long promotionPrice;
   private Long couponDiscountAmount;
-
   private Integer discountRate;
   private Boolean hasGift;
 
@@ -30,12 +32,24 @@ public class DisplayProductResponseDto {
     return brandName;
   }
 
+  public String getCategory() {
+    return category;
+  }
+
+  public String getSubcategory() {
+    return subcategory;
+  }
+
   public Long getOriginalPrice() {
     return originalPrice;
   }
 
-  public Long getCountOfLike() {
-    return countOfLike;
+  public Long getProductLike() {
+    return productLike;
+  }
+
+  public Long getProductClick() {
+    return productClick;
   }
 
   public Long getPromotionPrice() {
@@ -71,12 +85,24 @@ public class DisplayProductResponseDto {
     this.brandName = brandName;
   }
 
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  public void setSubcategory(String subcategory) {
+    this.subcategory = subcategory;
+  }
+
   public void setOriginalPrice(Long originalPrice) {
     this.originalPrice = originalPrice;
   }
 
-  public void setCountOfLike(Long countOfLike) {
-    this.countOfLike = countOfLike;
+  public void setProductLike(Long productLike) {
+    this.productLike = productLike;
+  }
+
+  public void setProductClick(Long productClick) {
+    this.productClick = productClick;
   }
 
   public void setPromotionPrice(Long promotionPrice) {
