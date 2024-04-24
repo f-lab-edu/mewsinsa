@@ -32,16 +32,18 @@ public class CouponService {
   }
 
 
-  public void addCoupon(AddCouponRequestDto couponDto) {
+  public Coupon addCoupon(AddCouponRequestDto couponDto) {
+    Coupon coupon;
     try {
-      Coupon coupon = new Coupon(
+      coupon = new Coupon(
           0L,
           couponDto.getCouponName(),
           couponDto.getCouponType(),
           couponDto.getDiscountRate(),
           couponDto.getDiscountAmount(),
           couponDto.getStartedAt(),
-          couponDto.getExpiredAt()
+          couponDto.getExpiredAt(),
+          couponDto.getRemaining()
       );
 
       // 유효한 쿠폰인지 검사
@@ -49,17 +51,19 @@ public class CouponService {
         throw new IllegalArgumentException();
       }
 
-      // 프로모션을 저장
+      // 쿠폰을 저장
       couponRepository.addCoupon(coupon);
       Long couponId = coupon.getCouponId();
 
-      List<Long> couponProduts = couponDto.getCouponProductList();
-      for(long productId : couponProduts) {
+      List<Long> couponProducts = couponDto.getCouponProductList();
+      for(long productId : couponProducts) {
         couponRepository.addCouponProduct(productId, couponId);
       }
     } catch (Exception e) {
       throw new IllegalArgumentException("쿠폰 등록에 실패하였습니다.", e);
     }
+
+    return coupon;
   }
 
   public List<Coupon> findOngoingCoupons(Integer page) {

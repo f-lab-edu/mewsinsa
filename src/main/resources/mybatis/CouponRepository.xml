@@ -4,8 +4,8 @@
 <mapper namespace="com.mewsinsa.coupon.repository.CouponRepository">
 <!--  새로운 쿠폰 등록-->
   <insert id="addCoupon" parameterType="com.mewsinsa.coupon.domain.Coupon" useGeneratedKeys="true" keyProperty="couponId" keyColumn="coupon_id">
-    INSERT INTO coupon(coupon_name, coupon_type, discount_rate, discount_amount, started_at, expired_at)
-    VALUES( #{couponName}, #{couponType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt})
+    INSERT INTO coupon(coupon_name, coupon_type, discount_rate, discount_amount, started_at, expired_at, remaining)
+    VALUES( #{couponName}, #{couponType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt}, #{remaining})
   </insert>
 
   <!--  진행중인 쿠폰 조회-->

@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConstantConfig {
   //==Coupon==//
-  public static final boolean FIXED_AMOUNT = true;
-  public static final boolean FIXED_RATE = false;
+  public static final boolean FIXED_AMOUNT = false;
+  public static final boolean FIXED_RATE = true;
 
   //==Product==//
   public static final Long MAX_PRICE_OF_PRODUCT = 10000000L;

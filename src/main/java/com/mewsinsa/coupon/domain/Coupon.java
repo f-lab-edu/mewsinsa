@@ -33,13 +33,18 @@ public class Coupon {
    */
   private LocalDateTime expiredAt;
 
+  /**
+   * 쿠폰 남은 수량
+   */
+  private Long remaining;
+
 
   //==Constructor==//
   public Coupon() {
   }
 
   public Coupon(Long couponId, String couponName, Boolean couponType, Integer discountRate,
-      Long discountAmount, LocalDateTime startedAt, LocalDateTime expiredAt) {
+      Long discountAmount, LocalDateTime startedAt, LocalDateTime expiredAt, Long remaining) {
     this.couponId = couponId;
     this.couponName = couponName;
     this.couponType = couponType;
@@ -47,6 +52,7 @@ public class Coupon {
     this.discountAmount = discountAmount;
     this.startedAt = startedAt;
     this.expiredAt = expiredAt;
+    this.remaining = remaining;
   }
 
   //==Getter==//
@@ -78,6 +84,10 @@ public class Coupon {
     return expiredAt;
   }
 
+  public Long getRemaining() {
+    return remaining;
+  }
+
   //==Setter==//
   public void setCouponId(Long couponId) {
     this.couponId = couponId;
@@ -105,5 +115,9 @@ public class Coupon {
 
   public void setExpiredAt(LocalDateTime expiredAt) {
     this.expiredAt = expiredAt;
+  }
+
+  public void setRemaining(Long remaining) {
+    this.remaining = remaining;
   }
 }

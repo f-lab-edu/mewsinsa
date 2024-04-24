@@ -41,9 +41,10 @@ public class CouponController {
    */
   @PostMapping
   ResponseEntity<SuccessResult> addCoupon(@Validated @RequestBody AddCouponRequestDto coupon) {
-    couponService.addCoupon(coupon);
+    Coupon registeredCoupon = couponService.addCoupon(coupon);
 
     SuccessResult result = new Builder(DetailedStatus.CREATED)
+        .data(registeredCoupon)
         .message("쿠폰이 정상적으로 등록되었습니다.")
         .build();
 
