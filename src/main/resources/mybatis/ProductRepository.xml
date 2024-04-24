@@ -35,9 +35,9 @@
   </update>
 
 <!--  재소를 감소 시키기-->
-  <update id="updateProductOptionStock">
+  <update id="reduceProductOptionStock">
     UPDATE product_option SET
-      stock = stock - #{count}
+      stock = stock - 1
     where product_option_id = #{productOptionId}
   </update>
   <update id="updateIsCancelled">
@@ -128,17 +128,6 @@
     WHERE product_option.product_option_id = #{productOptionId}
     AND product.product_id = product_option.product_id
     AND product.brand_id = brand.brand_id
-  </select>
-  <select id="findProductOptionByProductOptionIdForUpdate"
-          resultType="com.mewsinsa.product.domain.ProductOption">
-    SELECT
-      product_option_id AS productOptionId,
-      product_id AS productId,
-      product_option_name AS optionName,
-      stock AS stock
-    FROM product_option
-    WHERE product_option.product_option_id = #{productOptionId}
-    FOR UPDATE
   </select>
 
 </mapper>

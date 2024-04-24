@@ -37,7 +37,8 @@ public interface ProductRepository {
   ProductOption findProductOptionByProductOptionId(@Param("productOptionId") Long productOptionId);
 
 
-  void updateProductOptionStock(@Param("productOptionId") Long productOptionId, @Param("count") Long count);
+  // 재고 감소
+  void reduceProductOptionStock(@Param("productOptionId") Long productOptionId);
 
   Product findOneProduct(@Param("productId") Long productId);
 

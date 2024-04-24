@@ -182,7 +182,6 @@ public class OrderService {
 
     Member member = memberRepository.findMemberById(memberId);
     Integer tierId = member.getTierId();
-    String tierName = tierMap.get(tierId).getTierName();
     Long totalPrice = 0L;
     Long usedPoints = orderRequestDto.getUsedPoints();
     boolean usePointsInAdvance = orderRequestDto.getUsePointsInAdvance();
@@ -203,10 +202,11 @@ public class OrderService {
 
     List<OrderedProductDto> orderedProductList = orderRequestDto.getOrderedProductList();
     Map<Long, Long> productIdMap = new HashMap<>(); // key: 옵션 번호, value: productId
+
     // option의 내용이 올바른 부분인지 체크하는 부분:
     // 1. unitPromotion, piecePromotion의 가격이 일치하는가?
     // 2. 쿠폰과 쿠폰 할인 금액이 올바른가?
-    // 3. 재고가 충분한가?
+
     Map<Long, Long> couponMap = new HashMap<>(); // key: couponId, value: productOptionId
     Map<Long, Long> piecePriceMap = new HashMap<>(); // ket: productOptionId, value: piecePrice
     Long totalPoints = 0L, totalTierDiscountAmount = 0L;
@@ -231,6 +231,7 @@ public class OrderService {
       Long quantity = orderedProduct.getQuantity();
 
 
+      //== 적립금, 할인 금액, piecePromotion(프로모션이 적용된 상품 옵션별 부분 가격)이 일치하는가? ==//
       // 프로모션 단가 계산
       Long unitPromotionPrice = calculatePromotionPrice(productId, unitOriginalPrice);
       Long discountAmount = quantity * (unitOriginalPrice - unitPromotionPrice);
@@ -259,9 +260,9 @@ public class OrderService {
       totalPoints += points;
 
 
-      // 검증 2. 쿠폰이 맞는지 확인
+      //== 검증 2. 쿠폰이 맞는지 확인 ==//
       Long couponId = orderedProduct.getCouponId();
-      // TODO: 유저가 해당 쿠폰을 발급 받았는가? -> issued coupon table에서 찾아오기
+      // 유저가 해당 쿠폰을 발급 받았는가? -> issued coupon table에서 찾아오기
       IssuedCoupon issuedCoupon = couponRepository.findOneIssuedCoupon(couponId, memberId);
       if(couponId != null && issuedCoupon == null) {
         throw new OrderException("발급 받지 않은 쿠폰입니다. / couponId: " + couponId);
@@ -304,18 +305,11 @@ public class OrderService {
         memberRepository.updateMemberPoints(memberId, member.getPoints() - usedPoints);
       }
 
-      // 검증 4. 재고 체크 & 재고 감소
-      ProductOption productOption = productRepository.findProductOptionByProductOptionIdForUpdate(productOptionId);
-      long stock = productOption.getStock();
-
-      log.info("stock: {}  quantity: {}", stock, quantity);
-      if((stock - quantity) < 0) { // 살수 없음
-        throw new OutOfStockException(productOptionId, stock, quantity);
+      // 재고 감소
+      // 재고를 quantity만큼 감소 시키기 (음수 허용)
+      for(int i=0; i<quantity; ++i) {
+        reduceStock(productOptionId);
       }
-
-      // 살수 있음 -> 재고 감소 시키기
-      reduceStock(productOptionId, stock - quantity);
-
 
       // piecePrice란: piecePromotionPrice - 쿠폰할인
       Long piecePrice = piecePromotionPrice - couponDiscountAmount;
@@ -349,8 +343,9 @@ public class OrderService {
     return new OrderResponseDto(orderId, orderedAt);
   }
 
-  private void reduceStock(Long productOptionId, Long count) {
-    productRepository.updateProductOptionStock(productOptionId, count);
+  // 재고를 1개 감소 시킵니다.
+  private void reduceStock(Long productOptionId) {
+    productRepository.reduceProductOptionStock(productOptionId);
   }
 
 
@@ -358,7 +353,8 @@ public class OrderService {
   public List<OrderListResponseForAdminDto> allOrderList(int page, int count) {
     return orderRepository.findAllOrders(page, count);
   }
-  // TODO: 관리자 전용. 특정 주문 정보 조회
+
+  // 관리자 전용. 특정 주문 정보 조회
   public OrderInfoResponseForAdminDto orderInfo(Long orderId) {
     List<OrderedProduct> orderedProductList = orderRepository.findOrderedProductsByOrderId(orderId);
     OrderInfoResponseForAdminDto orderInfo = orderRepository.findOrderInfoByOrderId(orderId);
