@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.order.repository.OrderRepository">
+  <insert id="addOrder" parameterType="com.mewsinsa.order.domain.Order" useGeneratedKeys="true" keyProperty="orderId" keyColumn="order_id">
+    INSERT INTO `order` (receiver_address, receiver_name, receiver_phone, member_id)
+    VALUES (#{receiverAddress}, #{receiverName}, #{receiverPhone}, #{memberId})
+  </insert>
+  <update id="updateDeliveryAddressInOrder">
+    UPDATE `order`
+    SET receiver_address=#{receiverAddress}, receiver_name=#{receiverName}, receiver_phone=#{receiverPhone}
+    WHERE order_id = #{orderId};
+  </update>
+  <delete id="deleteOrderByOrderId">
+    DELETE FROM `order` WHERE order_id = #{orderId}
+  </delete>
+  <select id="findAllOrders" resultType="com.mewsinsa.order.controller.dto.admin.OrderListResponseForAdminDto">
+    SELECT
+      o.order_id AS orderId,
+      m.member_id AS memberId,
+      m.name AS memberName,
+      o.receiver_name AS receiverName,
+      o.receiver_address AS receiverAddress,
+      o.receiver_phone AS receiverPhone,
+      h.ordered_at AS orderedAt
+    FROM `order` AS o, member AS m, history AS h
+    WHERE o.order_id = h.order_id AND m.member_id = o.member_id
+      AND <![CDATA[ROWNUM() <= #{page} * #{count}
+    AND ROWNUM() > (#{page}-1)*#{count}]]>
+    ORDER BY orderedAt DESC
+  </select>
+  <select id="findAllMemberOrders"
+          resultType="com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto">
+    SELECT
+      op.ordered_product_id AS orderedProductId,
+      b.brand_id AS brandId,
+      b.brand_name AS brandName,
+      p.product_id AS productId,
+      p.product_name AS productName,
+      opt.product_option_name AS productOptionName,
+      h.ordered_at AS orderedAt,
+      op.order_id AS orderId,
+      (op.piece_price * op.quantity) AS price,
+      op.quantity AS quantity
+    FROM member AS m, `order` as o, product_option AS opt, ordered_product AS op, history AS h, brand AS b, product AS p
+    WHERE o.member_id = #{memberId}
+    AND o.member_id = m.member_id
+    AND h.order_id = op.order_id
+    AND p.product_id = opt.product_id
+    AND b.brand_id = p.brand_id
+    AND opt.product_option_id = op.product_option_id
+    GROUP BY op.ordered_product_id
+    ORDER BY op.ordered_product_id DESC
+  </select>
+  <select id="findOneOrderByOrderId" resultType="com.mewsinsa.order.domain.Order">
+    SELECT
+      order_id AS orderId,
+      receiver_address AS receiverAddress,
+      receiver_name AS receiverName,
+      receiver_phone AS receiverPhone,
+      member_id AS memberId
+    FROM `order`
+    WHERE order_id = #{orderId}
+  </select>
+  <select id="findOrderedProductsByOrderId"
+          resultType="com.mewsinsa.order.domain.OrderedProduct">
+    SELECT
+      ordered_product_id AS orderedProductId,
+      quantity,
+      coupon_id AS couponId,
+      product_option_id AS productOptionId,
+      order_id AS orderId,
+      piece_price AS piecePrice,
+      is_cancelled AS isCancelled
+    FROM ordered_product
+    WHERE order_id = #{orderId}
+  </select>
+  <select id="findOrderInfoByOrderId"
+          resultType="com.mewsinsa.order.controller.dto.admin.OrderInfoResponseForAdminDto">
+    SELECT
+      o.order_id AS orderId,
+      o.member_id AS memberId,
+      m.name AS memberName,
+      o.receiver_address AS receiverAddress,
+      o.receiver_name AS receiverName,
+      o.receiver_phone AS receiverPhone,
+      r.total_price AS totalPrice,
+      r.payment_method AS paymentMethod,
+      r.paid_at AS paidAt,
+      h.ordered_at AS orderedAt,
+      h.status
+    FROM `order` AS o, receipt AS r, history AS h, member AS m
+    WHERE o.order_id = #{orderId}
+    AND o.order_id = r.order_id
+    AND o.order_id = h.order_id
+    AND o.member_id = m.member_id
+  </select>
+</mapper>
