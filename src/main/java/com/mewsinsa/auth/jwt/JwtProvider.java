@@ -85,7 +85,7 @@ public class JwtProvider {
   public String createAccessToken(Long memberId, String nickname, Boolean isAdmin) {
     Map<String, Object> claims = new HashMap<>();
 
-    claims.put("userId", memberId);
+    claims.put("memberId", memberId);
     claims.put("nickname", nickname);
     claims.put("isAdmin", Boolean.toString(isAdmin));
 
@@ -114,7 +114,7 @@ public class JwtProvider {
 
     String refreshToken = Jwts.builder()
         .subject(Long.toString(memberId))
-        .claim("userId", memberId)
+        .claim("memberId", memberId)
         .expiration(expiration)
         .signWith(getSigningKey())
         .compact();

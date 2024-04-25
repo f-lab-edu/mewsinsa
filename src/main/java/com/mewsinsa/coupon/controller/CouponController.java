@@ -1,11 +1,14 @@
 package com.mewsinsa.coupon.controller;
 
+import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.coupon.controller.dto.AddCouponRequestDto;
 import com.mewsinsa.coupon.domain.Coupon;
+import com.mewsinsa.coupon.domain.IssuedCoupon;
 import com.mewsinsa.coupon.service.CouponService;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.global.response.SuccessResult;
 import com.mewsinsa.global.response.SuccessResult.Builder;
+import com.mewsinsa.member.service.MemberService;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
 import com.mewsinsa.promotion.controller.dto.PromotionDto;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,10 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CouponController {
   private final CouponService couponService;
+  private final MemberService memberService;
 
   //==Constructor==//
-  public CouponController(CouponService couponService) {
+  public CouponController(CouponService couponService, MemberService memberService) {
     this.couponService = couponService;
+    this.memberService = memberService;
   }
 
 
@@ -87,5 +93,18 @@ public class CouponController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+  @PostMapping("/{couponId}/issue")
+  ResponseEntity<SuccessResult> issueCoupon(@PathVariable("couponId") Long couponId,
+      @RequestHeader(value= JwtProvider.ACCESS_HEADER_STRING, required=false) String accessToken) {
+    Long memberId = memberService.getMemberIdByAccessToken(accessToken);
+    IssuedCoupon issuedCoupon = couponService.issueCoupon(couponId, memberId);
+
+    SuccessResult result = new Builder(DetailedStatus.CREATED)
+        .message("쿠폰이 발급되었습니다.")
+        .data(issuedCoupon)
+        .build();
+
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
+  }
 
 }

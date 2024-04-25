@@ -1,6 +1,6 @@
 package com.mewsinsa.global.response;
 
-public enum DetailedStatus {
+public enum DetailedStatus{
 
   //==Success==//
   OK(200, "S001"),
@@ -34,6 +34,13 @@ public enum DetailedStatus {
   NON_CANCELLABLE_ORDER(400, "O004"),
   NON_EXSISTENT_ORDER(400, "O005"), // 존재하지 않는 주문
   INVALIED_ORDER(400, "O006"), // 주문이 잘못된 경우
+
+  //==Coupon==//
+  OUT_OF_REMAINING(400, "CP001"), // CP: Coupon
+
+  NOT_ISSUANCE_PERIOD(400, "CP002"), // 발급 가능한 기간이 아님
+  DUPLICATED_ISSUED_COUPON(400, "CP003"), // 중복 발급
+  NON_EXSISTENT_COUPON(400, "CP004"), // 존재하지 않는 쿠폰
 
   //==Invalid Argument==//
   TYPE_MISMATCH(400, "V001"),

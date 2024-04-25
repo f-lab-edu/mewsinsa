@@ -2,9 +2,11 @@ package com.mewsinsa.order.service;
 
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
+import com.mewsinsa.coupon.exception.FailToIssueCouponException;
 import com.mewsinsa.coupon.repository.CouponRepository;
 import com.mewsinsa.delivery.domain.DeliveryAddress;
 import com.mewsinsa.delivery.repository.DeliveryAddressRepository;
+import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.domain.Tier;
 import com.mewsinsa.member.repository.MemberRepository;
@@ -66,7 +68,6 @@ public class OrderService {
   private final MemberRepository memberRepository;
   private final DeliveryAddressRepository deliveryAddressRepository;
   private final ReceiptRepository receiptRepository;
-  private final MemberService memberService;
 
 
   public static final boolean FIXED_DISCOUNT = false;
@@ -77,8 +78,7 @@ public class OrderService {
   public OrderService(ProductRepository productRepository, OrderRepository orderRepository,
       HistoryRepository historyRepository, OrderedProductRepository orderedProductRepository,
       CouponRepository couponRepository, PromotionRepository promotionRepository,
-      MemberRepository memberRepository, DeliveryAddressRepository deliveryAddressRepository, ReceiptRepository receiptRepository,
-      MemberService memberService) {
+      MemberRepository memberRepository, DeliveryAddressRepository deliveryAddressRepository, ReceiptRepository receiptRepository) {
     this.productRepository = productRepository;
     this.orderRepository = orderRepository;
     this.historyRepository = historyRepository;
@@ -88,7 +88,6 @@ public class OrderService {
     this.memberRepository = memberRepository;
     this.deliveryAddressRepository = deliveryAddressRepository;
     this.receiptRepository = receiptRepository;
-    this.memberService = memberService;
 
     for(Tier tier: Tier.values()) {
         tierMap.put(tier.getTierId(), tier);
@@ -133,7 +132,6 @@ public class OrderService {
 
       // 프로모션 단가 계산
       Long unitPromotionPrice = calculatePromotionPrice(productId, unitOriginalPrice);
-
 
       Long discountAmount = quantity * (unitOriginalPrice - unitPromotionPrice);
       Long pieceOriginalPrice = unitOriginalPrice * quantity;
@@ -207,7 +205,8 @@ public class OrderService {
     // 1. unitPromotion, piecePromotion의 가격이 일치하는가?
     // 2. 쿠폰과 쿠폰 할인 금액이 올바른가?
 
-    Map<Long, Long> couponMap = new HashMap<>(); // key: couponId, value: productOptionId
+    Map<Long, Long> usedCouponMap = new HashMap<>(); // key: couponId, value: productOptionId
+    List<Long> usedIssuedCouponIdList = new ArrayList<>(); // 사용된 쿠폰의 아이디를 저장
     Map<Long, Long> piecePriceMap = new HashMap<>(); // ket: productOptionId, value: piecePrice
     Long totalPoints = 0L, totalTierDiscountAmount = 0L;
     for(OrderedProductDto orderedProduct : orderedProductList) {
@@ -276,8 +275,8 @@ public class OrderService {
         throw new NotApplicapableCouponException("해당 상품에 적용 가능한 쿠폰이 아닙니다.", productId, couponId);
       }
       // 쿠폰이 중복 적용됐는가
-      if(couponId != null && couponMap.get(couponId) != null) {
-        throw new OrderException("쿠폰이 중복 적용되었습니다. / productOptionId: " + productOptionId + ", " + couponMap.get(couponId) + ", couponId: " + couponId);
+      if(couponId != null && usedCouponMap.get(couponId) != null) {
+        throw new OrderException("쿠폰이 중복 적용되었습니다. / productOptionId: " + productOptionId + ", " + usedCouponMap.get(couponId) + ", couponId: " + couponId);
       }
       // 쿠폰이 존재하는가, 쿠폰의 기한이 남아있는가
       Coupon coupon = couponRepository.findOneCoupon(couponId);
@@ -296,7 +295,10 @@ public class OrderService {
             + orderedProduct.getCouponDiscountAmount() + ", server couponDiscountAmount: " + couponDiscountAmount);
       }
       // 쿠폰 맵에 추가 -> 현재 주문에서 사용되었음을 의미
-      couponMap.put(couponId, productOptionId);
+      if(couponId != null) {
+        usedCouponMap.put(couponId, productOptionId);
+        usedIssuedCouponIdList.add(issuedCoupon.getIssuedCouponId());
+      }
 
       // 검증 3. 회원의 적립금이 충분한지
       if(member.getPoints() < usedPoints) {
@@ -311,6 +313,9 @@ public class OrderService {
         reduceStock(productOptionId);
       }
 
+      // 쿠폰 사용
+      useCoupons(memberId, usedIssuedCouponIdList);
+
       // piecePrice란: piecePromotionPrice - 쿠폰할인
       Long piecePrice = piecePromotionPrice - couponDiscountAmount;
       totalPrice += piecePrice;
@@ -321,6 +326,9 @@ public class OrderService {
       orderedProductRepository.addOrderedProduct(orderId, orderedProductInfo);
       historyRepository.addHistory(orderedProductInfo.getOrderedProductId(), orderId, orderedAt, OrderStatus.BEFORE_PAYMENT.getStatusDescription());
     }
+
+    // 쿠폰을 사용
+
 
     // 적립금 선할인, 적립금 선할인을 하지 않으면 적립금은 구매가 확정될 때 지급됩니다.
     if(usePointsInAdvance) {
@@ -514,20 +522,33 @@ public class OrderService {
     return orderedProductRepository.findOrderedProductByOrderedProductId(orderedProductId);
   }
 
+  // 이력 테이블 조회
+  public History lookUpOneHistoryTable(Long orderedProductId) {
+    return historyRepository.findOneHistoryByOrderedProductId(orderedProductId);
+  }
 
 
-  public Long calcaulateUnitPoints(Integer tierId, Long promotionPrice) {
+  //== private methods ==//
+
+  private Long calcaulateUnitPoints(Integer tierId, Long promotionPrice) {
     int accumulationRate = tierMap.get(tierId).getAccumulationRate();
     return (long)((double) promotionPrice * ((double) accumulationRate / 100.0));
   }
 
-  public Long calculateTierDiscountAmount(Integer tierId, Long promotionPrice) {
+  private Long calculateTierDiscountAmount(Integer tierId, Long promotionPrice) {
     int discountRate = tierMap.get(tierId).getDiscountRate();
     return (long)((double) promotionPrice * ((double) discountRate / 100.0));
   }
 
-  // 이력 테이블 조회
-  public History lookUpOneHistoryTable(Long orderedProductId) {
-    return historyRepository.findOneHistoryByOrderedProductId(orderedProductId);
+
+
+  // 쿠폰 사용
+  private void useCoupons(Long memberId, List<Long> issuedCouponList) {
+    try {
+      issuedCouponList
+          .forEach(couponRepository::updateUsedInIssuedCoupon);
+    } catch (Exception e) {
+      throw new FailToIssueCouponException(DetailedStatus.INTERNAL_SERER_ERROR);
+    }
   }
 }

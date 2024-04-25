@@ -39,4 +39,21 @@
       FROM access_token
     WHERE token_value = #{memberId}
   </select>
+  <select id="findMemberByAccessTokenValue" resultType="com.mewsinsa.member.domain.Member">
+    SELECT
+      a.member_id AS memberId,
+      mewsinsa_id AS mewsinsaId,
+      password,
+      name,
+      nickname,
+      email,
+      phone,
+      tier_id AS tierId,
+      is_admin AS isAdmin,
+      points,
+      default_delivery_address_id AS defaultDeliveryAddressId
+    FROM access_token AS a, member AS m
+    WHERE a.token_value = #{accessToken} AND a.member_id = m.member_id
+
+  </select>
 </mapper>

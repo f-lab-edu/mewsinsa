@@ -23,4 +23,9 @@ public interface CouponRepository {
   Coupon findOneCouponProduct(@Param("productId") Long productId, @Param("couponId") Long couponId);
 
   IssuedCoupon findOneIssuedCoupon(@Param("couponId") Long couponId, @Param("memberId") Long memberId);
+  void saveIssuedCoupon(IssuedCoupon issuedCoupon);
+
+  void decreaseCouponRemaining(@Param("couponId") Long couponId);
+
+  void updateUsedInIssuedCoupon(@Param("issuedCouponId") Long issuedCouponId);
 }

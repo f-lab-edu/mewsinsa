@@ -18,6 +18,7 @@ public class Member {
   private Long points;
   private Long defaultDeliveryAddressId;
 
+
   //==Constructor==//
   public Member() {
   }

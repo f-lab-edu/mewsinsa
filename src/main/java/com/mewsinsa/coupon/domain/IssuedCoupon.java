@@ -13,6 +13,19 @@ public class IssuedCoupon {
   private Long couponId;
   private Long memberId;
 
+  //==Constructor==//
+  public IssuedCoupon() {
+  }
+
+  public IssuedCoupon(Builder builder) {
+    this.issuedCouponId = builder.issuedCouponId;
+    this.isUsed = builder.isUsed;
+    this.issuedAt = builder.issuedAt;
+    this.usedAt = builder.usedAt;
+    this.couponId = builder.couponId;
+    this.memberId = builder.memberId;
+  }
+
   //==Getter==//
   public Long getIssuedCouponId() {
     return issuedCouponId;
@@ -61,5 +74,49 @@ public class IssuedCoupon {
 
   public void setMemberId(Long memberId) {
     this.memberId = memberId;
+  }
+
+  //==Builder==//
+  public static class Builder {
+    private Long issuedCouponId;
+    private Boolean isUsed;
+    private LocalDateTime issuedAt;
+    private LocalDateTime usedAt;
+    private Long couponId;
+    private Long memberId;
+
+    public Builder issuedCouponId(Long issuedCouponId) {
+      this.issuedCouponId = issuedCouponId;
+      return this;
+    }
+
+    public Builder isUsed(Boolean used) {
+      isUsed = used;
+      return this;
+    }
+
+    public Builder issuedAt(LocalDateTime issuedAt) {
+      this.issuedAt = issuedAt;
+      return this;
+    }
+
+    public Builder usedAt(LocalDateTime usedAt) {
+      this.usedAt = usedAt;
+      return this;
+    }
+
+    public Builder couponId(Long couponId) {
+      this.couponId = couponId;
+      return this;
+    }
+
+    public Builder memberId(Long memberId) {
+      this.memberId = memberId;
+      return this;
+    }
+
+    public IssuedCoupon build() {
+      return new IssuedCoupon(this);
+    }
   }
 }

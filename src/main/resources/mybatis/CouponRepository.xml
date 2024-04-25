@@ -7,6 +7,16 @@
     INSERT INTO coupon(coupon_name, coupon_type, discount_rate, discount_amount, started_at, expired_at, remaining)
     VALUES( #{couponName}, #{couponType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt}, #{remaining})
   </insert>
+  <update id="decreaseCouponRemaining">
+    UPDATE coupon
+    SET remaining = remaining - 1
+    WHERE coupon_id = #{couponId}
+  </update>
+  <update id="updateUsedInIssuedCoupon">
+    UPDATE issued_coupon
+    SET is_used = true
+    WHERE issued_coupon_id = #{issuedCouponId}
+  </update>
 
   <!--  진행중인 쿠폰 조회-->
   <select id="findOngoingCoupons" parameterType="int" resultType="com.mewsinsa.coupon.domain.Coupon">
@@ -31,8 +41,14 @@
     INSERT INTO coupon_product(product_id, coupon_id)
     VALUES (#{productId}, #{couponId})
   </insert>
+  <insert id="saveIssuedCoupon" parameterType="com.mewsinsa.coupon.domain.IssuedCoupon"
+    useGeneratedKeys="true" keyProperty="issuedCouponId" keyColumn="issued_coupon_id">
+    INSERT INTO issued_coupon(is_used, issued_at, used_at, coupon_id, member_id)
+    VALUES(#{isUsed}, #{issuedAt}, #{usedAt}, #{couponId}, #{memberId})
+  </insert>
 
-<!--상품에 적용되는 쿠폰 리스트 조회-->
+
+  <!--상품에 적용되는 쿠폰 리스트 조회-->
   <select id="findAvailableCouponsToProduct" resultType="com.mewsinsa.coupon.domain.Coupon">
     SELECT
       coupon.coupon_id AS couponId,
