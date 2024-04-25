@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.member.repository.MemberRepository">
+<!--  새로운 회원을 추가-->
+  <insert id="addMember" parameterType="com.mewsinsa.member.domain.Member" useGeneratedKeys="true" keyProperty="memberId" keyColumn="member_id">
+    INSERT INTO member(mewsinsa_id, password, name, nickname, email, phone, profile_image, tier_id, is_admin, range_of_notification, points)
+    VALUES(#{mewsinsaId}, #{password}, #{name}, #{nickname}, #{email}, #{phone}, #{profileImage}, #{tierId}, #{isAdmin}, "1", #{points})
+  </insert>
+  <update id="updateMemberPoints">
+    UPDATE member SET points = #{points} WHERE member_id = #{memberId}
+  </update>
+
+  <delete id="deleteMember" parameterType="long">
+    DELETE
+    FROM member
+    WHERE member_id = #{memberId}
+  </delete>
+
+  <select id="findMemberByEmail" resultType="com.mewsinsa.member.domain.Member" parameterType="String">
+    SELECT
+      member_id AS memberId,
+      mewsinsa_id AS mewsinsaId,
+      password,
+      name,
+      nickname,
+      email,
+      phone,
+      profile_image AS profileImage,
+      tier_id AS tierId,
+      is_admin AS isAdmin,
+      points
+    FROM member
+    WHERE email = #{userEmail}
+  </select>
+  <select id="findMemberById" resultType="com.mewsinsa.member.domain.Member" parameterType="Long">
+    SELECT
+      member_id AS memberId,
+      mewsinsa_id AS mewsinsaId,
+      password,
+      name,
+      nickname,
+      email,
+      phone,
+      profile_image AS profileImage,
+      tier_id AS tierId,
+      is_admin AS isAdmin,
+      points
+    FROM member
+    WHERE member_id = #{memberId}
+  </select>
+  <select id="findMemberByMewsinsaId" resultType="com.mewsinsa.member.domain.Member">
+    SELECT
+      member_id AS memberId,
+      mewsinsa_id AS mewsinsaId,
+      password,
+      name,
+      nickname,
+      email,
+      phone,
+      profile_image AS profileImage,
+      tier_id AS tierId,
+      is_admin AS isAdmin,
+      points
+    FROM member
+    WHERE mewsinsa_id = #{mewsinsaId}
+  </select>
+  <select id="findMemberByAccessToken" resultType="com.mewsinsa.member.domain.Member">
+    SELECT
+      member.member_id AS memberId,
+      mewsinsa_id AS mewsinsaId,
+      password,
+      name,
+      nickname,
+      email,
+      phone,
+      profile_image AS profileImage,
+      tier_id AS tierId,
+      is_admin AS isAdmin,
+      points
+    FROM member, access_token
+    WHERE access_token.token_value = #{accessToken}
+    AND member.member_id = access_token.member_id
+  </select>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.auth.jwt.repository.AccessTokenRepository">
+
+  <insert id="addAccessToken">
+    INSERT INTO access_token (member_id, token_value, expiration)
+    VALUES (#{memberId}, #{tokenValue}, #{expiration})
+  </insert>
+
+  <delete id="deleteAccessTokenByMemberId">
+    DELETE
+    FROM access_token
+    WHERE member_id = #{memberId}
+  </delete>
+  <delete id="deleteAccessTokenByTokenValue">
+    DELETE
+    FROM access_token
+    WHERE token_value = #{accessToken}
+  </delete>
+
+
+  <select id="findAccessTokenByTokenValue"
+          resultType="com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto">
+    SELECT
+      member_id AS memberId,
+      token_value AS tokenValue,
+      expiration
+    FROM access_token
+    WHERE token_value = #{accessToken}
+  </select>
+
+  <select id="findAccessTokenByMemberId"
+          resultType="com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto">
+    SELECT
+      member_id AS memberId,
+      token_value AS tokenValue,
+      expiration
+      FROM access_token
+    WHERE token_value = #{memberId}
+  </select>
+  <select id="findMemberByAccessTokenValue" resultType="com.mewsinsa.member.domain.Member">
+    SELECT
+      a.member_id AS memberId,
+      mewsinsa_id AS mewsinsaId,
+      password,
+      name,
+      nickname,
+      email,
+      phone,
+      tier_id AS tierId,
+      is_admin AS isAdmin,
+      points,
+      default_delivery_address_id AS defaultDeliveryAddressId
+    FROM access_token AS a, member AS m
+    WHERE a.token_value = #{accessToken} AND a.member_id = m.member_id
+
+  </select>
+</mapper>

@@ -5,6 +5,19 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+##
+.DS_Store
+src/.DS_Store
+src/main/.DS_Store
+src/main/java/.DS_Store
+src/main/java/com/.DS_Store
+
+## 카카오 로그인 관련 정보
+src/main/resources/application-auth.properties
+## jwt 관련 정보
+src/main/resources/application-jwt.properties
+
+
 ### STS ###
 .apt_generated
 .classpath

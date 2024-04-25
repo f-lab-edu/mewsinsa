@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.order.repository.HistoryRepository">
+
+  <insert id="addHistory">
+    INSERT INTO history (ordered_product_id, order_id, ordered_at, status)
+    VALUES (#{orderedProductId}, #{orderId}, #{orderedAt}, #{status})
+  </insert>
+  <update id="updateStatus">
+    UPDATE history
+    SET status = #{orderStatus}
+    WHERE ordered_product_id = #{orderedProductId}
+  </update>
+  <select id="findOneHistoryByOrderedProductId"
+          resultType="com.mewsinsa.order.domain.History">
+    SELECT
+      order_id AS orderId,
+      ordered_product_id AS orderedProductId,
+      ordered_at AS orderedAt,
+      payment_confirmed_at AS paymentConfirmedAt,
+      refund_requested_at AS refundRequestedAt,
+      refund_completed_at AS refundCompletedAt,
+      release_requested_at AS releaseRequestedAt,
+      release_started_at AS releaseStartedAt,
+      release_completed_at AS releaseCompletedAt,
+      delivery_completed_at AS deliveryCompletedAt,
+      status
+    FROM history
+    WHERE ordered_product_id = #{orderedProductId}
+  </select>
+  <select id="findHistoriesByOrderId" resultType="com.mewsinsa.order.domain.History">
+    SELECT
+      order_id AS orderId,
+      ordered_product_id AS orderedProductId,
+      ordered_at AS orderedAt,
+      payment_confirmed_at AS paymentConfirmedAt,
+      refund_requested_at AS refundRequestedAt,
+      refund_completed_at AS refundCompletedAt,
+      release_requested_at AS releaseRequestedAt,
+      release_started_at AS releaseStartedAt,
+      release_completed_at AS releaseCompletedAt,
+      delivery_completed_at AS deliveryCompletedAt,
+      status
+    FROM history
+    WHERE order_id = #{orderId}
+  </select>
+
+</mapper>

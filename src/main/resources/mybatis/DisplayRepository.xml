@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.display.repository.DisplayRepository">
+  <select id="displayProductDetail" parameterType="long" resultType="hashmap">
+    SELECT
+      pd.product_id AS productId,
+      p.product_name AS productName,
+      b.brand_id AS brandId,
+      b.brand_name AS brandName,
+      pd.original_price AS originalPrice,
+      pd.promotion_price AS promotionPrice,
+      pd.coupon_discount_amount AS couponDiscountAmount,
+      pd.discount_rate AS discountRate,
+      pd.has_gift AS hasGift
+    FROM product_display as pd, product as p, brand as b
+    WHERE pd.product_id = #{productId} AND pd.product_id = p.product_id AND p.brand_id = b.brand_id;
+  </select>
+  <select id="displayProductListBySubcategory"
+          resultType="com.mewsinsa.display.controller.dto.DisplayProductResponseDto">
+    SELECT
+      p.product_id AS productId,
+      product_name AS productName,
+      b.brand_id AS brandId,
+      b.brand_name AS brandName,
+      category,
+      subcategory,
+      p.original_price AS originalPrice,
+      product_like AS productLike,
+      product_click AS productClick,
+      promotion_price AS promotionPrice,
+      coupon_discount_amount AS couponDiscountAmount,
+      discount_rate AS discountRate,
+      has_gift AS hasGift
+    FROM product AS p, brand AS b  -- 프로덕트의 내용을 그대로 가져오면서
+    LEFT JOIN product_display AS pd ON product_id = pd.product_id -- product display와의 교집합을 가져오기
+    WHERE subcategory = #{subcategory}
+    AND b.brand_id = p.brand_id
+    AND <![CDATA[ROWNUM() <= #{page} * #{count}
+    AND ROWNUM() > (#{page} - 1) * #{count}]]>
+  </select>
+  <select id="displayProductInfo" resultType="hashmap">
+    SELECT
+      promotion_price AS promotionPrice,
+      coupon_discount_amount AS couponDiscountAmount,
+      discount_rate AS discountRate,
+      has_gift AS hasGift
+    FROM product_display
+    WHERE product_id = #{productId}
+  </select>
+</mapper>

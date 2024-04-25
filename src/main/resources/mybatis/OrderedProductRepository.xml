@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.order.repository.OrderedProductRepository">
+
+  <insert id="addOrderedProduct" parameterType="com.mewsinsa.order.domain.OrderedProduct"
+    useGeneratedKeys="true" keyProperty="orderedProduct.orderedProductId" keyColumn="ordered_product_id">
+    INSERT INTO ordered_product (order_id, product_option_id, coupon_id, quantity, piece_price)
+    VALUES (#{orderId}, #{orderedProduct.productOptionId},#{orderedProduct.couponId},
+    #{orderedProduct.quantity}, #{orderedProduct.piecePrice})
+  </insert>
+  <delete id="deleteOrderedProduct">
+    DELETE FROM ordered_product WHERE ordered_product_id = #{orderedProductId}
+  </delete>
+<!--  <select id="findOrderedProductByOrderedProductId"-->
+<!--          resultType="com.mewsinsa.order.domain.OrderedProduct">-->
+<!--    SELECT-->
+<!--    product_option_id AS productOptionId,-->
+<!--    quantity-->
+<!--    coupon_id AS couponId,-->
+<!--    ordered_product_id AS orderedProductId,-->
+<!--    order_id AS orderId,-->
+<!--    piece_price AS piecePrice-->
+<!--    FROM ordered_product-->
+<!--    WHERE ordered_product_id = #{orderedProductId}-->
+<!--  </select>-->
+
+
+  <select id="findOneOrderedProductByOrderedProductId"
+    resultType="com.mewsinsa.order.domain.OrderedProduct">
+    SELECT
+    ordered_product_id AS orderedProductId,
+    product_option_id AS productOptionId,
+    quantity,
+    coupon_id AS couponId,
+    piece_price AS piecePrice,
+    order_id AS orderId,
+    is_cancelled AS isCancelled
+    FROM ordered_product
+    WHERE ordered_product_id = #{orderedProductId}
+  </select>
+</mapper>

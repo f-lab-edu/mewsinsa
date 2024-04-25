@@ -4,7 +4,18 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: mewsinsa_admin
     password: mewsinsa
+  messages:
+    basename: messages
 
 mybatis:
   type-aliases-package: com.mewsinsa.*.domain
   mapper-locations: mybatis/**.xml
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
