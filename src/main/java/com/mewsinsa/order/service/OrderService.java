@@ -313,9 +313,6 @@ public class OrderService {
         reduceStock(productOptionId);
       }
 
-      // 쿠폰 사용
-      useCoupons(memberId, usedIssuedCouponIdList, orderedAt);
-
       // piecePrice란: piecePromotionPrice - 쿠폰할인
       Long piecePrice = piecePromotionPrice - couponDiscountAmount;
       totalPrice += piecePrice;
@@ -327,8 +324,8 @@ public class OrderService {
       historyRepository.addHistory(orderedProductInfo.getOrderedProductId(), orderId, orderedAt, OrderStatus.BEFORE_PAYMENT.getStatusDescription());
     }
 
-    // 쿠폰을 사용
-
+    // 쿠폰 사용
+    useCoupons(memberId, usedIssuedCouponIdList, orderedAt);
 
     // 적립금 선할인, 적립금 선할인을 하지 않으면 적립금은 구매가 확정될 때 지급됩니다.
     if(usePointsInAdvance) {
