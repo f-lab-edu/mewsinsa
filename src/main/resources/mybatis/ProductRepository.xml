@@ -130,4 +130,6 @@
     AND product.brand_id = brand.brand_id
   </select>
 
+
+
 </mapper>

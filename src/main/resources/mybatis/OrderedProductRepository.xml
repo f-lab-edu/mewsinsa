@@ -12,15 +12,30 @@
   <delete id="deleteOrderedProduct">
     DELETE FROM ordered_product WHERE ordered_product_id = #{orderedProductId}
   </delete>
-  <select id="findOrderedProductByOrderedProductId"
-          resultType="com.mewsinsa.order.domain.OrderedProduct">
+<!--  <select id="findOrderedProductByOrderedProductId"-->
+<!--          resultType="com.mewsinsa.order.domain.OrderedProduct">-->
+<!--    SELECT-->
+<!--    product_option_id AS productOptionId,-->
+<!--    quantity-->
+<!--    coupon_id AS couponId,-->
+<!--    ordered_product_id AS orderedProductId,-->
+<!--    order_id AS orderId,-->
+<!--    piece_price AS piecePrice-->
+<!--    FROM ordered_product-->
+<!--    WHERE ordered_product_id = #{orderedProductId}-->
+<!--  </select>-->
+
+
+  <select id="findOneOrderedProductByOrderedProductId"
+    resultType="com.mewsinsa.order.domain.OrderedProduct">
     SELECT
-    product_option_id AS productOptionId,
-    quantity
-    coupon_id AS couponId,
     ordered_product_id AS orderedProductId,
+    product_option_id AS productOptionId,
+    quantity,
+    coupon_id AS couponId,
+    piece_price AS piecePrice,
     order_id AS orderId,
-    piece_price AS piecePrice
+    is_cancelled AS isCancelled
     FROM ordered_product
     WHERE ordered_product_id = #{orderedProductId}
   </select>

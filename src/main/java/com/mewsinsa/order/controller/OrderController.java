@@ -144,9 +144,12 @@ public class OrderController {
   }
   @Auth
   @PostMapping("/cancel-order/{orderedProductId}")
-  public ResponseEntity<SuccessResult> cancelOrder(@PathVariable("orderedProductId") Long orderedProductId) {
-
-    OrderedProduct cancelledOrderedProduct = orderService.cancelOrder(orderedProductId);
+  public ResponseEntity<SuccessResult> cancelOrder(
+      @PathVariable("orderedProductId") Long orderedProductId,
+      @RequestHeader(value= JwtProvider.ACCESS_HEADER_STRING, required=false) String accessToken
+      ) {
+    Long memberId = memberService.getMemberIdByAccessToken(accessToken);
+    OrderedProduct cancelledOrderedProduct = orderService.cancelOrder(orderedProductId, memberId);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
         .message("주문이 성공적으로 취소 되었습니다.")

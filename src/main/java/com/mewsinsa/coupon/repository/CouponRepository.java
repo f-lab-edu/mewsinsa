@@ -27,5 +27,8 @@ public interface CouponRepository {
 
   void decreaseCouponRemaining(@Param("couponId") Long couponId);
 
-  void updateUsedInIssuedCoupon(@Param("issuedCouponId") Long issuedCouponId);
+  void updateUsedInIssuedCoupon(
+      @Param("issuedCouponId") Long issuedCouponId,
+      @Param("isUsed") Boolean isUsed
+      );
 }

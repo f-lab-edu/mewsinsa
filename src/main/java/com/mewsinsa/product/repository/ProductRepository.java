@@ -1,6 +1,7 @@
 package com.mewsinsa.product.repository;
 
 import com.mewsinsa.order.controller.dto.form.OrderedProductInfoDto;
+import com.mewsinsa.order.domain.OrderedProduct;
 import com.mewsinsa.product.controller.dto.AddProductOptionDto;
 import com.mewsinsa.product.controller.dto.UpdateProductOptionRequestDto;
 import com.mewsinsa.product.controller.dto.UpdateProductRequestDto;
@@ -47,4 +48,5 @@ public interface ProductRepository {
   // 주문 취소
   void updateIsCancelled(@Param("orderedProductId") Long orderedProductId, @Param("isCancelled") Boolean isCancelled);
 
+//  OrderedProduct findOneOrderedProductByOrderedProductId(@Param("orderedProductId") Long orderedProductId);
 }

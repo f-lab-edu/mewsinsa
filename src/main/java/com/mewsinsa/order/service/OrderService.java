@@ -494,7 +494,7 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderedProduct cancelOrder(Long orderedProductId) {
+  public OrderedProduct cancelOrder(Long orderedProductId, Long memberId) {
     // TODO: 인가에 대한 부분 구현
 
     // 삭제 -> 주문의 상태를 보고, "입금 전", "입금확인", "출고처리중"이면 바로 취소 가능하다.
@@ -503,23 +503,35 @@ public class OrderService {
     History history = historyRepository.findOneHistoryByOrderedProductId(orderedProductId);
 
     List<String> cancelableList = new ArrayList<>(Arrays.asList(
-        new String[]{OrderStatus.BEFORE_PAYMENT.getStatusDescription(),
+            OrderStatus.BEFORE_PAYMENT.getStatusDescription(),
             OrderStatus.CONFIRMED_PAYMENT.getStatusDescription(),
-            OrderStatus.PREPARING_FOR_DELIVERY.getStatusDescription()}));
+            OrderStatus.PREPARING_FOR_DELIVERY.getStatusDescription()));
 
     Long refundPrice = 0L;
     if(!cancelableList.contains(history.getStatus())) {
       throw new OrderCancellationException("주문을 취소할 수 없습니다.", history.getStatus());
     }
 
+    // 주문의 상태 변경
     productRepository.updateIsCancelled(orderedProductId, true);
     historyRepository.updateStatus(orderedProductId, OrderStatus.ORDER_CANCELLATION_COMPLETED.getStatusDescription());
 
+    // issued_coupon의 is_used를 다시 false로 설정
+    OrderedProduct orderedProduct = orderedProductRepository.findOneOrderedProductByOrderedProductId(
+        orderedProductId);
+
+    IssuedCoupon issuedCoupon = couponRepository.findOneIssuedCoupon(
+        orderedProduct.getCouponId(), memberId);
+
+    couponRepository.updateUsedInIssuedCoupon(issuedCoupon.getIssuedCouponId(), false);
+
+    // 영수증의 상태를 변경
     Receipt receipt = receiptRepository.findOneReceiptByOrderId(history.getOrderId());
     receiptRepository.updateReceiptIsRefunded(receipt.getReceiptId(), true);
     // TODO: 결제가 이미 진행되었을시에 환불하는 과정
 
-    return orderedProductRepository.findOrderedProductByOrderedProductId(orderedProductId);
+
+    return orderedProductRepository.findOneOrderedProductByOrderedProductId(orderedProductId);
   }
 
   // 이력 테이블 조회
@@ -546,7 +558,7 @@ public class OrderService {
   private void useCoupons(Long memberId, List<Long> issuedCouponList) {
     try {
       issuedCouponList
-          .forEach(couponRepository::updateUsedInIssuedCoupon);
+          .forEach(issuedCouponId -> couponRepository.updateUsedInIssuedCoupon(issuedCouponId, true));
     } catch (Exception e) {
       throw new FailToIssueCouponException(DetailedStatus.INTERNAL_SERER_ERROR);
     }

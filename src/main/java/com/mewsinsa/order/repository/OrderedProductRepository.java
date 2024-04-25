@@ -11,5 +11,5 @@ public interface OrderedProductRepository {
   public void addOrderedProduct( @Param("orderId") Long orderId, @Param("orderedProduct") OrderedProduct orderedProduct);
   public void deleteOrderedProduct(@Param("orderedProductId") Long orderedProductId);
 
-  public OrderedProduct findOrderedProductByOrderedProductId(@Param("orderedProductId") Long orderedProductId);
+  public OrderedProduct findOneOrderedProductByOrderedProductId(@Param("orderedProductId") Long orderedProductId);
 }

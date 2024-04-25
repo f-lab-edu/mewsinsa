@@ -14,7 +14,7 @@
   </update>
   <update id="updateUsedInIssuedCoupon">
     UPDATE issued_coupon
-    SET is_used = true
+    SET is_used = #{isUsed}
     WHERE issued_coupon_id = #{issuedCouponId}
   </update>
 
