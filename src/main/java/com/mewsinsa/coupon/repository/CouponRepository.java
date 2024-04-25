@@ -3,6 +3,7 @@ package com.mewsinsa.coupon.repository;
 
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -29,6 +30,7 @@ public interface CouponRepository {
 
   void updateUsedInIssuedCoupon(
       @Param("issuedCouponId") Long issuedCouponId,
-      @Param("isUsed") Boolean isUsed
+      @Param("isUsed") Boolean isUsed,
+      @Param("usedAt")LocalDateTime usedAt
       );
 }

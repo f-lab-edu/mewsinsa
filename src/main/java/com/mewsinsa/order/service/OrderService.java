@@ -314,7 +314,7 @@ public class OrderService {
       }
 
       // 쿠폰 사용
-      useCoupons(memberId, usedIssuedCouponIdList);
+      useCoupons(memberId, usedIssuedCouponIdList, orderedAt);
 
       // piecePrice란: piecePromotionPrice - 쿠폰할인
       Long piecePrice = piecePromotionPrice - couponDiscountAmount;
@@ -523,7 +523,7 @@ public class OrderService {
     IssuedCoupon issuedCoupon = couponRepository.findOneIssuedCoupon(
         orderedProduct.getCouponId(), memberId);
 
-    couponRepository.updateUsedInIssuedCoupon(issuedCoupon.getIssuedCouponId(), false);
+    couponRepository.updateUsedInIssuedCoupon(issuedCoupon.getIssuedCouponId(), false, null);
 
     // 영수증의 상태를 변경
     Receipt receipt = receiptRepository.findOneReceiptByOrderId(history.getOrderId());
@@ -555,10 +555,10 @@ public class OrderService {
 
 
   // 쿠폰 사용
-  private void useCoupons(Long memberId, List<Long> issuedCouponList) {
+  private void useCoupons(Long memberId, List<Long> issuedCouponList, LocalDateTime orderedAt) {
     try {
       issuedCouponList
-          .forEach(issuedCouponId -> couponRepository.updateUsedInIssuedCoupon(issuedCouponId, true));
+          .forEach(issuedCouponId -> couponRepository.updateUsedInIssuedCoupon(issuedCouponId, true, orderedAt));
     } catch (Exception e) {
       throw new FailToIssueCouponException(DetailedStatus.INTERNAL_SERER_ERROR);
     }
