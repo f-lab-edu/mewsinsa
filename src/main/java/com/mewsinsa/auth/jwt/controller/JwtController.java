@@ -2,7 +2,7 @@ package com.mewsinsa.auth.jwt.controller;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.auth.jwt.controller.dto.LoginRequestDto;
-import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
+import com.mewsinsa.auth.jwt.controller.dto.SignUpRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.global.response.DetailedStatus;
@@ -13,7 +13,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import java.net.URI;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -60,7 +59,7 @@ public class JwtController {
 
     Long memberId = Long.parseLong(claimsJws.getPayload().getSubject());
 
-    jwtService.logout(memberId); // refresh, access token을 DB에서 지워주기
+    jwtService.logout(memberId);
 
     SuccessResult result = new Builder(DetailedStatus.OK)
         .message("로그아웃 되었습니다.")
@@ -69,8 +68,8 @@ public class JwtController {
   }
 
   @PostMapping("/sign-up")
-  public ResponseEntity<SuccessResult> signUp(@RequestBody SignInRequestDto signInRequestDto) throws Exception {
-    jwtService.signUp(signInRequestDto);
+  public ResponseEntity<SuccessResult> signUp(@RequestBody SignUpRequestDto signUpRequestDto) throws Exception {
+    jwtService.signUp(signUpRequestDto);
 
     SuccessResult result = new Builder(DetailedStatus.CREATED)
         .message("회원 가입에 성공하였습니다.")

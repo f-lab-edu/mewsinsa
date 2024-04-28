@@ -2,12 +2,14 @@ package com.mewsinsa.auth.jwt.service;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
 import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
-import com.mewsinsa.auth.jwt.controller.dto.SignInRequestDto;
+import com.mewsinsa.auth.jwt.controller.dto.SignUpRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 import com.mewsinsa.auth.jwt.exception.DuplicateMemberInfoException;
 import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
 import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
+import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
+import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
 import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
@@ -17,7 +19,6 @@ import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Base64;
 import java.util.Date;
 import org.slf4j.Logger;
@@ -30,27 +31,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class JwtService {
   Logger log = LoggerFactory.getLogger(getClass());
-  private final RefreshTokenRepository refreshTokenRepository;
-  private final AccessTokenRepository accessTokenRepository;
   private final MemberRepository memberRepository;
   private final JwtProvider jwtProvider;
+
+  private final RedisAccessTokenRepository redisAccessTokenRepository;
+  private final RedisRefreshTokenRepository redisRefreshTokenRepository;
 
   @Value("${jwt.sign_in.password.salt}")
   private String passwordSalt;
 
   public JwtService(RefreshTokenRepository refreshTokenRepository,
       AccessTokenRepository accessTokenRepository,
-      MemberRepository memberRepository, JwtProvider jwtProvider) {
-    this.refreshTokenRepository = refreshTokenRepository;
-    this.accessTokenRepository = accessTokenRepository;
+      MemberRepository memberRepository, JwtProvider jwtProvider,
+      RedisAccessTokenRepository redisAccessTokenRepository,
+      RedisRefreshTokenRepository redisRefreshTokenRepository) {
     this.memberRepository = memberRepository;
     this.jwtProvider = jwtProvider;
+    this.redisAccessTokenRepository = redisAccessTokenRepository;
+    this.redisRefreshTokenRepository = redisRefreshTokenRepository;
   }
 
-
-  public RefreshTokenDto getRefreshToken(Long memberId) {
-    return refreshTokenRepository.findRefreshTokenByMemberId(memberId);
-  }
 
   @Transactional
   public JwtToken login(Long memberId) {
@@ -62,20 +62,20 @@ public class JwtService {
   }
 
 
-  public void signUp(SignInRequestDto signInRequestDto) throws SQLIntegrityConstraintViolationException {
-    String encryptedPassword = getEncryptedPassword(signInRequestDto.getPassword());
+  public void signUp(SignUpRequestDto signUpRequestDto) {
+    String encryptedPassword = getEncryptedPassword(signUpRequestDto.getPassword());
 
     Member member = new Member.Builder()
-        .mewsinsaId(signInRequestDto.getMewsinsaId())
+        .mewsinsaId(signUpRequestDto.getMewsinsaId())
         .password(encryptedPassword)
-        .name(signInRequestDto.getName())
-        .nickname(signInRequestDto.getNickname())
-        .email(signInRequestDto.getEmail())
-        .phone(signInRequestDto.getPhone())
-        .profileImage(signInRequestDto.getProfileImage())
-        .tierId(signInRequestDto.getTierId())
-        .isAdmin(signInRequestDto.getAdmin())
-        .points(signInRequestDto.getPoints())
+        .name(signUpRequestDto.getName())
+        .nickname(signUpRequestDto.getNickname())
+        .email(signUpRequestDto.getEmail())
+        .phone(signUpRequestDto.getPhone())
+        .profileImage(signUpRequestDto.getProfileImage())
+        .tierId(signUpRequestDto.getTierId())
+        .isAdmin(signUpRequestDto.getAdmin())
+        .points(signUpRequestDto.getPoints())
         .build();
 
     // DB에 회원 정보 저장
@@ -116,9 +116,10 @@ public class JwtService {
   @Transactional
   public void logout(Long memberId) {
     try {
+      String strMemberId = Long.toString(memberId);
       // 멤버의 access, refresh 토큰 삭제
-      accessTokenRepository.deleteAccessTokenByMemberId(memberId);
-      refreshTokenRepository.deleteRefreshTokenByMemberId(memberId);
+      redisAccessTokenRepository.deleteById(strMemberId);
+      redisRefreshTokenRepository.deleteById(strMemberId);
     } catch(Exception e) {
       throw new IllegalArgumentException(e.getMessage());
     }
@@ -131,8 +132,6 @@ public class JwtService {
 
     // 리턴 값이 null이라면 만료
     if(claims == null) {
-      // refresh Token을 DB에서 삭제
-      refreshTokenRepository.deleteRefreshTokenByTokenValue(refreshToken);
       return null;
     }
 

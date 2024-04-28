@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class SignInRequestDto {
+public class SignUpRequestDto {
   @NotEmpty
   private String mewsinsaId;
   @NotEmpty
@@ -27,10 +27,10 @@ public class SignInRequestDto {
   private Long points;
 
   //==Constructor==//
-  public SignInRequestDto() {
+  public SignUpRequestDto() {
   }
 
-  public SignInRequestDto(String mewsinsaId, String password, String name, String nickname,
+  public SignUpRequestDto(String mewsinsaId, String password, String name, String nickname,
       String email, String phone, String profileImage, Integer tierId, Boolean isAdmin,
       Long points) {
     this.mewsinsaId = mewsinsaId;
