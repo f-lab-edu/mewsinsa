@@ -42,8 +42,7 @@ public class JwtService {
   @Value("${jwt.sign_in.password.salt}")
   private String passwordSalt;
 
-  public JwtService(RefreshTokenRepository refreshTokenRepository,
-      AccessTokenRepository accessTokenRepository,
+  public JwtService(
       MemberRepository memberRepository, JwtProvider jwtProvider,
       RedisAccessTokenRepository redisAccessTokenRepository,
       RedisRefreshTokenRepository redisRefreshTokenRepository) {
@@ -58,6 +57,11 @@ public class JwtService {
   public JwtToken login(Long memberId) {
     // 멤버 찾기
     Member member = memberRepository.findMemberById(memberId);
+    System.out.println(memberId);
+
+    if(member == null) {
+      throw new NonExistentMemberException("회원이 존재하지 않습니다.");
+    }
 
     // 토큰 발행
     return jwtProvider.createJwtToken(memberId, member.getNickname(), member.getAdmin());
