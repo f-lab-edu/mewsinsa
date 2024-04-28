@@ -18,6 +18,7 @@ class RedisTokenRepositoryTest {
   @Test
   void redisSaveTokenTest() {
     Member member = new Member.Builder()
+        .memberId(123L)
         .name("sejeong")
         .nickname("clean")
         .email("test@test.com")
@@ -27,14 +28,16 @@ class RedisTokenRepositoryTest {
     RedisAccessToken accessToken = new RedisAccessToken();
     accessToken.setAccessToken(accessTokenValue);
     accessToken.setMember(member);
+    accessToken.setMemberId(123L);
 
     redisTokenRepository.save(accessToken);
 
-    RedisAccessToken accessTokenFoundById = redisTokenRepository.findById(accessTokenValue).get();
+    RedisAccessToken accessTokenFoundById = redisTokenRepository.findById("123").get();
 
 
     Assertions.assertThat(accessTokenFoundById.getMember().getName()).isEqualTo("sejeong");
     Assertions.assertThat(accessTokenFoundById.getMember().getEmail()).isEqualTo("test@test.com");
+
   }
 
 }

@@ -12,6 +12,16 @@ public class RedisRefreshToken {
   private String refreshToken;
   private Member member;
 
+  //==Constructor==//
+  public RedisRefreshToken() {
+  }
+
+  public RedisRefreshToken(Long memberId, String refreshToken, Member member) {
+    this.memberId = memberId;
+    this.refreshToken = refreshToken;
+    this.member = member;
+  }
+
   //==Getter==//
   public String getRefreshToken() {
     return refreshToken;

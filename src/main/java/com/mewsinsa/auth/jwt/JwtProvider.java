@@ -6,8 +6,14 @@ import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
 
 import com.mewsinsa.auth.jwt.domain.JwtToken;
 
+import com.mewsinsa.auth.jwt.redis.dto.RedisAccessToken;
+import com.mewsinsa.auth.jwt.redis.dto.RedisRefreshToken;
+import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
+import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
 import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
+import com.mewsinsa.member.domain.Member;
+import com.mewsinsa.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -43,17 +49,22 @@ public class JwtProvider {
   private static String keyBase64Encoded; // properties에 정의된 값
   private static SecretKey signingKey;
 
-  private final AccessTokenRepository accessTokenRepository;
-  private final RefreshTokenRepository refreshTokenRepository;
+  private final RedisAccessTokenRepository redisAccessTokenRepository;
+  private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+  private final MemberRepository memberRepository;
+
 
   @Autowired
   public JwtProvider(@Value("${jwt.secret_key}") String keyParam,
-      AccessTokenRepository accessTokenRepository, RefreshTokenRepository refreshTokenRepository) {
+      RedisAccessTokenRepository redisAccessTokenRepository,
+      RedisRefreshTokenRepository redisRefreshTokenRepository, MemberRepository memberRepository) {
     key = keyParam;
+    this.redisAccessTokenRepository = redisAccessTokenRepository;
+    this.redisRefreshTokenRepository = redisRefreshTokenRepository;
+    this.memberRepository = memberRepository;
     keyBase64Encoded = Base64.getEncoder().encodeToString(key.getBytes());
     signingKey = Keys.hmacShaKeyFor(keyBase64Encoded.getBytes());
-    this.accessTokenRepository = accessTokenRepository;
-    this.refreshTokenRepository = refreshTokenRepository;
+
 
   }
 
@@ -91,7 +102,7 @@ public class JwtProvider {
 
     Date expiration = new Date(System.currentTimeMillis() + ACCESSTOKEN_TIME);
 
-    String accessToken = ACCESS_PREFIX_STRING + Jwts.builder()
+    String accessToken = Jwts.builder()
         .subject(Long.toString(memberId))
         .claims(claims)
         .expiration(expiration)
@@ -99,10 +110,10 @@ public class JwtProvider {
         .compact();
 
     // 액세스 토큰을 DB에 저장
-    accessTokenRepository.deleteAccessTokenByMemberId(memberId);
-    accessTokenRepository.addAccessToken(new AccessTokenDto(memberId, accessToken, expiration));
+    Member member = memberRepository.findMemberById(memberId);
+    redisAccessTokenRepository.save(new RedisAccessToken(memberId, accessToken, member));
 
-    return accessToken;
+    return ACCESS_PREFIX_STRING + accessToken;
   }
 
   /**
@@ -120,8 +131,8 @@ public class JwtProvider {
         .compact();
 
     // 리프레시 토큰을 DB에 저장
-    refreshTokenRepository.deleteRefreshTokenByMemberId(memberId);
-    refreshTokenRepository.addRefreshToken(new RefreshTokenDto(refreshToken, memberId, expiration));
+    Member member = memberRepository.findMemberById(memberId);
+    redisRefreshTokenRepository.save(new RedisRefreshToken(memberId, refreshToken, member));
 
     return refreshToken;
   }

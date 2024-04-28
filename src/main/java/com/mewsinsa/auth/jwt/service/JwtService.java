@@ -8,6 +8,7 @@ import com.mewsinsa.auth.jwt.exception.DuplicateMemberInfoException;
 import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
 import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
+import com.mewsinsa.auth.jwt.redis.dto.RedisRefreshToken;
 import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
 import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
 import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
@@ -21,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -141,9 +143,9 @@ public class JwtService {
     boolean isAdmin = Boolean.parseBoolean(claims.getPayload().get("isAdmin", String.class));
 
     // refreshToken과 DB에 저장된 refreshToken의 값이 일치하는지 확인
-    RefreshTokenDto findRefreshToken = refreshTokenRepository.findRefreshTokenByMemberId(
-        memberId);
-    if(!findRefreshToken.getTokenValue().equals(refreshToken)) {
+    Optional<RedisRefreshToken> foundRefreshToken = redisRefreshTokenRepository.findById(Long.toString(memberId));
+    if(foundRefreshToken.isEmpty()
+        ||!foundRefreshToken.get().getRefreshToken().equals(refreshToken)) {
       throw new InvalidTokenException("잘못된 리프레시 토큰입니다.");
     }
 

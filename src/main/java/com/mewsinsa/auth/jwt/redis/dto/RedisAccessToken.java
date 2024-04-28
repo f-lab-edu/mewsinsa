@@ -12,6 +12,16 @@ public class RedisAccessToken {
   private String accessToken;
   private Member member;
 
+  //==Constructor==//
+  public RedisAccessToken() {
+  }
+
+  public RedisAccessToken(Long memberId, String accessToken, Member member) {
+    this.memberId = memberId;
+    this.accessToken = accessToken;
+    this.member = member;
+  }
+
   //==Getter==//
   public String getAccessToken() {
     return accessToken;
