@@ -141,6 +141,7 @@ public class JwtProvider {
    * @return 해당 토큰의 클레임들. parse에 실패할 경우 null을 반환합니다.
    */
   public Jws<Claims> parseClaims(String token) {
+    token = token.replace("Bearer ", "");
     Jws<Claims> claimsJws;
     try {
 
