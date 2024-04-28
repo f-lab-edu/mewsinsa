@@ -1,5 +1,6 @@
 package com.mewsinsa.order.service;
 
+import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
 import com.mewsinsa.coupon.exception.FailToIssueCouponException;
@@ -68,6 +69,8 @@ public class OrderService {
   private final MemberRepository memberRepository;
   private final DeliveryAddressRepository deliveryAddressRepository;
   private final ReceiptRepository receiptRepository;
+  private final MemberService memberService;
+  private final JwtService jwtService;
 
 
   public static final boolean FIXED_DISCOUNT = false;
@@ -78,7 +81,8 @@ public class OrderService {
   public OrderService(ProductRepository productRepository, OrderRepository orderRepository,
       HistoryRepository historyRepository, OrderedProductRepository orderedProductRepository,
       CouponRepository couponRepository, PromotionRepository promotionRepository,
-      MemberRepository memberRepository, DeliveryAddressRepository deliveryAddressRepository, ReceiptRepository receiptRepository) {
+      MemberRepository memberRepository, DeliveryAddressRepository deliveryAddressRepository, ReceiptRepository receiptRepository,
+      MemberService memberService, JwtService jwtService) {
     this.productRepository = productRepository;
     this.orderRepository = orderRepository;
     this.historyRepository = historyRepository;
@@ -88,6 +92,8 @@ public class OrderService {
     this.memberRepository = memberRepository;
     this.deliveryAddressRepository = deliveryAddressRepository;
     this.receiptRepository = receiptRepository;
+    this.memberService = memberService;
+    this.jwtService = jwtService;
 
     for(Tier tier: Tier.values()) {
         tierMap.put(tier.getTierId(), tier);
@@ -98,7 +104,7 @@ public class OrderService {
   public OrderFormResponseDto orderForm(String accessToken, OrderFormRequestDto orderFormRequestDto) {
     // 회원 기본 배송지 불러오기
     // 1. 액세스 토큰으로 회원 정보 찾아오기
-    Member member = memberRepository.findMemberByAccessToken(accessToken);
+    Member member = jwtService.findMemberByAccessToken(accessToken);
     Integer tierId = member.getTierId();
     String tierName = tierMap.get(tierId).getTierName();
 

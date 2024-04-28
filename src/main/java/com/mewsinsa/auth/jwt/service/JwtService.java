@@ -7,7 +7,9 @@ import com.mewsinsa.auth.jwt.domain.JwtToken;
 import com.mewsinsa.auth.jwt.exception.DuplicateMemberInfoException;
 import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
 import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
+import com.mewsinsa.auth.jwt.exception.NoTokenException;
 import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
+import com.mewsinsa.auth.jwt.redis.dto.RedisAccessToken;
 import com.mewsinsa.auth.jwt.redis.dto.RedisRefreshToken;
 import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
 import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
@@ -15,6 +17,7 @@ import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
+import com.mewsinsa.member.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +41,7 @@ public class JwtService {
 
   private final RedisAccessTokenRepository redisAccessTokenRepository;
   private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+  private final MemberService memberService;
 
   @Value("${jwt.sign_in.password.salt}")
   private String passwordSalt;
@@ -45,11 +49,12 @@ public class JwtService {
   public JwtService(
       MemberRepository memberRepository, JwtProvider jwtProvider,
       RedisAccessTokenRepository redisAccessTokenRepository,
-      RedisRefreshTokenRepository redisRefreshTokenRepository) {
+      RedisRefreshTokenRepository redisRefreshTokenRepository, MemberService memberService) {
     this.memberRepository = memberRepository;
     this.jwtProvider = jwtProvider;
     this.redisAccessTokenRepository = redisAccessTokenRepository;
     this.redisRefreshTokenRepository = redisRefreshTokenRepository;
+    this.memberService = memberService;
   }
 
 
@@ -180,6 +185,19 @@ public class JwtService {
 
     // 토큰 발행
     return jwtProvider.createJwtToken(member.getMemberId(), member.getNickname(), member.getAdmin());
+  }
+
+  public Member findMemberByAccessToken(String accessToken) {
+    Long memberId = memberService.getMemberIdByAccessToken(accessToken);
+    String strMemberId = Long.toString(memberId);
+    Optional<RedisAccessToken> accessTokenOptional = redisAccessTokenRepository.findById(strMemberId);
+
+    if(accessTokenOptional.isEmpty()) {
+      throw new NoTokenException("액세스 토큰이 존재하지 않습니다.");
+    }
+
+    RedisAccessToken redisAccessToken = accessTokenOptional.get();
+    return redisAccessToken.getMember();
   }
 
 }

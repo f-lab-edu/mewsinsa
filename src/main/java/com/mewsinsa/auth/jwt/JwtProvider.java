@@ -10,8 +10,6 @@ import com.mewsinsa.auth.jwt.redis.dto.RedisAccessToken;
 import com.mewsinsa.auth.jwt.redis.dto.RedisRefreshToken;
 import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
 import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
-import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
-import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
