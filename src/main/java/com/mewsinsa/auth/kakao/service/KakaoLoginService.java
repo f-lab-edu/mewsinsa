@@ -25,13 +25,11 @@ public class KakaoLoginService {
 
   private final KakaoLoginProperties kakaoLoginProperties;
   private final MemberRepository memberRepository;
-  private final RefreshTokenRepository refreshTokenRepository;
 
   public KakaoLoginService(KakaoLoginProperties kakaoLoginProperties,
-      MemberRepository memberRepository, RefreshTokenRepository refreshTokenRepository) {
+      MemberRepository memberRepository) {
     this.kakaoLoginProperties = kakaoLoginProperties;
     this.memberRepository = memberRepository;
-    this.refreshTokenRepository = refreshTokenRepository;
   }
 
   /**
