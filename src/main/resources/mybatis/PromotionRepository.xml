@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.promotion.repository.PromotionRepository">
+  <!--프로모션 추가-->
+  <insert id="addPromotion" parameterType="com.mewsinsa.promotion.domain.Promotion" useGeneratedKeys="true" keyProperty="promotionId" keyColumn="promotion_id">
+    INSERT INTO promotion(promotion_name, promotion_type, discount_rate, discount_amount, started_at, expired_at)
+    VALUES( #{promotionName}, #{promotionType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt})
+  </insert>
+
+  <!--  진행중인 프로모션 조회-->
+  <select id="findOngoingPromotions" parameterType="int" resultType="com.mewsinsa.promotion.controller.dto.PromotionDto">
+    SELECT
+      promotion_id AS promotionId,
+      promotion_name AS promotionName,
+      promotion_type AS promotionType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM promotion
+    WHERE  <![CDATA[NOW() < expired_at
+    AND NOW() > started_at
+    AND ROWNUM() <= #{page} * 10
+    AND ROWNUM() > (#{page}-1)*10]]>
+  </select>
+
+  <select id="findOnePromotionByPromotionId" resultType="com.mewsinsa.promotion.domain.Promotion">
+    SELECT
+      promotion_id AS promotionId,
+      promotion_name AS promotionName,
+      promotion_type AS promotionType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM promotion
+    WHERE promotion_id = #{promotionId}
+  </select>
+  <select id="findPromotionListByProductId"
+          resultType="com.mewsinsa.promotion.domain.Promotion">
+    SELECT
+      promotion.promotion_id AS promotionId,
+      promotion.promotion_name AS promotionName,
+      promotion.promotion_type AS promotionType,
+      promotion.discount_rate AS discountRate,
+      promotion.discount_amount AS discountAmount,
+      promotion.started_at AS startedAt,
+      promotion.expired_at AS expiredAt
+    FROM promotion, promotion_product
+    WHERE promotion_product.product_id = #{productId}
+    AND promotion.promotion_id = promotion_product.promotion_id
+  </select>
+
+  <insert id="addPromotionProduct" parameterType="long">
+    INSERT INTO promotion_product(product_id, promotion_id)
+    VALUES (#{productId}, #{promotionId})
+  </insert>
+</mapper>

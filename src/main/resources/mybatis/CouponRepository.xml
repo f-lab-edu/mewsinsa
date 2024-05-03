@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mewsinsa.coupon.repository.CouponRepository">
+<!--  새로운 쿠폰 등록-->
+  <insert id="addCoupon" parameterType="com.mewsinsa.coupon.domain.Coupon" useGeneratedKeys="true" keyProperty="couponId" keyColumn="coupon_id">
+    INSERT INTO coupon(coupon_name, coupon_type, discount_rate, discount_amount, started_at, expired_at, remaining)
+    VALUES( #{couponName}, #{couponType}, #{discountRate}, #{discountAmount}, #{startedAt}, #{expiredAt}, #{remaining})
+  </insert>
+  <update id="decreaseCouponRemaining">
+    UPDATE coupon
+    SET remaining = remaining - 1
+    WHERE coupon_id = #{couponId}
+  </update>
+  <update id="updateUsedInIssuedCoupon">
+    UPDATE issued_coupon
+    SET is_used = #{isUsed}, used_at = #{usedAt}
+    WHERE issued_coupon_id = #{issuedCouponId}
+  </update>
+
+  <!--  진행중인 쿠폰 조회-->
+  <select id="findOngoingCoupons" parameterType="int" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      coupon_id AS couponId,
+      coupon_name AS couponName,
+      coupon_type AS couponType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM coupon
+    WHERE  <![CDATA[NOW() < expired_at
+    AND NOW() > started_at
+    AND ROWNUM() <= #{page} * 30
+    AND ROWNUM() > (#{page}-1)*30]]>
+  </select>
+
+
+  <!--  쿠폰을 사용할 수 있는 상품 정보 등록-->
+  <insert id="addCouponProduct" parameterType="long">
+    INSERT INTO coupon_product(product_id, coupon_id)
+    VALUES (#{productId}, #{couponId})
+  </insert>
+  <insert id="saveIssuedCoupon" parameterType="com.mewsinsa.coupon.domain.IssuedCoupon"
+    useGeneratedKeys="true" keyProperty="issuedCouponId" keyColumn="issued_coupon_id">
+    INSERT INTO issued_coupon(is_used, issued_at, used_at, coupon_id, member_id)
+    VALUES(#{isUsed}, #{issuedAt}, #{usedAt}, #{couponId}, #{memberId})
+  </insert>
+
+
+  <!--상품에 적용되는 쿠폰 리스트 조회-->
+  <select id="findAvailableCouponsToProduct" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      coupon.coupon_id AS couponId,
+      coupon_name AS couponName,
+      coupon_type AS couponType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM coupon
+    JOIN coupon_product ON coupon.coupon_id = coupon_product.coupon_id
+    WHERE coupon_product.product_id = #{productId}
+  </select>
+  <select id="findOneCoupon" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      coupon_id AS couponId,
+      coupon_name AS couponName,
+      coupon_type AS couponType,
+      discount_rate AS discountRate,
+      discount_amount AS discountAmount,
+      started_at AS startedAt,
+      expired_at AS expiredAt
+    FROM coupon
+    WHERE coupon_id = #{couponId}
+  </select>
+  <select id="findOneCouponProduct" resultType="com.mewsinsa.coupon.domain.Coupon">
+    SELECT
+      product_id AS productId,
+      coupon_id AS couponId
+    FROM coupon_product
+    WHERE product_id = #{productId} AND coupon_id = #{couponId}
+  </select>
+  <select id="findOneIssuedCoupon" resultType="com.mewsinsa.coupon.domain.IssuedCoupon">
+    SELECT
+      issued_coupon_id AS issuedCouponId,
+      is_used AS isUsed,
+      issued_at AS issuedAt,
+      used_at AS usedAt,
+      coupon_id AS couponId,
+      member_id AS memberId
+    FROM issued_coupon
+    WHERE coupon_id = #{couponId} AND member_id = #{memberId}
+  </select>
+</mapper>
