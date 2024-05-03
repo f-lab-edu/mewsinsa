@@ -10,6 +10,14 @@
 - Jenkins로 CI/CD 파이프라인 구축을 시도하고 있습니다.
 
 ## ✨  사용 기술
+#### Framework
+  <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
+
+#### DBMS
+  <img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white"> 
+
+#### Deployment
+  <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> 
 
 
 ## ✨ ERD
