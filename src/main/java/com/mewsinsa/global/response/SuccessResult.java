@@ -1,7 +1,5 @@
 package com.mewsinsa.global.response;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
 public class SuccessResult {
   private DetailedStatus status;
   private String message;
