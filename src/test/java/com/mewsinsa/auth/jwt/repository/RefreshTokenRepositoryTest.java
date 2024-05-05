@@ -48,10 +48,6 @@ class RefreshTokenRepositoryTest {
   }
 
 
-  @AfterEach
-  void deleteRefreshToken() {
-    refreshTokenRepository.deleteRefreshToken(memberId);
-  }
 
   @Test
   void uuidTest() {
@@ -79,7 +75,7 @@ class RefreshTokenRepositoryTest {
   @Test
   void deleteTokenByTokenId() {
     // when
-    refreshTokenRepository.deleteRefreshToken(memberId);
+    refreshTokenRepository.deleteRefreshTokenByMemberId(memberId);
 
     // then
     RefreshTokenDto deletedToken = refreshTokenRepository.findRefreshTokenByMemberId(memberId);
