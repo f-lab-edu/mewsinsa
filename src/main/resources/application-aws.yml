@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mariadb://mewsinsa-mariadb.cnwmkucoaa34.ap-northeast-2.rds.amazonaws.com:3306/mewsinsa_db
+    url: ${MARIADB_URL}
     driver-class-name: org.mariadb.jdbc.Driver
-    username: mewsinsa_admin
-    password: mewsinsa
+    username: ${MARIADB_USERNAME}
+    password: ${MARIADB_PW}
   messages:
     basename: messages
 
@@ -19,3 +19,7 @@ server:
       force: true
   tomcat:
     uri-encoding: UTF-8
+
+deployment:
+  domain:
+    str: ${DOMAIN_STR}

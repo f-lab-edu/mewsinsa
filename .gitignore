@@ -13,10 +13,10 @@ src/main/java/.DS_Store
 src/main/java/com/.DS_Store
 
 ## 카카오 로그인 관련 정보
-src/main/resources/application-auth.properties
-## jwt 관련 정보
-src/main/resources/application-jwt.properties
-src/main/resources/application-aws.yml
+#src/main/resources/application-auth.properties
+### jwt 관련 정보
+#src/main/resources/application-jwt.properties
+#src/main/resources/application-aws.yml
 
 
 ### STS ###
