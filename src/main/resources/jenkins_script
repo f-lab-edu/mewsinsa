@@ -13,25 +13,16 @@ pipeline {
             }
         }
 
-        stage('Clean and Build') {
-            steps {
-            	//디렉토리 오류가 종종 발생하여 직접 이동하여 실행합니다.
-                dir('mewsinsa/') {
-                    sh 'chmod +x ./gradlew'
-                    sh './gradlew clean build'
-                }
-            }
-        }
-
-        stage('Add Env') {
+        stage('add properties') {
             steps {
                 withCredentials([file(credentialsId: 'application', variable: 'application'),
                                 file(credentialsId: 'application-jwt', variable: 'application-jwt'),
                                 file(credentialsId: 'application-auth', variable: 'application-auth')]) {
                     script {
-                        sh 'cp ${application}  src/main/resources/application.yml'
-                        sh 'cp ${application-jwt}  src/main/resources/application-jwt.yml'
-                        sh 'cp ${application-auth}  src/main/resources/application-auth.yml'
+                        sh 'chmod 755 /var/jenkins_home/workspace/mewsinsa-pipeline/mewsinsa/src/main/resources'
+                        sh 'cp ${application}       /var/jenkins_home/workspace/mewsinsa-pipeline/mewsinsa/src/main/resources/application.yml'
+                        sh 'cp ${application-jwt}   /var/jenkins_home/workspace/mewsinsa-pipeline/mewsinsa/src/main/resources/application-jwt.properties'
+                        sh 'cp ${application-auth}  /var/jenkins_home/workspace/mewsinsa-pipeline/mewsinsa/src/main/resources/application-auth.properties'
                     }
                 }
             }
@@ -39,11 +30,13 @@ pipeline {
 
         stage('build') {
             steps {
-               sh '''
-                echo 'start bootJar'
-                chmod +x gradlew
-                ./gradlew clean bootJar
-                '''
+                dir('/var/jenkins_home/workspace/mewsinsa-pipeline/mewsinsa') {
+                   sh '''
+                    echo 'start bootJar'
+                    chmod +x gradlew
+                    ./gradlew clean bootJar
+                    '''
+                }
             }
         }
     }
