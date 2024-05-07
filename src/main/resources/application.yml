@@ -22,4 +22,4 @@ server:
 
 deployment:
   domain:
-    str: ${DOMAIN_STR}
+    str: 43.201.132.226
