@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${MARIADB_URL}
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${MARIADB_USERNAME}
+    password: ${MARIADB_PW}
+  messages:
+    basename: messages
+
+mybatis:
+  type-aliases-package: com.mewsinsa.*.domain
+  mapper-locations: mybatis/**.xml
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
+
+deployment:
+  domain:
+    str: ${DOMAIN_STR}
