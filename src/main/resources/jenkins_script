@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('git clone') {
+            steps {
+                sh '''
+                    rm -rf mewsinsa
+                    git clone https://github.com/f-lab-edu/mewsinsa.git
+                    cd mewsinsa
+                    git switch develop-v1
+                '''
+            }
+        }
+
+        stage('Clean and Build') {
+            steps {
+            	//디렉토리 오류가 종종 발생하여 직접 이동하여 실행합니다.
+                dir('mewsinsa/') {
+                    sh 'chmod +x ./gradlew'
+                    sh './gradlew clean build'
+                }
+            }
+        }
+
+        stage('Add Env') {
+            steps {
+                withCredentials([file(credentialsId: 'application', variable: 'application'),
+                                file(credentialsId: 'application-jwt', variable: 'application-jwt'),
+                                file(credentialsId: 'application-auth', variable: 'application-auth')]) {
+                    script {
+                        sh 'cp ${application}  src/main/resources/application.yml'
+                        sh 'cp ${application-jwt}  src/main/resources/application-jwt.yml'
+                        sh 'cp ${application-auth}  src/main/resources/application-auth.yml'
+                    }
+                }
+            }
+        }
+
+        stage('build') {
+            steps {
+               sh '''
+                echo 'start bootJar'
+                chmod +x gradlew
+                ./gradlew clean bootJar
+                '''
+            }
+        }
+    }
+}
