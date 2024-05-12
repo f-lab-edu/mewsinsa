@@ -7,18 +7,14 @@ import java.time.LocalDateTime;
 public class Coupon {
   private Long couponId;
   private String couponName;
-  /**
-   * true: 정률할인
-   * false: 정액할인
-   */
-  private Boolean couponType;
+  private String couponType;
 
   /**
-   * 할인율. couponType이 false일 경우 null가능
+   * 할인율. couponType이 "amount"일 경우 null가능
    */
   private Integer discountRate;
   /**
-   * 할인금액. couponType이 true일 경우 null가능
+   * 할인금액. couponType이 "rate"일 경우 null가능
    */
   private Long discountAmount;
 
@@ -43,7 +39,7 @@ public class Coupon {
   public Coupon() {
   }
 
-  public Coupon(Long couponId, String couponName, Boolean couponType, Integer discountRate,
+  public Coupon(Long couponId, String couponName, String couponType, Integer discountRate,
       Long discountAmount, LocalDateTime startedAt, LocalDateTime expiredAt, Long remaining) {
     this.couponId = couponId;
     this.couponName = couponName;
@@ -64,7 +60,7 @@ public class Coupon {
     return couponName;
   }
 
-  public Boolean getCouponType() {
+  public String getCouponType() {
     return couponType;
   }
 
@@ -97,7 +93,7 @@ public class Coupon {
     this.couponName = couponName;
   }
 
-  public void setCouponType(Boolean couponType) {
+  public void setCouponType(String couponType) {
     this.couponType = couponType;
   }
 

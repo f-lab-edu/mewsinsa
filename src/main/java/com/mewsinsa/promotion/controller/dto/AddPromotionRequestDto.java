@@ -19,7 +19,7 @@ public class AddPromotionRequestDto {
   @NotEmpty
   private String promotionName;
   @NotNull
-  private Boolean promotionType;
+  private String promotionType;
 
   @Range(min=0, max=100)
   private Integer discountRate;
@@ -53,7 +53,7 @@ public class AddPromotionRequestDto {
     return promotionName;
   }
 
-  public Boolean getPromotionType() {
+  public String getPromotionType() {
     return promotionType;
   }
 
@@ -82,7 +82,7 @@ public class AddPromotionRequestDto {
     this.promotionName = promotionName;
   }
 
-  public void setPromotionType(Boolean promotionType) {
+  public void setPromotionType(String promotionType) {
     this.promotionType = promotionType;
   }
 
@@ -109,7 +109,7 @@ public class AddPromotionRequestDto {
   //==Builder==//
   public static class Builder {
     private String promotionName;
-    private Boolean promotionType;
+    private String promotionType;
     private Integer discountRate;
     private Long discountAmount;
     private LocalDateTime startedAt;
@@ -130,7 +130,7 @@ public class AddPromotionRequestDto {
     }
 
 
-    public Builder promotionType(boolean promotionType) {
+    public Builder promotionType(String promotionType) {
       this.promotionType = promotionType;
       return this;
     }

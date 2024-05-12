@@ -2,6 +2,7 @@ package com.mewsinsa.order.service;
 
 import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.coupon.domain.Coupon;
+import com.mewsinsa.coupon.domain.CouponType;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
 import com.mewsinsa.coupon.exception.FailToIssueCouponException;
 import com.mewsinsa.coupon.repository.CouponRepository;
@@ -42,6 +43,7 @@ import com.mewsinsa.product.domain.Product;
 import com.mewsinsa.product.domain.ProductOption;
 import com.mewsinsa.product.repository.ProductRepository;
 import com.mewsinsa.promotion.domain.Promotion;
+import com.mewsinsa.promotion.domain.PromotionType;
 import com.mewsinsa.promotion.repository.PromotionRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -291,7 +293,7 @@ public class OrderService {
       }
       // 쿠폰으로 할인 받은 비용이 맞는지 확인
       Long couponDiscountAmount = 0L;
-      if(coupon!= null && coupon.getCouponType() == FIXED_DISCOUNT) {
+      if(coupon!= null && coupon.getCouponType().equals(CouponType.FIXED_AMOUNT.getType())) {
         couponDiscountAmount = coupon.getDiscountAmount();
       } else if(coupon != null) {
         couponDiscountAmount = (long)(piecePromotionPrice * ((double)coupon.getDiscountRate() / 100.0));
@@ -454,7 +456,7 @@ public class OrderService {
       if(promotion.getExpiredAt().isBefore(now)) continue;
 
       Long discountAmount;
-      if(promotion.getPromotionType() == FIXED_DISCOUNT) { //
+      if(promotion.getPromotionType().equals(PromotionType.FIXED_AMOUNT.getType())) { //
         discountAmount = promotion.getDiscountAmount();
       } else {
         discountAmount = (long)((double)tierPrice * ((double)promotion.getDiscountRate() / 100.0));
@@ -468,7 +470,7 @@ public class OrderService {
     // 쿠폰을 찾아오기
     Coupon coupon = couponRepository.findOneCoupon(couponId);
     Long couponAppliedPrice;
-    if(coupon.getCouponType() == FIXED_DISCOUNT) {
+    if(coupon.getCouponType().equals(CouponType.FIXED_AMOUNT.getType())) {
       couponAppliedPrice = promotionPrice - coupon.getDiscountAmount();
     } else {
       couponAppliedPrice = (long)((double)promotionPrice * (1.0 - (double)coupon.getDiscountRate() / 100.0));

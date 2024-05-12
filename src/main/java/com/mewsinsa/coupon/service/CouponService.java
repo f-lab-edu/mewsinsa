@@ -6,6 +6,7 @@ import static com.mewsinsa.global.config.ConstantConfig.*;
 import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.coupon.controller.dto.AddCouponRequestDto;
 import com.mewsinsa.coupon.domain.Coupon;
+import com.mewsinsa.coupon.domain.CouponType;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
 import com.mewsinsa.coupon.exception.FailToIssueCouponException;
 import com.mewsinsa.coupon.repository.CouponRepository;
@@ -113,10 +114,10 @@ public class CouponService {
 
   // 쿠폰 등록 시 유효한 쿠폰인지 검사합니다.
   private boolean isValidCoupon(Coupon coupon) {
-    if(coupon.getCouponType() == FIXED_RATE
+    if(coupon.getCouponType().equals(CouponType.FIXED_RATE.getType())
         && (coupon.getDiscountRate() == null || coupon.getDiscountRate() <= 0)) {
       return false; // 잘못된 쿠폰
-    } else if(coupon.getCouponType() == FIXED_AMOUNT
+    } else if(coupon.getCouponType().equals(CouponType.FIXED_AMOUNT.getType())
         && (coupon.getDiscountAmount() == null || coupon.getDiscountAmount() <= 0)) {
       return false; // 잘못된 쿠폰
     }
