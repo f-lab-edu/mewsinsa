@@ -62,10 +62,7 @@ public class CouponController {
    * @return 해당 페이지의 쿠폰 리스트
    */
   @GetMapping
-  ResponseEntity<SuccessResult> findOngoingCoupons(@RequestParam(value = "page", required = false) Integer page) {
-    if(page == null) {
-      page = 1;
-    }
+  ResponseEntity<SuccessResult> findOngoingCoupons(@RequestParam(value = "page", defaultValue = "1") Integer page) {
     List<Coupon> couponList = couponService.findOngoingCoupons(page);
 
     SuccessResult result = new Builder(DetailedStatus.OK)

@@ -7,14 +7,10 @@ import java.time.LocalDateTime;
 public class Promotion {
   private Long promotionId;
   private String promotionName;
-  /**
-   * true: 정률할인
-   * false: 정액할인
-   */
-  private Boolean promotionType;
+  private String promotionType;
 
   /**
-   * 할인율. promotionType이 false일 경우 null가능
+   * 할인율. promotionType이 "amount"일 경우 null가능
    */
   private Integer discountRate;
   /**
@@ -37,7 +33,7 @@ public class Promotion {
   public Promotion() {
   }
 
-  public Promotion(Long promotionId, String promotionName, Boolean promotionType,
+  public Promotion(Long promotionId, String promotionName, String promotionType,
       Integer discountRate, Long discountAmount, LocalDateTime startedAt, LocalDateTime expiredAt) {
     this.promotionId = promotionId;
     this.promotionName = promotionName;
@@ -57,7 +53,7 @@ public class Promotion {
     return promotionName;
   }
 
-  public Boolean getPromotionType() {
+  public String getPromotionType() {
     return promotionType;
   }
 
@@ -86,7 +82,7 @@ public class Promotion {
     this.promotionName = promotionName;
   }
 
-  public void setPromotionType(Boolean promotionType) {
+  public void setPromotionType(String promotionType) {
     this.promotionType = promotionType;
   }
 

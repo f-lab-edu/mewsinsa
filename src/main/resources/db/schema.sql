@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS `coupon`;
 CREATE TABLE `coupon` (
 	`coupon_id`	bigint	NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	`coupon_name`	varchar(30)	NULL,
-	`coupon_type`	tinyint(1)	NULL	DEFAULT 0	COMMENT 'ex) 1이면 정액할인, 0이면 정률할인',
+	`coupon_type`	varchar(10)	NOT NULL DEFAULT 'rate',
 	`discount_rate`	int	NULL	COMMENT '정액 할인 일시, null',
 	`discount_amount`	bigint	NULL	COMMENT '정률 할인 일시, null',
 	`started_at`	timestamp	NULL,
@@ -72,7 +72,7 @@ DROP TABLE IF EXISTS `promotion`;
 CREATE TABLE `promotion` (
 	`promotion_id`	bigint	NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	`promotion_name`	varchar(30)	NOT NULL,
-	`promotion_type`	tinyint(1)	NOT NULL	DEFAULT 0	COMMENT 'ex) 1이면 정액할인, 0이면 정률할인',
+	`promotion_type`	varchar(10)	NOT NULL DEFAULT 'rate',
 	`discount_rate`	int	NULL,
 	`discount_amount`	bigint	NULL,
 	`started_at`	timestamp	NOT NULL,

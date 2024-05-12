@@ -16,7 +16,7 @@ public class AddCouponRequestDto {
    * false: 정액할인
    */
   @NotNull
-  private Boolean couponType;
+  private String couponType;
 
   /**
    * 할인율. couponType이 false일 경우 null가능
@@ -56,7 +56,7 @@ public class AddCouponRequestDto {
     return couponName;
   }
 
-  public Boolean getCouponType() {
+  public String getCouponType() {
     return couponType;
   }
 
@@ -90,7 +90,7 @@ public class AddCouponRequestDto {
     this.couponName = couponName;
   }
 
-  public void setCouponType(Boolean couponType) {
+  public void setCouponType(String couponType) {
     this.couponType = couponType;
   }
 
