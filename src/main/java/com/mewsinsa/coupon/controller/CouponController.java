@@ -11,7 +11,6 @@ import com.mewsinsa.global.response.SuccessResult.Builder;
 import com.mewsinsa.member.service.MemberService;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
 import com.mewsinsa.promotion.controller.dto.PromotionDto;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.Positive;
 import java.util.ArrayList;
 import java.util.List;
