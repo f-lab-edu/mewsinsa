@@ -1,5 +1,6 @@
 package com.mewsinsa.display.controller;
 
+import com.mewsinsa.auth.jwt.interceptor.Auth;
 import com.mewsinsa.display.controller.dto.DisplayProductResponseDto;
 import com.mewsinsa.display.controller.dto.ProductDetailResponseDto;
 import com.mewsinsa.display.domain.ProductDisplay;
