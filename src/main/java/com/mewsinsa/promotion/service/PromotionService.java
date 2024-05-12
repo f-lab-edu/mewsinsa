@@ -10,6 +10,7 @@ import com.mewsinsa.promotion.domain.Promotion;
 import com.mewsinsa.promotion.repository.PromotionRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PromotionService {
@@ -33,6 +34,7 @@ public class PromotionService {
     return true; // 유효한 프로모션
   }
 
+  @Transactional
   public void addPromotion(AddPromotionRequestDto promotionDto) {
     try {
       Promotion promotion = new Promotion(
