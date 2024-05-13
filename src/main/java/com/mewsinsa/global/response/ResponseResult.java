@@ -1,16 +1,24 @@
 package com.mewsinsa.global.response;
 
-public class FailureResult {
-  private DetailedStatus status;
-  private String code;
-  private String message;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+public class ResponseResult {
+  protected DetailedStatus status;
+  protected String code;
+
+  @JsonInclude(Include.NON_NULL)
+  protected String message;
 
   //==Constructor==//
   // builder를 통해서만 생성되도록 private으로 정의
-  private FailureResult(Builder builder) {
+  protected ResponseResult(Builder builder) {
     this.status = builder.status;
     this.code = builder.code;
     this.message = builder.message;
+  }
+
+  protected ResponseResult() {
   }
 
   //==Getter==//
@@ -50,8 +58,8 @@ public class FailureResult {
       return this;
     }
 
-    public FailureResult build() {
-      return new FailureResult(this);
+    public ResponseResult build() {
+      return new ResponseResult(this);
     }
   }
 }
