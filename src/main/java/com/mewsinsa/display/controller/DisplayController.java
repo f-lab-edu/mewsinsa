@@ -42,8 +42,8 @@ public class DisplayController {
 
     SuccessResult successResult = new SuccessResult
         .Builder(DetailedStatus.OK)
+        .code("S001")
         .data(result)
-        .message("상품의 디테일 정보입니다.")
         .build();
     return new ResponseEntity<>(successResult, HttpStatus.OK);
   }
@@ -57,8 +57,8 @@ public class DisplayController {
 
     SuccessResult successResult = new SuccessResult
         .Builder(DetailedStatus.OK)
+        .code("S001")
         .data(list)
-        .message("서브 카테고리: " + subcategory + ", page: " + page)
         .build();
 
     return new ResponseEntity<>(successResult, HttpStatus.OK);

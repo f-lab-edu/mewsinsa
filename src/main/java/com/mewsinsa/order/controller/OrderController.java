@@ -55,6 +55,7 @@ public class OrderController {
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.CREATED)
         .data(orderFormResponseDto)
+        .code("S001")
         .build();
 
     return new ResponseEntity<>(result, HttpStatus.CREATED);
@@ -70,6 +71,7 @@ public class OrderController {
     OrderResponseDto orderResponseDto = orderService.makeOrder(orderRequestDto, memberId);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.CREATED)
+        .code("S002")
         .message("주문에 성공하였습니다.")
         .data(orderResponseDto)
         .build();
@@ -85,6 +87,7 @@ public class OrderController {
     List<OrderListResponseForAdminDto> orders = orderService.allOrderList(page, count);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .code("S001")
         .data(orders)
         .build();
 
@@ -97,6 +100,7 @@ public class OrderController {
     OrderInfoResponseForAdminDto orderInfo = orderService.orderInfo(orderId);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .code("S001")
         .data(orderInfo)
         .build();
 
@@ -114,6 +118,7 @@ public class OrderController {
     List<OrderListResponseForMemberDto> orders = orderService.orderListByMemberId(memberId, page, count, dateFrom, dateTo);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .code("S001")
         .data(orders)
         .build();
 
@@ -131,6 +136,7 @@ public class OrderController {
       throw new NonExsistentOrderException("주문이 존재하지 않습니다. orderedProductId: " + orderedProductId);
     }
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .code("S001")
         .data(history)
         .build();
 
@@ -146,6 +152,7 @@ public class OrderController {
     OrderedProduct cancelledOrderedProduct = orderService.cancelOrder(orderedProductId, memberId);
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
+        .code("S001")
         .message("주문이 성공적으로 취소 되었습니다.")
         .data(cancelledOrderedProduct)
         .build();
@@ -169,6 +176,7 @@ public class OrderController {
 
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
         .message("배송지가 정상적으로 변경되었습니다.")
+        .code("S001")
         .data(order)
         .build();
 

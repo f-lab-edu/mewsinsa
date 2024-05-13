@@ -2,7 +2,7 @@ package com.mewsinsa.coupon.controllerAdvice;
 
 import com.mewsinsa.coupon.exception.FailToIssueCouponException;
 import com.mewsinsa.global.response.DetailedStatus;
-import com.mewsinsa.global.response.FailureResult;
+import com.mewsinsa.global.response.ResponseResult;
 import com.mewsinsa.order.exception.NotApplicapableCouponException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class CouponExceptionControllerAdvice {
   @ExceptionHandler(FailToIssueCouponException.class)
-  protected ResponseEntity<FailureResult> handleFailToIssueCouponException(
+  protected ResponseEntity<ResponseResult> handleFailToIssueCouponException(
       FailToIssueCouponException e) {
 
-    final FailureResult result = new FailureResult.Builder()
+    final ResponseResult result = new ResponseResult.Builder()
         .status(e.getStatus())
         .code(e.getStatus().getCode())
         .message(e.getMessage())
