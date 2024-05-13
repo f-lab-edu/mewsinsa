@@ -1,15 +1,12 @@
 package com.mewsinsa.promotion.service;
-
-import static com.mewsinsa.global.config.ConstantConfig.FIXED_AMOUNT;
-import static com.mewsinsa.global.config.ConstantConfig.FIXED_RATE;
-
-import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.promotion.controller.dto.AddPromotionRequestDto;
 import com.mewsinsa.promotion.controller.dto.PromotionDto;
 import com.mewsinsa.promotion.domain.Promotion;
+import com.mewsinsa.promotion.domain.PromotionType;
 import com.mewsinsa.promotion.repository.PromotionRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PromotionService {
@@ -22,10 +19,10 @@ public class PromotionService {
 
   //==유효한 프로모션 검사 로직==//
   boolean isValidPromotion(Promotion promotion) {
-    if(promotion.getPromotionType() == FIXED_RATE
+    if(promotion.getPromotionType().equals(PromotionType.FIXED_RATE.getType())
         && (promotion.getDiscountRate() == null || promotion.getDiscountRate() <= 0)) {
       return false; // 잘못된 프로모션
-    } else if(promotion.getPromotionType() == FIXED_AMOUNT
+    } else if(promotion.getPromotionType().equals(PromotionType.FIXED_AMOUNT.getType())
         && (promotion.getDiscountAmount() == null || promotion.getDiscountAmount() <= 0)) {
       return false; // 잘못된 프로모션
     }
@@ -33,6 +30,7 @@ public class PromotionService {
     return true; // 유효한 프로모션
   }
 
+  @Transactional
   public void addPromotion(AddPromotionRequestDto promotionDto) {
     try {
       Promotion promotion = new Promotion(

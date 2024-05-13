@@ -10,6 +10,7 @@ import com.mewsinsa.product.repository.ProductRepository;
 import java.util.List;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductService {
@@ -25,6 +26,7 @@ public class ProductService {
   /**
    * @param product 등록하려는 상품 정보
    */
+  @Transactional
   public void addProduct(AddProductRequestDto productDto) {
     try {
       // 상품 정보를 등록

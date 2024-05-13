@@ -1,7 +1,7 @@
 package com.mewsinsa.order.controllerAdvice;
 
 import com.mewsinsa.global.response.DetailedStatus;
-import com.mewsinsa.global.response.FailureResult;
+import com.mewsinsa.global.response.ResponseResult;
 import com.mewsinsa.order.exception.InvalidProductOptionException;
 import com.mewsinsa.order.exception.NonExsistentOrderException;
 import com.mewsinsa.order.exception.NotApplicapableCouponException;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class OrderExceptionControllerAdvice {
   @ExceptionHandler(OutOfStockException.class)
-  protected ResponseEntity<FailureResult> handleOutOfStockException(OutOfStockException e) {
+  protected ResponseEntity<ResponseResult> handleOutOfStockException(OutOfStockException e) {
 
-    final FailureResult result = new FailureResult.Builder()
+    final ResponseResult result = new ResponseResult.Builder()
         .status(DetailedStatus.OUT_OF_STOCK)
         .code(DetailedStatus.OUT_OF_STOCK.getCode())
         .message(e.getMessage())
@@ -28,10 +28,10 @@ public class OrderExceptionControllerAdvice {
   }
 
   @ExceptionHandler(NotApplicapableCouponException.class)
-  protected ResponseEntity<FailureResult> handleInvalidCouponException(
+  protected ResponseEntity<ResponseResult> handleInvalidCouponException(
       NotApplicapableCouponException e) {
 
-    final FailureResult result = new FailureResult.Builder()
+    final ResponseResult result = new ResponseResult.Builder()
         .status(DetailedStatus.NOT_APPLICAPABLE_COUPN)
         .code(DetailedStatus.NOT_APPLICAPABLE_COUPN.getCode())
         .message(e.getMessage() + " / productId: " + e.getProductId() + " couponId: " + e.getCouponId())
@@ -41,8 +41,8 @@ public class OrderExceptionControllerAdvice {
   }
 
   @ExceptionHandler(InvalidProductOptionException.class)
-  protected ResponseEntity<FailureResult> handleInvalidProductOptionException(InvalidProductOptionException e) {
-    final FailureResult result = new FailureResult.Builder()
+  protected ResponseEntity<ResponseResult> handleInvalidProductOptionException(InvalidProductOptionException e) {
+    final ResponseResult result = new ResponseResult.Builder()
         .status(DetailedStatus.INVALID_PRODUCT_OPTION_ID)
         .code(DetailedStatus.INVALID_PRODUCT_OPTION_ID.getCode())
         .message(e.getMessage() + " / productId: " + e.getProductOptionId())
@@ -52,8 +52,8 @@ public class OrderExceptionControllerAdvice {
   }
 
   @ExceptionHandler(OrderCancellationException.class)
-  protected ResponseEntity<FailureResult> handleOrderCancellationException(OrderCancellationException e) {
-    final FailureResult result = new FailureResult.Builder()
+  protected ResponseEntity<ResponseResult> handleOrderCancellationException(OrderCancellationException e) {
+    final ResponseResult result = new ResponseResult.Builder()
         .status(DetailedStatus.NON_CANCELLABLE_ORDER)
         .code(DetailedStatus.NON_CANCELLABLE_ORDER.getCode())
         .message(e.getMessage() + " / 현재 상태: " + e.getStatus())
@@ -63,8 +63,8 @@ public class OrderExceptionControllerAdvice {
   }
 
   @ExceptionHandler(NonExsistentOrderException.class)
-  protected ResponseEntity<FailureResult> handleOrderException(NonExsistentOrderException e) {
-    final FailureResult result = new FailureResult.Builder()
+  protected ResponseEntity<ResponseResult> handleOrderException(NonExsistentOrderException e) {
+    final ResponseResult result = new ResponseResult.Builder()
         .status(DetailedStatus.NON_CANCELLABLE_ORDER)
         .code(DetailedStatus.NON_CANCELLABLE_ORDER.getCode())
         .message(e.getMessage())
@@ -74,9 +74,9 @@ public class OrderExceptionControllerAdvice {
   }
 
   @ExceptionHandler(OrderException.class)
-  protected ResponseEntity<FailureResult> handleOrderException(OrderException e) {
+  protected ResponseEntity<ResponseResult> handleOrderException(OrderException e) {
 
-    final FailureResult result = new FailureResult.Builder()
+    final ResponseResult result = new ResponseResult.Builder()
         .status(DetailedStatus.INVALIED_ORDER)
         .code(DetailedStatus.INVALIED_ORDER.getCode())
         .message(e.getMessage())

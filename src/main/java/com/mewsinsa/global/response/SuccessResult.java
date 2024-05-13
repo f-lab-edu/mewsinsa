@@ -1,16 +1,19 @@
 package com.mewsinsa.global.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-public class SuccessResult {
-  private DetailedStatus status;
-  private String message;
+public class SuccessResult extends ResponseResult {
+  @JsonInclude(Include.NON_NULL)
   private Object data;
 
   //==Constructor==//
   // builder를 통해서만 생성되도록 private으로 정의
-  private SuccessResult(Builder builder) {
+  protected SuccessResult(Builder builder) {
+    super();
     this.status = builder.status;
+    this.code = builder.code;
     this.message = builder.message;
     this.data = builder.data;
   }
@@ -32,6 +35,7 @@ public class SuccessResult {
   public static class Builder {
     DetailedStatus status;
     String message;
+    String code;
     Object data;
 
     // httpStatus에 대한 정보는 반드시 필요
@@ -47,6 +51,11 @@ public class SuccessResult {
 
     public Builder data(Object data) {
       this.data = data;
+      return this;
+    }
+
+    public Builder code(String code) {
+      this.code = code;
       return this;
     }
 

@@ -27,6 +27,7 @@
 
 
 ## ✨ ERD
+[ERD CLOUD 바로가기](https://www.erdcloud.com/d/RL4RaATgkurMStxn4)
 ![primary_mewsinsa](https://github.com/f-lab-edu/mewsinsa/assets/64718002/2a54f397-f2f3-47cf-89be-4be4fa3e3dbf)
 
 

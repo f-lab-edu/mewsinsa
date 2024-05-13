@@ -1,5 +1,6 @@
 package com.mewsinsa.display.controller;
 
+import com.mewsinsa.auth.jwt.interceptor.Auth;
 import com.mewsinsa.display.controller.dto.DisplayProductResponseDto;
 import com.mewsinsa.display.controller.dto.ProductDetailResponseDto;
 import com.mewsinsa.display.domain.ProductDisplay;
@@ -41,25 +42,23 @@ public class DisplayController {
 
     SuccessResult successResult = new SuccessResult
         .Builder(DetailedStatus.OK)
+        .code("S001")
         .data(result)
-        .message("상품의 디테일 정보입니다.")
         .build();
     return new ResponseEntity<>(successResult, HttpStatus.OK);
   }
 
   @GetMapping("/products")
   ResponseEntity<SuccessResult> displayProducts(@RequestParam("subcategory") String subcategory,
-      @RequestParam(value = "page", required = false) @Positive Integer page,
-      @RequestParam(value = "count", required = false) @Positive Integer count) {
-    page = page == null ? 1 : page;
-    count = count == null ? 90 : count;
+      @RequestParam(value = "page", defaultValue = "1") @Positive Integer page,
+      @RequestParam(value = "count", defaultValue =  "90") @Positive Integer count) {
     List<DisplayProductResponseDto> list = displayService.productListBySubcategory(subcategory, page, count);
 
 
     SuccessResult successResult = new SuccessResult
         .Builder(DetailedStatus.OK)
+        .code("S001")
         .data(list)
-        .message("서브 카테고리: " + subcategory + ", page: " + page)
         .build();
 
     return new ResponseEntity<>(successResult, HttpStatus.OK);

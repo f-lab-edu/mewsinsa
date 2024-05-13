@@ -2,6 +2,7 @@ package com.mewsinsa.order.service;
 
 import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.coupon.domain.Coupon;
+import com.mewsinsa.coupon.domain.CouponType;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
 import com.mewsinsa.coupon.exception.FailToIssueCouponException;
 import com.mewsinsa.coupon.repository.CouponRepository;
@@ -12,7 +13,6 @@ import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.domain.Tier;
 import com.mewsinsa.member.repository.MemberRepository;
 import com.mewsinsa.member.service.MemberService;
-import com.mewsinsa.order.controller.dto.OrderDeliveryAddressDto;
 import com.mewsinsa.order.controller.dto.admin.OrderInfoResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.admin.OrderListResponseForAdminDto;
 import com.mewsinsa.order.controller.dto.OrderListResponseForMemberDto;
@@ -26,12 +26,11 @@ import com.mewsinsa.order.domain.History;
 import com.mewsinsa.order.domain.Order;
 import com.mewsinsa.order.domain.OrderStatus;
 import com.mewsinsa.order.domain.OrderedProduct;
-import com.mewsinsa.order.exception.DeliveryAddressUpdateException;
+import com.mewsinsa.global.error.exception.order.DeliveryAddressUpdateException;
 import com.mewsinsa.order.exception.InvalidProductOptionException;
 import com.mewsinsa.order.exception.NotApplicapableCouponException;
 import com.mewsinsa.order.exception.OrderCancellationException;
 import com.mewsinsa.order.exception.OrderException;
-import com.mewsinsa.order.exception.OutOfStockException;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
 import com.mewsinsa.order.repository.HistoryRepository;
 import com.mewsinsa.order.repository.OrderRepository;
@@ -39,9 +38,9 @@ import com.mewsinsa.order.repository.OrderedProductRepository;
 import com.mewsinsa.payment.domain.Receipt;
 import com.mewsinsa.payment.repository.ReceiptRepository;
 import com.mewsinsa.product.domain.Product;
-import com.mewsinsa.product.domain.ProductOption;
 import com.mewsinsa.product.repository.ProductRepository;
 import com.mewsinsa.promotion.domain.Promotion;
+import com.mewsinsa.promotion.domain.PromotionType;
 import com.mewsinsa.promotion.repository.PromotionRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -291,7 +290,7 @@ public class OrderService {
       }
       // 쿠폰으로 할인 받은 비용이 맞는지 확인
       Long couponDiscountAmount = 0L;
-      if(coupon!= null && coupon.getCouponType() == FIXED_DISCOUNT) {
+      if(coupon!= null && coupon.getCouponType().equals(CouponType.FIXED_AMOUNT.getType())) {
         couponDiscountAmount = coupon.getDiscountAmount();
       } else if(coupon != null) {
         couponDiscountAmount = (long)(piecePromotionPrice * ((double)coupon.getDiscountRate() / 100.0));
@@ -454,7 +453,7 @@ public class OrderService {
       if(promotion.getExpiredAt().isBefore(now)) continue;
 
       Long discountAmount;
-      if(promotion.getPromotionType() == FIXED_DISCOUNT) { //
+      if(promotion.getPromotionType().equals(PromotionType.FIXED_AMOUNT.getType())) { //
         discountAmount = promotion.getDiscountAmount();
       } else {
         discountAmount = (long)((double)tierPrice * ((double)promotion.getDiscountRate() / 100.0));
@@ -468,7 +467,7 @@ public class OrderService {
     // 쿠폰을 찾아오기
     Coupon coupon = couponRepository.findOneCoupon(couponId);
     Long couponAppliedPrice;
-    if(coupon.getCouponType() == FIXED_DISCOUNT) {
+    if(coupon.getCouponType().equals(CouponType.FIXED_AMOUNT.getType())) {
       couponAppliedPrice = promotionPrice - coupon.getDiscountAmount();
     } else {
       couponAppliedPrice = (long)((double)promotionPrice * (1.0 - (double)coupon.getDiscountRate() / 100.0));
