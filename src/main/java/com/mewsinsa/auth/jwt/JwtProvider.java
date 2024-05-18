@@ -10,6 +10,8 @@ import com.mewsinsa.auth.jwt.redis.dto.RedisAccessToken;
 import com.mewsinsa.auth.jwt.redis.dto.RedisRefreshToken;
 import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
 import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
+import com.mewsinsa.global.error.exception.auth.InvalidTokenException;
+import com.mewsinsa.global.error.exception.auth.NoTokenException;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
@@ -141,6 +143,10 @@ public class JwtProvider {
    * @return 해당 토큰의 클레임들. parse에 실패할 경우 null을 반환합니다.
    */
   public Jws<Claims> parseClaims(String token) {
+    if(token == null) {
+      throw new NoTokenException();
+    }
+
     token = token.replace("Bearer ", "");
     Jws<Claims> claimsJws;
     try {
@@ -150,10 +156,8 @@ public class JwtProvider {
           .build()
           .parseSignedClaims(token);
 
-    } catch(ExpiredJwtException ex) {
-      return null; // 만료되었음
-    } catch(JwtException ex) {
-      throw new IllegalArgumentException("잘못된 토큰입니다.");
+    } catch(JwtException e) {
+      throw new InvalidTokenException();
     }
 
     return claimsJws;

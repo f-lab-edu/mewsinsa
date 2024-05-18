@@ -11,7 +11,6 @@ public class SuccessResult extends ResponseResult {
   //==Constructor==//
   // builder를 통해서만 생성되도록 private으로 정의
   protected SuccessResult(Builder builder) {
-    super();
     this.status = builder.status;
     this.code = builder.code;
     this.message = builder.message;

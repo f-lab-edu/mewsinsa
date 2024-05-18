@@ -4,11 +4,13 @@ package com.mewsinsa.auth.jwt.redis.dto;
 import com.mewsinsa.member.domain.Member;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 @RedisHash(value = "accessToken", timeToLive = 1800) // 30m
 public class RedisAccessToken {
   @Id
   private Long memberId;
+  @Indexed
   private String accessToken;
   private Member member;
 
