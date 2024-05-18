@@ -1,20 +1,17 @@
 package com.mewsinsa.auth.jwt.service;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
-import com.mewsinsa.auth.jwt.controller.dto.RefreshTokenDto;
 import com.mewsinsa.auth.jwt.controller.dto.SignUpRequestDto;
 import com.mewsinsa.auth.jwt.domain.JwtToken;
-import com.mewsinsa.auth.jwt.exception.DuplicateMemberInfoException;
-import com.mewsinsa.auth.jwt.exception.IncorrectPasswordException;
-import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
-import com.mewsinsa.auth.jwt.exception.NoTokenException;
-import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
+import com.mewsinsa.global.error.exception.auth.DuplicateMemberInfoException;
+import com.mewsinsa.global.error.exception.auth.IncorrectPasswordException;
+import com.mewsinsa.global.error.exception.auth.InvalidTokenException;
+import com.mewsinsa.global.error.exception.auth.NoTokenException;
+import com.mewsinsa.global.error.exception.auth.NonExistentMemberException;
 import com.mewsinsa.auth.jwt.redis.dto.RedisAccessToken;
 import com.mewsinsa.auth.jwt.redis.dto.RedisRefreshToken;
 import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
 import com.mewsinsa.auth.jwt.redis.repository.RedisRefreshTokenRepository;
-import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
-import com.mewsinsa.auth.jwt.repository.RefreshTokenRepository;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
 import com.mewsinsa.member.service.MemberService;
@@ -65,7 +62,7 @@ public class JwtService {
     System.out.println(memberId);
 
     if(member == null) {
-      throw new NonExistentMemberException("회원이 존재하지 않습니다.");
+      throw new NonExistentMemberException();
     }
 
     // 토큰 발행
@@ -93,7 +90,7 @@ public class JwtService {
     try {
       memberRepository.addMember(member);
     } catch (DataIntegrityViolationException e) {
-      throw new DuplicateMemberInfoException("아이디 또는 이메일 또는 연락처가 기존 회원과 중복됩니다.");
+      throw new DuplicateMemberInfoException();
     } catch (Exception e) {
       throw new IllegalArgumentException(e.getMessage());
     }
@@ -155,7 +152,7 @@ public class JwtService {
     Optional<RedisRefreshToken> foundRefreshToken = redisRefreshTokenRepository.findById(Long.toString(memberId));
     if(foundRefreshToken.isEmpty()
         ||!foundRefreshToken.get().getRefreshToken().equals(refreshToken)) {
-      throw new InvalidTokenException("잘못된 리프레시 토큰입니다.");
+      throw new InvalidTokenException();
     }
 
     // 재발급
@@ -174,13 +171,13 @@ public class JwtService {
   public JwtToken mewsinsaLogin(String mewsinsaId, String password) {
     Member member = memberRepository.findMemberByMewsinsaId(mewsinsaId);
     if(member == null) {
-      throw new NonExistentMemberException(mewsinsaId, "회원이 존재하지 않습니다.");
+      throw new NonExistentMemberException();
     }
 
     // 비밀번호를 해싱
     String encryptedPassword = getEncryptedPassword(password);
     if(!encryptedPassword.equals(member.getPassword())) { // 같지 않음
-      throw new IncorrectPasswordException(mewsinsaId, "비밀번호가 틀립니다.");
+      throw new IncorrectPasswordException();
     }
 
     // 토큰 발행
@@ -193,7 +190,7 @@ public class JwtService {
     Optional<RedisAccessToken> accessTokenOptional = redisAccessTokenRepository.findById(strMemberId);
 
     if(accessTokenOptional.isEmpty()) {
-      throw new NoTokenException("액세스 토큰이 존재하지 않습니다.");
+      throw new NoTokenException();
     }
 
     RedisAccessToken redisAccessToken = accessTokenOptional.get();

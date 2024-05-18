@@ -17,7 +17,7 @@ import com.mewsinsa.order.controller.dto.form.OrderFormResponseDto;
 import com.mewsinsa.order.domain.History;
 import com.mewsinsa.order.domain.Order;
 import com.mewsinsa.order.domain.OrderedProduct;
-import com.mewsinsa.order.exception.NonExsistentOrderException;
+import com.mewsinsa.global.error.exception.order.NonExsistentOrderException;
 import com.mewsinsa.order.service.OrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -133,7 +133,7 @@ public class OrderController {
     History history = orderService.lookUpOneHistoryTable(orderedProductId);
 
     if(history == null) {
-      throw new NonExsistentOrderException("주문이 존재하지 않습니다. orderedProductId: " + orderedProductId);
+      throw new NonExsistentOrderException();
     }
     SuccessResult result = new SuccessResult.Builder(DetailedStatus.OK)
         .code("S001")

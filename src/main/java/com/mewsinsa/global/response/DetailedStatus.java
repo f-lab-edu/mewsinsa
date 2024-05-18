@@ -31,13 +31,16 @@ public enum DetailedStatus{
   OUT_OF_STOCK(400, "O001"), // Order
   NOT_APPLICAPABLE_COUPN(400, "O002"),
   INVALID_PRODUCT_OPTION_ID(400, "O003"),
-  NON_CANCELLABLE_ORDER(400, "O004"),
+  NON_CANCELLABLE_ORDER(400, "O004"), // 취소가 불가능한 주문
   NON_EXSISTENT_ORDER(400, "O005"), // 존재하지 않는 주문
   INVALIED_ORDER(400, "O006"), // 주문이 잘못된 경우
+  NOT_ISSUED_COUPON(400, "O007"), // 주문 시 발급 안된 쿠폰을 사용
+  DUPLICATED_USED_COUPON(400, "O008"), // 주문 시 쿠폰을 중복 적용
+  NOT_MATCHED_PRICE(400, "O009"), // 클라이언트에서 보낸 가격과 서버에서 계산한 가격이 일치하지 않음
+  INSUFFICIENT_POINTS(400, "O0010"), // 적립금 부족
 
-  //==Coupon==//
-  OUT_OF_REMAINING(400, "CP001"), // CP: Coupon
-
+  //==Coupon(CP)==//
+  OUT_OF_REMAINING(400, "CP001"), // 쿠폰 수량 소진
   NOT_ISSUANCE_PERIOD(400, "CP002"), // 발급 가능한 기간이 아님
   DUPLICATED_ISSUED_COUPON(400, "CP003"), // 중복 발급
   NON_EXSISTENT_COUPON(400, "CP004"), // 존재하지 않는 쿠폰
@@ -58,7 +61,6 @@ public enum DetailedStatus{
 
 
   //==Constructor==//
-
   DetailedStatus(int statusCode, String code) {
     this.statusCode = statusCode;
     this.code = code;

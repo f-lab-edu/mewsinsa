@@ -1,13 +1,9 @@
 package com.mewsinsa.member.service;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
-import com.mewsinsa.auth.jwt.controller.dto.AccessTokenDto;
-import com.mewsinsa.auth.jwt.exception.NoTokenException;
-import com.mewsinsa.auth.jwt.exception.NonExistentMemberException;
+import com.mewsinsa.global.error.exception.auth.NoTokenException;
 import com.mewsinsa.auth.jwt.redis.dto.RedisAccessToken;
 import com.mewsinsa.auth.jwt.redis.repository.RedisAccessTokenRepository;
-import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
-import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -45,7 +41,7 @@ public class MemberService {
     Optional<RedisAccessToken> accessTokenOptional = redisAccessTokenRepository.findById(strMemberId);
 
     if(accessTokenOptional.isEmpty()) {
-      throw new NoTokenException("액세스 토큰이 존재하지 않습니다.");
+      throw new NoTokenException();
     }
 
     RedisAccessToken redisAccessToken = accessTokenOptional.get();

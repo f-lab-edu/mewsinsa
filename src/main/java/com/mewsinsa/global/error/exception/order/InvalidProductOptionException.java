@@ -3,10 +3,9 @@ package com.mewsinsa.global.error.exception.order;
 import com.mewsinsa.global.error.exception.BaseException;
 import com.mewsinsa.global.response.DetailedStatus;
 
-public class DeliveryAddressUpdateException extends BaseException {
+public class InvalidProductOptionException extends BaseException {
 
-  public DeliveryAddressUpdateException() {
-    super(DetailedStatus.INTERNAL_SERER_ERROR);
+  public InvalidProductOptionException() {
+    super(DetailedStatus.INVALID_PRODUCT_OPTION_ID);
   }
-
 }
