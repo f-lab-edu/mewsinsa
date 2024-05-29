@@ -94,11 +94,6 @@ public class JwtController {
 
     JwtToken jwtToken = jwtService.reissueAccessToken(refreshToken);
 
-    if(jwtToken == null) { // 메인 페이지로
-      HttpHeaders headers = new HttpHeaders();
-      headers.setLocation(URI.create("/"));
-      return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    }
 
     SuccessResult result = new Builder(DetailedStatus.CREATED)
         .message("access token이 재발급 되었습니다.")

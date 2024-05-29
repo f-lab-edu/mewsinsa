@@ -1,17 +1,16 @@
 package com.mewsinsa.coupon.service;
 
 
-import static com.mewsinsa.global.config.ConstantConfig.*;
-
-import com.mewsinsa.auth.jwt.repository.AccessTokenRepository;
 import com.mewsinsa.coupon.controller.dto.AddCouponRequestDto;
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.domain.CouponType;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
-import com.mewsinsa.coupon.exception.FailToIssueCouponException;
+import com.mewsinsa.global.error.exception.coupon.CouponOutOfRemainingException;
+import com.mewsinsa.global.error.exception.coupon.DuplicatedIssuedCouponException;
 import com.mewsinsa.coupon.repository.CouponRepository;
+import com.mewsinsa.global.error.exception.coupon.NotIssuancePreiodException;
+import com.mewsinsa.global.error.exception.order.NonExsistentOrderException;
 import com.mewsinsa.global.response.DetailedStatus;
-import com.mewsinsa.member.domain.Member;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -90,7 +89,7 @@ public class CouponService {
     try {
       couponRepository.decreaseCouponRemaining(couponId);
     } catch(Exception e) { // 수량 부족. (remaining => Unsigned)
-      throw new FailToIssueCouponException(DetailedStatus.OUT_OF_REMAINING);
+      throw new CouponOutOfRemainingException();
     }
 
     // issuedAt(지금)이 startedAt과 expiredAt 사이에 있는지를 체크합니다.
@@ -132,12 +131,12 @@ public class CouponService {
     Coupon coupon = couponRepository.findOneCoupon(couponId);
 
     if(coupon == null) { // 없는 쿠폰
-      throw new FailToIssueCouponException(DetailedStatus.NON_EXSISTENT_COUPON);
+      throw new NonExsistentOrderException();
     }
 
     if(issuedAt.isBefore(coupon.getStartedAt())
     || issuedAt.isAfter(coupon.getExpiredAt())) {
-      throw new FailToIssueCouponException(DetailedStatus.NOT_ISSUANCE_PERIOD);
+      throw new NotIssuancePreiodException();
     }
   }
 
@@ -146,7 +145,7 @@ public class CouponService {
     IssuedCoupon issuedCoupon = couponRepository.findOneIssuedCoupon(couponId, memberId);
 
     if(issuedCoupon != null) {
-      throw new FailToIssueCouponException(DetailedStatus.DUPLICATED_ISSUED_COUPON);
+      throw new DuplicatedIssuedCouponException();
     }
   }
 

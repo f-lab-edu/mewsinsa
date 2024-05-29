@@ -1,8 +1,8 @@
 package com.mewsinsa.auth.jwt.interceptor;
 
 import com.mewsinsa.auth.jwt.JwtProvider;
-import com.mewsinsa.auth.jwt.exception.InvalidTokenException;
-import com.mewsinsa.auth.jwt.exception.NoTokenException;
+import com.mewsinsa.global.error.exception.auth.InvalidTokenException;
+import com.mewsinsa.global.error.exception.auth.NoTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -29,7 +29,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
     if(accessToken == null) {
-      throw new NoTokenException("토큰이 없습니다. 로그인 해주세요.");
+      throw new NoTokenException();
     }
 
     String actualToken = accessToken.replaceFirst("Bearer ", "");
@@ -42,10 +42,8 @@ public class AuthInterceptor implements HandlerInterceptor {
           .build()
           .parseSignedClaims(actualToken);
 
-    } catch(ExpiredJwtException ex) {
-      throw ex;
     } catch(JwtException ex) {
-      throw new InvalidTokenException("잘못된 토큰입니다.");
+      throw new InvalidTokenException();
     }
 
     return true;

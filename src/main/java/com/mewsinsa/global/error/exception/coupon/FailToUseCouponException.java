@@ -1,12 +1,11 @@
-package com.mewsinsa.global.error.exception.order;
+package com.mewsinsa.global.error.exception.coupon;
 
 import com.mewsinsa.global.error.exception.BaseException;
 import com.mewsinsa.global.response.DetailedStatus;
 
-public class DeliveryAddressUpdateException extends BaseException {
+public class FailToUseCouponException extends BaseException {
 
-  public DeliveryAddressUpdateException() {
+  public FailToUseCouponException() {
     super(DetailedStatus.INTERNAL_SERER_ERROR);
   }
-
 }

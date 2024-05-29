@@ -4,10 +4,15 @@ import com.mewsinsa.auth.jwt.service.JwtService;
 import com.mewsinsa.coupon.domain.Coupon;
 import com.mewsinsa.coupon.domain.CouponType;
 import com.mewsinsa.coupon.domain.IssuedCoupon;
-import com.mewsinsa.coupon.exception.FailToIssueCouponException;
+import com.mewsinsa.global.error.exception.coupon.FailToIssueCouponException;
 import com.mewsinsa.coupon.repository.CouponRepository;
 import com.mewsinsa.delivery.domain.DeliveryAddress;
 import com.mewsinsa.delivery.repository.DeliveryAddressRepository;
+import com.mewsinsa.global.error.exception.coupon.FailToUseCouponException;
+import com.mewsinsa.global.error.exception.coupon.NotIssuancePreiodException;
+import com.mewsinsa.global.error.exception.order.DuplicatedUsedCouponException;
+import com.mewsinsa.global.error.exception.order.InsufficientPointsException;
+import com.mewsinsa.global.error.exception.order.NotMatchedPriceException;
 import com.mewsinsa.global.response.DetailedStatus;
 import com.mewsinsa.member.domain.Member;
 import com.mewsinsa.member.domain.Tier;
@@ -27,10 +32,9 @@ import com.mewsinsa.order.domain.Order;
 import com.mewsinsa.order.domain.OrderStatus;
 import com.mewsinsa.order.domain.OrderedProduct;
 import com.mewsinsa.global.error.exception.order.DeliveryAddressUpdateException;
-import com.mewsinsa.order.exception.InvalidProductOptionException;
-import com.mewsinsa.order.exception.NotApplicapableCouponException;
-import com.mewsinsa.order.exception.OrderCancellationException;
-import com.mewsinsa.order.exception.OrderException;
+import com.mewsinsa.global.error.exception.order.InvalidProductOptionException;
+import com.mewsinsa.global.error.exception.order.NotApplicapableCouponException;
+import com.mewsinsa.global.error.exception.order.OrderCancellationException;
 import com.mewsinsa.order.controller.dto.OrderRequestDto;
 import com.mewsinsa.order.repository.HistoryRepository;
 import com.mewsinsa.order.repository.OrderRepository;
@@ -119,7 +123,7 @@ public class OrderService {
       OrderedProductInfoDto tempOrderedProductInfo = productRepository.findOneOrderedProductInfo(orderedProduct.getProductOptionId());
 
       if(tempOrderedProductInfo == null) {
-        throw new InvalidProductOptionException("해당 상품 옵션이 존재하지 않습니다.", orderedProduct.getProductOptionId());
+        throw new InvalidProductOptionException();
       }
 
       // 찾아온 데이터를 꺼내기
@@ -221,7 +225,7 @@ public class OrderService {
 
       // 주문에 포함된 옵션이 DB에 존재하지 않는 경우
       if(tempOrderedProductInfo == null) {
-        throw new InvalidProductOptionException("해당 상품 옵션이 존재하지 않습니다.", productOptionId);
+        throw new InvalidProductOptionException();
       }
 
       // 찾아온 데이터를 꺼내기
@@ -249,15 +253,15 @@ public class OrderService {
       // 검증 1. 부분 가격이 맞는지 확인
       // 프로모션가가 맞는지 확인
       if(!Objects.equals(orderedProduct.getPiecePromotionPrice(), piecePromotionPrice)) {
-        throw new OrderException("상품의 프로모션가가 틀립니다. / productOptionId: " + productOptionId + ", client piecePromotionPrice: " + orderedProduct.getPiecePromotionPrice() + ", server piecePromotionPrice: " + piecePromotionPrice);
+        throw new NotMatchedPriceException();
       }
       // 회원 등급 할인 금액이 맞는지 확인
       if(orderedProduct.getPieceTierDiscountAmount() != quantity * unitTierDiscountAmount) {
-        throw new OrderException("회원 할인가가 틀립니다. / productOptionId: " + productOptionId + ", client pieceTierDiscountAmount: " + orderedProduct.getPieceTierDiscountAmount() + ", server pieceTierDiscountAmount: " + quantity * unitTierDiscountAmount);
+        throw new NotMatchedPriceException();
       }
       // 적립금이 맞는지 확인
       if(!Objects.equals(orderedProduct.getPoints(), points)) {
-        throw new OrderException("적립금이 틀립니다. / productOptionId: " + productOptionId + ", client points: " + orderedProduct.getPoints() + ", server points: " + points);
+        throw new NotMatchedPriceException();
       }
 
       // 적립금 더하기
@@ -269,24 +273,24 @@ public class OrderService {
       // 유저가 해당 쿠폰을 발급 받았는가? -> issued coupon table에서 찾아오기
       IssuedCoupon issuedCoupon = couponRepository.findOneIssuedCoupon(couponId, memberId);
       if(couponId != null && issuedCoupon == null) {
-        throw new OrderException("발급 받지 않은 쿠폰입니다. / couponId: " + couponId);
+        throw new NotIssuancePreiodException();
       } else if(issuedCoupon != null && issuedCoupon.getUsed()){
-        throw new OrderException("이미 사용된 쿠폰입니다. / couponId: " + couponId);
+        throw new NotApplicapableCouponException();
       }
 
       // 쿠폰이 해당 상품에 적용 가능한가
       boolean applicableCoupon = isApplicableCoupon(productId, couponId);
       if(!applicableCoupon) {
-        throw new NotApplicapableCouponException("해당 상품에 적용 가능한 쿠폰이 아닙니다.", productId, couponId);
+        throw new NotApplicapableCouponException();
       }
       // 쿠폰이 중복 적용됐는가
       if(couponId != null && usedCouponMap.get(couponId) != null) {
-        throw new OrderException("쿠폰이 중복 적용되었습니다. / productOptionId: " + productOptionId + ", " + usedCouponMap.get(couponId) + ", couponId: " + couponId);
+        throw new DuplicatedUsedCouponException();
       }
       // 쿠폰이 존재하는가, 쿠폰의 기한이 남아있는가
       Coupon coupon = couponRepository.findOneCoupon(couponId);
       if(couponId != null && (coupon == null || coupon.getExpiredAt().isBefore(LocalDateTime.now()))) {
-        throw new OrderException("존재하지 않거나, 기한이 지난 쿠폰입니다 / couponId: " + couponId);
+        throw new NotApplicapableCouponException();
       }
       // 쿠폰으로 할인 받은 비용이 맞는지 확인
       Long couponDiscountAmount = 0L;
@@ -296,8 +300,7 @@ public class OrderService {
         couponDiscountAmount = (long)(piecePromotionPrice * ((double)coupon.getDiscountRate() / 100.0));
       }
       if(couponId != null && !Objects.equals(orderedProduct.getCouponDiscountAmount(), couponDiscountAmount)) {
-        throw new OrderException("쿠폰 할인 금액이 틀립니다 / couponId: " + couponId + ", client couponDiscountAmount: "
-            + orderedProduct.getCouponDiscountAmount() + ", server couponDiscountAmount: " + couponDiscountAmount);
+        throw new NotMatchedPriceException();
       }
       // 쿠폰 맵에 추가 -> 현재 주문에서 사용되었음을 의미
       if(couponId != null) {
@@ -307,7 +310,7 @@ public class OrderService {
 
       // 검증 3. 회원의 적립금이 충분한지
       if(member.getPoints() < usedPoints) {
-        throw new OrderException("적립금이 부족합니다. / 회원의 잔여 포인트: " + member.getPoints() + ", 사용 포인트: " + usedPoints);
+        throw new InsufficientPointsException();
       } else { // 회원 적립금 업데이트
         memberRepository.updateMemberPoints(memberId, member.getPoints() - usedPoints);
       }
@@ -387,7 +390,7 @@ public class OrderService {
     // 배송지를 바꿀 수 있는지 검사해보기
     for (History history : historyList) {
       if(!updatableList.contains(history.getStatus())) {
-        throw new DeliveryAddressUpdateException("배송지를 변경할 수 없습니다.");
+        throw new DeliveryAddressUpdateException();
       }
     }
 
@@ -511,7 +514,7 @@ public class OrderService {
 
     Long refundPrice = 0L;
     if(!cancelableList.contains(history.getStatus())) {
-      throw new OrderCancellationException("주문을 취소할 수 없습니다.", history.getStatus());
+      throw new OrderCancellationException();
     }
 
     // 주문의 상태 변경
@@ -562,7 +565,7 @@ public class OrderService {
       issuedCouponList
           .forEach(issuedCouponId -> couponRepository.updateUsedInIssuedCoupon(issuedCouponId, true, orderedAt));
     } catch (Exception e) {
-      throw new FailToIssueCouponException(DetailedStatus.INTERNAL_SERER_ERROR);
+      throw new FailToUseCouponException();
     }
   }
 }
